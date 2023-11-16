@@ -5,18 +5,25 @@ import ru.dragonestia.loadbalancer.model.Node;
 import ru.dragonestia.loadbalancer.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BucketService {
 
-    void createBucket(Node node, Bucket lobby);
+    void createBucket(Bucket lobby);
 
-    void removeBucket(Node node, Bucket lobby);
+    void removeBucket(Bucket lobby);
+
+    Optional<Bucket> findBucket(Node node, String identifier);
 
     List<Bucket> allBuckets(Node node);
 
-    int countAvailableBuckets(Node node);
+    default int countAvailableBuckets(Node node) {
+        return countAvailableBuckets(node, 1);
+    }
+
+    int countAvailableBuckets(Node node, int requiredSlots);
 
     Bucket pickAvailableBucket(Node node, List<User> users);
 
-    void freeBucket(Node node, List<User> users);
+    void freeBucket(Bucket bucket, List<User> users);
 }
