@@ -28,4 +28,19 @@ public class Bucket {
         if (slots.isUnlimited()) return true;
         return slots.getSlots() >= usedSlots + requiredSlots;
     }
+
+    @Override
+    public int hashCode() {
+        return identifier.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) return true;
+        if (object == null) return false;
+        if (object instanceof Bucket other) {
+            return identifier.equals(other.identifier);
+        }
+        return false;
+    }
 }
