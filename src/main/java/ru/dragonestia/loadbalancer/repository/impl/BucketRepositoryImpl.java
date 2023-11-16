@@ -49,6 +49,8 @@ public class BucketRepositoryImpl implements BucketRepository {
 
             node2bucketsMap.get(node.get()).remove(bucket.getIdentifier());
         }
+
+        userRepository.onRemoveBucket(bucket);
     }
 
     @Override
@@ -85,9 +87,15 @@ public class BucketRepositoryImpl implements BucketRepository {
             }
 
             var requiredSlots = users.size();
-            var container = node2bucketsMap.get(node).values().stream()
+            var container = node2bucketsMap.get(node).values().stream() // TODO: pick bucket with used node balancing method
                     .filter(b -> b.isAvailable(requiredSlots))
                     .findFirst();
+
+            if (container.isPresent()) {
+                var cont = container.get();
+                var addedUsers = userRepository.linkWithBucket(cont.bucket(), users);
+                cont.used().getAndAdd((int) addedUsers.values().stream().filter(Boolean.TRUE::equals).count());
+            }
 
             return container.map(BucketContainer::bucket);
         }
@@ -110,7 +118,7 @@ public class BucketRepositoryImpl implements BucketRepository {
                 throw new IllegalArgumentException("Bucket '" + nodeId + "' does not exist");
             }
 
-            var delta = userRepository.tryUnlinkWithBucket(bucket, users);
+            var delta = userRepository.unlinkWithBucket(bucket, users);
             if (buckets.get(bucket.getIdentifier()).used().getAndAdd(-delta) < 0) {
                 throw new RuntimeException("Bucket has less than 0 users");
             }

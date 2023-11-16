@@ -1,6 +1,9 @@
 package ru.dragonestia.loadbalancer.repository.impl;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import ru.dragonestia.loadbalancer.model.Node;
+import ru.dragonestia.loadbalancer.repository.BucketRepository;
 import ru.dragonestia.loadbalancer.repository.NodeRepository;
 
 import java.util.List;
@@ -8,8 +11,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Repository
+@RequiredArgsConstructor
 public class NodeRepositoryImpl implements NodeRepository {
 
+    private final BucketRepository bucketRepository;
     private final Map<String, Node> nodeMap = new ConcurrentHashMap<>();
 
     @Override
@@ -21,6 +27,8 @@ public class NodeRepositoryImpl implements NodeRepository {
 
             nodeMap.put(node.identifier(), node);
         }
+
+        bucketRepository.onCreateNode(node);
     }
 
     @Override
@@ -28,6 +36,8 @@ public class NodeRepositoryImpl implements NodeRepository {
         synchronized (nodeMap) {
             nodeMap.remove(node.identifier());
         }
+
+        bucketRepository.onRemoveNode(node);
     }
 
     @Override

@@ -15,41 +15,22 @@ public class UserRepositoryImpl implements UserRepository {
     private final Map<User, Set<Bucket>> usersMap = new ConcurrentHashMap<>();
 
     @Override
-    public void linkWithBucket(Bucket bucket, Collection<User> users) {
+    public Map<User, Boolean> linkWithBucket(Bucket bucket, Collection<User> users) {
+        var result = new HashMap<User, Boolean>();
+
         synchronized (usersMap) {
             for (var user: users) {
                 var set = usersMap.getOrDefault(user, new HashSet<>());
-                set.add(bucket);
+                result.put(user, set.add(bucket));
                 usersMap.put(user, set);
             }
         }
+
+        return result;
     }
 
     @Override
-    public void unlinkWithBucket(Bucket bucket, Collection<User> users) {
-        synchronized (usersMap) {
-            for (var user: users) {
-                var set = usersMap.getOrDefault(user, new HashSet<>());
-                set.remove(bucket);
-
-                if (set.isEmpty()) {
-                    usersMap.remove(user);
-                } else {
-                    usersMap.put(user, set);
-                }
-            }
-        }
-    }
-
-    @Override
-    public List<Bucket> findAllLinkedUserBuckets(User user) {
-        synchronized (usersMap) {
-            return usersMap.getOrDefault(user, new HashSet<>()).stream().toList();
-        }
-    }
-
-    @Override
-    public int tryUnlinkWithBucket(Bucket bucket, Collection<User> users) {
+    public int unlinkWithBucket(Bucket bucket, Collection<User> users) {
         var counter = new AtomicInteger();
         synchronized (usersMap) {
             usersMap.forEach((user, set) -> {
@@ -64,6 +45,13 @@ public class UserRepositoryImpl implements UserRepository {
             });
         }
         return counter.get();
+    }
+
+    @Override
+    public List<Bucket> findAllLinkedUserBuckets(User user) {
+        synchronized (usersMap) {
+            return usersMap.getOrDefault(user, new HashSet<>()).stream().toList();
+        }
     }
 
     @Override

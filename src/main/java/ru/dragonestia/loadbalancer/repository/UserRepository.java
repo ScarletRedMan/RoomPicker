@@ -5,16 +5,15 @@ import ru.dragonestia.loadbalancer.model.User;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public interface UserRepository {
 
-    void linkWithBucket(Bucket bucket, Collection<User> users);
+    Map<User, Boolean> linkWithBucket(Bucket bucket, Collection<User> users);
 
-    void unlinkWithBucket(Bucket bucket, Collection<User> users);
+    int unlinkWithBucket(Bucket bucket, Collection<User> users);
 
     List<Bucket> findAllLinkedUserBuckets(User user);
-
-    int tryUnlinkWithBucket(Bucket bucket, Collection<User> users);
 
     void onRemoveBucket(Bucket bucket);
 }
