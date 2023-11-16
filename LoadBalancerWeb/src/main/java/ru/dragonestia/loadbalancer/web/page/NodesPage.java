@@ -1,9 +1,11 @@
 package ru.dragonestia.loadbalancer.web.page;
 
+import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.Getter;
+import ru.dragonestia.loadbalancer.web.component.NavPath;
 import ru.dragonestia.loadbalancer.web.component.NodeList;
 import ru.dragonestia.loadbalancer.web.component.RegisterNode;
 
@@ -20,7 +22,9 @@ public class NodesPage extends VerticalLayout {
     public NodesPage() {
         super();
 
+        add(new NavPath(new NavPath.Point("Nodes", "/nodes")));
         add(registerNode = createRegisterNodeElement());
+        add(new Hr());
         add(nodeList = createNodeListElement());
     }
 
