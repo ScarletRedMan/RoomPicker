@@ -1,11 +1,19 @@
 package ru.dragonestia.loadbalancer.web.component;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import ru.dragonestia.loadbalancer.web.model.Node;
 
 import java.util.List;
@@ -49,7 +57,67 @@ public class NodeList extends VerticalLayout {
         var grid = new Grid<>(Node.class, false);
         grid.addColumn(Node::identifier).setHeader("Identifier");
         grid.addColumn(node -> node.method().getName()).setHeader("Mode");
+        grid.addComponentColumn(this::createManageButtons).setHeader("Manage");
         return grid;
+    }
+
+    private HorizontalLayout createManageButtons(Node node) {
+        var layout = new HorizontalLayout();
+
+        {
+            var button = new Button("Details");
+            button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            button.addClickListener(event -> clickDetailsButton(node));
+            layout.add(button);
+        }
+
+        {
+            var button = new Button("Remove");
+            button.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+            button.addClickListener(event -> clickRemoveButton(node));
+            layout.add(button);
+        }
+
+        return layout;
+    }
+
+    private void clickDetailsButton(Node node) {
+        // TODO
+    }
+
+    private void clickRemoveButton(Node node) {
+        var dialog = new Dialog("Confirm node deletion");
+        dialog.add(new Paragraph("Confirm that you want to delete node. Enter '" + node.identifier() + "' to field below and confirm."));
+
+        var inputField = new TextField();
+        dialog.add(inputField);
+
+        { // confirm
+            var button = new Button("Confirm");
+            button.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
+            button.addClickListener(event -> {
+                if (!node.identifier().equals(inputField.getValue())) {
+                    Notification.show("Invalid input", 3000, Notification.Position.TOP_END)
+                            .addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    return;
+                }
+
+                removeNode(node);
+                Notification.show("Node '" + node.identifier() + "' was successfully removed!", 3000, Notification.Position.TOP_END)
+                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                dialog.close();
+            });
+
+            dialog.getFooter().add(button);
+        }
+
+        { // cancel
+            var button = new Button("Cancel", event -> dialog.close());
+            button.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+            dialog.getFooter().add(button);
+        }
+
+        dialog.open();
     }
 
     public void update(List<Node> nodes) {
@@ -57,9 +125,7 @@ public class NodeList extends VerticalLayout {
         applySearch(searchField.getValue());
     }
 
-    private void registerNode(Node node) {
-        // TODO: send request for register node and get all nodes
-
-        update(List.of(node));
+    private void removeNode(Node node) {
+        // TODO: send remove request and getting nodes list
     }
 }
