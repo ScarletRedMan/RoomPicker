@@ -13,4 +13,8 @@ public interface UserRepository {
     void unlinkWithBucket(Bucket bucket, Collection<User> users);
 
     List<Bucket> findAllLinkedUserBuckets(User user);
+
+    int tryUnlinkWithBucket(Bucket bucket, Collection<User> users);
+
+    void onRemoveBucket(Bucket bucket);
 }

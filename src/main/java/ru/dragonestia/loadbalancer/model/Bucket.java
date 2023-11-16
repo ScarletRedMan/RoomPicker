@@ -1,11 +1,12 @@
 package ru.dragonestia.loadbalancer.model;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import ru.dragonestia.loadbalancer.model.type.SlotLimit;
 
 @Getter
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Bucket {
 
     private final String identifier;
@@ -13,6 +14,10 @@ public class Bucket {
     private final SlotLimit slots;
     private final String payload;
     private boolean locked = false;
+
+    public static Bucket create(String identifier, Node node, SlotLimit limit, String payload) {
+        return new Bucket(identifier, node.identifier(), limit, payload);
+    }
 
     public void setLocked(boolean value) {
         locked = value;
