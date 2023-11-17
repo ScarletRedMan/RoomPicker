@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
@@ -20,19 +21,22 @@ import ru.dragonestia.loadbalancer.web.model.type.LoadBalancingMethod;
 
 import java.util.function.Function;
 
-public class RegisterNode extends VerticalLayout {
+public class RegisterNode extends Details {
 
     private final Function<Node, Response> onSubmit;
     private final TextField identifierField;
     private final RadioButtonGroup<LoadBalancingMethod> modeRadio;
 
     public RegisterNode(Function<Node, Response> onSubmit) {
+        super(new H2("Register node"));
         this.onSubmit = onSubmit;
 
-        add(new H2("Register node"));
-        add(identifierField = createNodeIdentifierField());
-        add(modeRadio = createModeRadio());
-        add(createSubmitButton());
+        var layout = new VerticalLayout();
+        layout.add(identifierField = createNodeIdentifierField());
+        layout.add(modeRadio = createModeRadio());
+        layout.add(createSubmitButton());
+
+        add(layout);
     }
 
     private TextField createNodeIdentifierField() {
