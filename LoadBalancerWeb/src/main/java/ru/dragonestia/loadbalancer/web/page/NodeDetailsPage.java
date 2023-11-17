@@ -1,5 +1,12 @@
 package ru.dragonestia.loadbalancer.web.page;
 
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.HtmlComponent;
+import com.vaadin.flow.component.HtmlContainer;
+import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -32,16 +39,31 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
         }
         node = new Node(nodeIdOpt.get(), LoadBalancingMethod.ROUND_ROBIN); // TODO: getting node
 
-        add(new NavPath(new NavPath.Point("Nodes", "/nodes"),
-                new NavPath.Point(node.identifier(), "/nodes/" + node.identifier())));
-
         // TODO: getting buckets
-        add(bucketList = new BucketList(List.of(
+        initComponents(node, List.of(
                 Bucket.create("test-1", node, SlotLimit.unlimited(), "Hello world!"),
                 Bucket.create("test-2", node, SlotLimit.of(12), "Hello world!"),
                 Bucket.create("test-3", node, SlotLimit.unlimited(), "Hello world!"),
                 Bucket.create("test-4", node, SlotLimit.of(32), "Hello world!"),
-                Bucket.create("test-5", node, SlotLimit.of(54), "Hello world!")
-        )));
+                Bucket.create("test-5", node, SlotLimit.of(54), "Hello world!")));
+    }
+
+    private void initComponents(Node node, List<Bucket> buckets) {
+        add(new NavPath(new NavPath.Point("Nodes", "/nodes"),
+                new NavPath.Point(node.identifier(), "/nodes/" + node.identifier())));
+
+        printNodeDetails(node);
+        add(bucketList = new BucketList(buckets));
+    }
+
+    private void printNodeDetails(Node node) {
+        add(new H2("Node details"));
+
+        var layout = new VerticalLayout();
+        layout.add(new Html("<span>Identifier: <b>" + node.identifier() + "</b></span>"));
+        layout.add(new Html("<span>Mode: <b>" + node.method().getName() + "</b></span>"));
+
+        add(layout);
+        add(new Hr());
     }
 }
