@@ -1,12 +1,8 @@
 package ru.dragonestia.loadbalancer.web.page;
 
 import com.vaadin.flow.component.Html;
-import com.vaadin.flow.component.HtmlComponent;
-import com.vaadin.flow.component.HtmlContainer;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Hr;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -15,6 +11,7 @@ import com.vaadin.flow.router.Route;
 import lombok.Getter;
 import ru.dragonestia.loadbalancer.web.component.BucketList;
 import ru.dragonestia.loadbalancer.web.component.NavPath;
+import ru.dragonestia.loadbalancer.web.component.RegisterBucket;
 import ru.dragonestia.loadbalancer.web.model.Bucket;
 import ru.dragonestia.loadbalancer.web.model.Node;
 import ru.dragonestia.loadbalancer.web.model.type.LoadBalancingMethod;
@@ -28,6 +25,7 @@ import java.util.List;
 public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
     private Node node;
+    private RegisterBucket registerBucket;
     private BucketList bucketList;
 
     @Override
@@ -53,6 +51,12 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
                 new NavPath.Point(node.identifier(), "/nodes/" + node.identifier())));
 
         printNodeDetails(node);
+        add(new Hr());
+        add(registerBucket = new RegisterBucket(node, (bucket) -> {
+            // TODO: register bucket and getting all buckets
+            return new RegisterBucket.Response(false, "");
+        }));
+        add(new Hr());
         add(bucketList = new BucketList(buckets));
     }
 
@@ -64,6 +68,5 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
         layout.add(new Html("<span>Mode: <b>" + node.method().getName() + "</b></span>"));
 
         add(layout);
-        add(new Hr());
     }
 }
