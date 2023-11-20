@@ -18,7 +18,7 @@ public class NavPath extends HorizontalLayout{
                 .set("padding-right", "1rem");
 
         {
-            var button = createPointButton(root);
+            var button = createPointButton(root, points.length > 0);
             button.getStyle().set("font-weight", "bold");
             add(button);
         }
@@ -27,11 +27,8 @@ public class NavPath extends HorizontalLayout{
             add(createDelimiterComponent());
 
             for (int i = 0, n = points.length; i < n; i++) {
-                var button = createPointButton(points[i]);
+                var button = createPointButton(points[i], i + 1 != n);
 
-                if (i + 1 == n) {
-                    button.setEnabled(false);
-                }
                 add(button);
 
                 if (i + 1 != n) {
@@ -45,12 +42,15 @@ public class NavPath extends HorizontalLayout{
         return new Icon(VaadinIcon.ANGLE_RIGHT);
     }
 
-    private Button createPointButton(Point point) {
+    private Button createPointButton(Point point, boolean enable) {
         var text = new Span(point.name());
 
-        var button = new Button(text, event -> {
-            getUI().ifPresent(ui -> ui.navigate(point.uri()));
-        });
+        var button = new Button(text);
+        if (enable) {
+            button.addClickListener(event -> {
+                getUI().ifPresent(ui -> ui.navigate(point.uri()));
+            });
+        }
         button.getStyle()
                 .setPadding("0")
                 .setBorder("0");
