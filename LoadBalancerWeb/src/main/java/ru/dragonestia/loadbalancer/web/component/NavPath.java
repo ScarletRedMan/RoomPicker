@@ -28,6 +28,10 @@ public class NavPath extends HorizontalLayout{
 
             for (int i = 0, n = points.length; i < n; i++) {
                 var button = createPointButton(points[i]);
+
+                if (i + 1 == n) {
+                    button.setEnabled(false);
+                }
                 add(button);
 
                 if (i + 1 != n) {
