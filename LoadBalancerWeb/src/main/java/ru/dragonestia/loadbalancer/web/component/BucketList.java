@@ -92,7 +92,7 @@ public class BucketList extends VerticalLayout {
     private void clickDetailsButton(Bucket bucket) {
         getUI().ifPresent(ui -> {
             ui.navigate("/nodes/" + bucket.getNodeIdentifier() +
-                    "/" + bucket.getIdentifier());
+                    "/buckets/" + bucket.getIdentifier());
         });
     }
 
