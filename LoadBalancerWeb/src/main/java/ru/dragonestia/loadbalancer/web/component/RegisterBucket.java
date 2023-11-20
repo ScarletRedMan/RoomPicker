@@ -3,6 +3,7 @@ package ru.dragonestia.loadbalancer.web.component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.Notification;
@@ -24,6 +25,7 @@ public class RegisterBucket extends Details {
     private final Function<Bucket, Response> onSubmit;
     private final TextField identifierField;
     private final TextArea payloadField;
+    private final Checkbox lockedField;
 
     public RegisterBucket(Node node, Function<Bucket, Response> onSubmit) {
         super(new H2("Register bucket"));
@@ -34,6 +36,7 @@ public class RegisterBucket extends Details {
         layout.add(createNodeIdentifierField());
         layout.add(identifierField = createBucketIdentifierField());
         layout.add(payloadField = createPayloadField());
+        layout.add(lockedField = createLockedField());
         layout.add(createSubmitButton());
 
         add(layout);
@@ -67,6 +70,12 @@ public class RegisterBucket extends Details {
         return field;
     }
 
+    private Checkbox createLockedField() {
+        var field = new Checkbox("Locked");
+        field.setValue(false);
+        return field;
+    }
+
     private Button createSubmitButton() {
         var button = new Button("Register");
         button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -77,6 +86,7 @@ public class RegisterBucket extends Details {
     public void clear() {
         identifierField.clear();
         payloadField.clear();
+        lockedField.setValue(false);
     }
 
     private @Nullable String validateForm(String identifier) {
@@ -102,6 +112,7 @@ public class RegisterBucket extends Details {
         }
 
         var bucket = Bucket.create(nodeIdentifier, node, SlotLimit.unlimited(), payloadField.getValue());
+        bucket.setLocked(lockedField.getValue());
         var response = onSubmit.apply(bucket);
         clear();
         if (response.error()) {
