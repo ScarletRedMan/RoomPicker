@@ -20,6 +20,7 @@ import ru.dragonestia.loadbalancer.web.model.Bucket;
 import ru.dragonestia.loadbalancer.web.model.Node;
 import ru.dragonestia.loadbalancer.web.model.type.LoadBalancingMethod;
 import ru.dragonestia.loadbalancer.web.model.type.SlotLimit;
+import ru.dragonestia.loadbalancer.web.repository.BucketRepository;
 import ru.dragonestia.loadbalancer.web.repository.NodeRepository;
 
 import java.util.List;
@@ -30,12 +31,16 @@ import java.util.List;
 public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
     private final NodeRepository nodeRepository;
+    private final BucketRepository bucketRepository;
     private Node node;
     private RegisterBucket registerBucket;
     private BucketList bucketList;
 
-    public NodeDetailsPage(@Autowired NodeRepository nodeRepository) {
+    public NodeDetailsPage(@Autowired NodeRepository nodeRepository,
+                           @Autowired BucketRepository bucketRepository) {
+
         this.nodeRepository = nodeRepository;
+        this.bucketRepository = bucketRepository;
     }
 
     @Override
@@ -56,19 +61,12 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
             return;
         }
+        node = nodeOpt.get();
 
-        node = nodeOpt.get(); // TODO: getting node
-
-        // TODO: getting buckets
-        initComponents(node, List.of(
-                Bucket.create("test-1", node, SlotLimit.unlimited(), "Hello world!"),
-                Bucket.create("test-2", node, SlotLimit.of(12), "Hello world!"),
-                Bucket.create("test-3", node, SlotLimit.unlimited(), "Hello world!"),
-                Bucket.create("test-4", node, SlotLimit.of(32), "Hello world!"),
-                Bucket.create("test-5", node, SlotLimit.of(54), "Hello world!")));
+        initComponents(node, bucketRepository.all(node));
     }
 
-    private void initComponents(Node node, List<Bucket> buckets) {
+    private void initComponents(Node node, List<BucketRepository.BucketInfo> buckets) {
         printNodeDetails(node);
         add(new Hr());
         add(registerBucket = new RegisterBucket(node, (bucket) -> {
@@ -76,7 +74,7 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
             return new RegisterBucket.Response(false, "");
         }));
         add(new Hr());
-        add(bucketList = new BucketList(buckets));
+        add(bucketList = new BucketList(node.identifier(), buckets));
     }
 
     private void printNodeDetails(Node node) {

@@ -1,6 +1,7 @@
 package ru.dragonestia.loadbalancer.web.repository.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,6 +23,11 @@ public class RestUtil {
     public <T> T get(URI uri, Class<T> responseType) {
         var template = restTemplate.get();
         return Objects.requireNonNull(template.getForObject(serverUrl.resolve(uri), responseType));
+    }
+
+    public <T> ResponseEntity<T> getEntity(URI uri, Class<T> responseType) {
+        var template = restTemplate.get();
+        return template.getForEntity(serverUrl.resolve(uri), responseType);
     }
 
     public <T> T get(URI uri, Class<T> responseType, Consumer<Map<String, String>> paramsConsumer) {
