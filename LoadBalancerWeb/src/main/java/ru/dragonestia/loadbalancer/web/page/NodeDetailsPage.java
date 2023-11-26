@@ -3,12 +3,16 @@ package ru.dragonestia.loadbalancer.web.page;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.loadbalancer.web.component.BucketList;
 import ru.dragonestia.loadbalancer.web.component.NavPath;
 import ru.dragonestia.loadbalancer.web.component.RegisterBucket;
@@ -16,6 +20,7 @@ import ru.dragonestia.loadbalancer.web.model.Bucket;
 import ru.dragonestia.loadbalancer.web.model.Node;
 import ru.dragonestia.loadbalancer.web.model.type.LoadBalancingMethod;
 import ru.dragonestia.loadbalancer.web.model.type.SlotLimit;
+import ru.dragonestia.loadbalancer.web.repository.NodeRepository;
 
 import java.util.List;
 
@@ -24,9 +29,14 @@ import java.util.List;
 @Route("/nodes/:nodeId")
 public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
+    private final NodeRepository nodeRepository;
     private Node node;
     private RegisterBucket registerBucket;
     private BucketList bucketList;
+
+    public NodeDetailsPage(@Autowired NodeRepository nodeRepository) {
+        this.nodeRepository = nodeRepository;
+    }
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
@@ -35,7 +45,19 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
             getUI().ifPresent(ui -> ui.navigate("/nodes"));
             return;
         }
-        node = new Node(nodeIdOpt.get(), LoadBalancingMethod.ROUND_ROBIN); // TODO: getting node
+        var nodeId = nodeIdOpt.get();
+        add(new NavPath(new NavPath.Point("Nodes", "/nodes"), new NavPath.Point(nodeId, "/nodes/" + nodeId)));
+
+        var nodeOpt = nodeRepository.findNode(nodeId);
+        if (nodeOpt.isEmpty()) {
+            add(new H2("Error 404"));
+            add(new Paragraph("Node not found"));
+            Notification.show("Node '" + nodeId + "' does not exist", 3000, Notification.Position.TOP_END)
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            return;
+        }
+
+        node = nodeOpt.get(); // TODO: getting node
 
         // TODO: getting buckets
         initComponents(node, List.of(
@@ -47,9 +69,6 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
     }
 
     private void initComponents(Node node, List<Bucket> buckets) {
-        add(new NavPath(new NavPath.Point("Nodes", "/nodes"),
-                new NavPath.Point(node.identifier(), "/nodes/" + node.identifier())));
-
         printNodeDetails(node);
         add(new Hr());
         add(registerBucket = new RegisterBucket(node, (bucket) -> {

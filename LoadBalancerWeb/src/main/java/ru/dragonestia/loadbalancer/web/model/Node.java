@@ -3,7 +3,9 @@ package ru.dragonestia.loadbalancer.web.model;
 import lombok.NonNull;
 import ru.dragonestia.loadbalancer.web.model.type.LoadBalancingMethod;
 
-public record Node(@NonNull String identifier, @NonNull LoadBalancingMethod method) {
+import java.io.Serializable;
+
+public record Node(@NonNull String identifier, @NonNull LoadBalancingMethod method) implements Serializable {
 
     @Override
     public int hashCode() {

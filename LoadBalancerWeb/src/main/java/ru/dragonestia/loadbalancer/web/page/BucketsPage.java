@@ -7,6 +7,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
+import ru.dragonestia.loadbalancer.web.component.AddUsers;
 import ru.dragonestia.loadbalancer.web.component.NavPath;
 import ru.dragonestia.loadbalancer.web.model.Bucket;
 import ru.dragonestia.loadbalancer.web.model.Node;
@@ -17,6 +18,7 @@ import ru.dragonestia.loadbalancer.web.model.type.SlotLimit;
 public class BucketsPage extends VerticalLayout implements BeforeEnterObserver {
 
     private Bucket bucket;
+    private AddUsers addUsers;
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
@@ -40,7 +42,7 @@ public class BucketsPage extends VerticalLayout implements BeforeEnterObserver {
         add(new H2("Bucket details"));
         printBucketDetails();
         add(new Hr());
-        add(new H2("Add users"));
+        add(addUsers = new AddUsers(bucket));
         add(new Hr());
         add(new H2("Users"));
     }

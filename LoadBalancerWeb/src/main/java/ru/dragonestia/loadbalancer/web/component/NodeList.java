@@ -13,15 +13,18 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import lombok.Setter;
 import ru.dragonestia.loadbalancer.web.model.Node;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class NodeList extends VerticalLayout {
 
     private final Grid<Node> nodesGrid;
     private final TextField searchField;
     private List<Node> cachedNodes;
+    @Setter private Consumer<String> removeMethod;
 
     public NodeList(List<Node> nodes) {
         super();
@@ -125,6 +128,8 @@ public class NodeList extends VerticalLayout {
     }
 
     private void removeNode(Node node) {
-        // TODO: send remove request and getting nodes list
+        if (removeMethod != null) {
+            removeMethod.accept(node.identifier());
+        }
     }
 }
