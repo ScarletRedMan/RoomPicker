@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface BucketService {
 
-    void createBucket(Bucket lobby);
+    void createBucket(Bucket bucket);
 
-    void removeBucket(Bucket lobby);
+    void removeBucket(Bucket bucket);
 
     Optional<Bucket> findBucket(Node node, String identifier);
 

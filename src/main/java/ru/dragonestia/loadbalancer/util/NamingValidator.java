@@ -8,4 +8,8 @@ public class NamingValidator {
     public boolean validateNodeIdentifier(String input) {
         return input.matches("^[a-z\\d-]+$");
     }
+
+    public boolean validateBucketIdentifier(String input) {
+        return input.matches("^[a-z\\d-]+$");
+    }
 }
