@@ -3,10 +3,12 @@ package ru.dragonestia.loadbalancer.web.repository.impl;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.dragonestia.loadbalancer.web.model.Bucket;
 import ru.dragonestia.loadbalancer.web.model.Node;
 import ru.dragonestia.loadbalancer.web.repository.BucketRepository;
 import ru.dragonestia.loadbalancer.web.repository.impl.response.BucketListResponse;
+import ru.dragonestia.loadbalancer.web.repository.impl.response.BucketRegisterResponse;
 
 import java.net.URI;
 import java.util.List;
@@ -33,5 +35,30 @@ public class BucketRepositoryImpl implements BucketRepository {
         }
 
         return Objects.requireNonNull(entity.getBody()).buckets();
+    }
+
+    @Override
+    public void register(Bucket bucket) {
+        try {
+            var response = rest.post(URI.create("/nodes/" + bucket.getNodeIdentifier() + "/buckets"),
+                    BucketRegisterResponse.class,
+                    params -> {
+                        params.put("identifier", bucket.getIdentifier());
+                        params.put("slots", Integer.toString(bucket.getSlots().getSlots()));
+                        params.put("payload", bucket.getPayload());
+                        params.put("locked", Boolean.toString(bucket.isLocked()));
+                    });
+
+            if (response.success()) return;
+        } catch (HttpClientErrorException ex) {
+            var response = ex.getResponseBodyAs(BucketRegisterResponse.class);
+
+            if (response != null) {
+                throw new Error(response.message());
+            }
+
+            log.throwing(ex);
+            throw new Error("Internal error. Check logs");
+        }
     }
 }

@@ -22,16 +22,21 @@ public class BucketRepositoryImpl implements BucketRepository {
     @Override
     public void createBucket(Bucket bucket) {
         var nodeId = bucket.getNodeIdentifier();
-        var node = node2bucketsMap.keySet().stream()
-                .filter(n -> bucket.getNodeIdentifier().equals(n.identifier()))
-                .findFirst();
 
         synchronized (node2bucketsMap) {
+            var node = node2bucketsMap.keySet().stream()
+                    .filter(n -> bucket.getNodeIdentifier().equals(n.identifier()))
+                    .findFirst();
+
             if (node.isEmpty()) {
                 throw new IllegalArgumentException("Node '" + nodeId + "' does not exist");
             }
 
-            node2bucketsMap.get(node.get()).put(bucket.getIdentifier(), new BucketContainer(bucket, new AtomicInteger(0)));
+            var buckets = node2bucketsMap.get(node.get());
+            if (buckets.containsKey(bucket.getIdentifier())) {
+                throw new IllegalArgumentException("Bucket already exists");
+            }
+            buckets.put(bucket.getIdentifier(), new BucketContainer(bucket, new AtomicInteger(0)));
         }
     }
 

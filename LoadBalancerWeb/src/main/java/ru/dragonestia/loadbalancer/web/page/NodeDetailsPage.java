@@ -70,8 +70,14 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
         printNodeDetails(node);
         add(new Hr());
         add(registerBucket = new RegisterBucket(node, (bucket) -> {
-            // TODO: register bucket and getting all buckets
-            return new RegisterBucket.Response(false, "");
+            try {
+                bucketRepository.register(bucket);
+                return new RegisterBucket.Response(false,  null);
+            } catch (Error error) {
+                return new RegisterBucket.Response(true,  error.getMessage());
+            } finally {
+                bucketList.update(bucketRepository.all(node));
+            }
         }));
         add(new Hr());
         add(bucketList = new BucketList(node.identifier(), buckets));

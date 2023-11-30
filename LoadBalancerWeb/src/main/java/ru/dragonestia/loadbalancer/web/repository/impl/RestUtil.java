@@ -51,6 +51,17 @@ public class RestUtil {
                 params));
     }
 
+    public <T> ResponseEntity<T> postEntity(URI uri, Class<T> responseType, Consumer<Map<String, String>> paramsConsumer) {
+        var params = new HashMap<String, String>();
+        paramsConsumer.accept(params);
+
+        var template = restTemplate.get();
+        return template.postForEntity(buildPath(uri, params.keySet()),
+                null,
+                responseType,
+                params);
+    }
+
     public void put(URI uri, Consumer<Map<String, String>> paramsConsumer) {
         var params = new HashMap<String, String>();
         paramsConsumer.accept(params);
