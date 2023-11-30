@@ -15,19 +15,21 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import lombok.Setter;
 import ru.dragonestia.loadbalancer.web.model.Bucket;
-import ru.dragonestia.loadbalancer.web.repository.BucketRepository;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class BucketList extends VerticalLayout {
 
     private final String nodeIdentifier;
-    private final Grid<BucketRepository.BucketInfo> bucketsGrid;
+    private final Grid<Bucket> bucketsGrid;
     private final TextField searchField;
-    private List<BucketRepository.BucketInfo> cachedBuckets;
+    private List<Bucket> cachedBuckets;
+    @Setter private Consumer<Bucket> removeMethod;
 
-    public BucketList(String nodeIdentifier, List<BucketRepository.BucketInfo> buckets) {
+    public BucketList(String nodeIdentifier, List<Bucket> buckets) {
         this.nodeIdentifier = nodeIdentifier;
         cachedBuckets = buckets;
 
@@ -51,20 +53,20 @@ public class BucketList extends VerticalLayout {
         var temp = input.trim();
 
         bucketsGrid.setItems(cachedBuckets.stream()
-                .filter(bucket -> bucket.identifier().startsWith(temp))
+                .filter(bucket -> bucket.getIdentifier().startsWith(temp))
                 .toList());
     }
 
-    private Grid<BucketRepository.BucketInfo> createGrid() {
-        var grid = new Grid<>(BucketRepository.BucketInfo.class, false);
-        grid.addColumn(BucketRepository.BucketInfo::identifier).setHeader("Identifier");
+    private Grid<Bucket> createGrid() {
+        var grid = new Grid<>(Bucket.class, false);
+        grid.addColumn(Bucket::getIdentifier).setHeader("Identifier");
         grid.addComponentColumn(bucket -> {
             var result = new Span();
-            if (bucket.slots() == -1) {
+            if (bucket.getSlots().isUnlimited()) {
                 result.setText("Unlimited");
                 result.getElement().getThemeList().add("badge contrast");
             } else {
-                result.setText(Integer.toString(bucket.slots()));
+                result.setText(Integer.toString(bucket.getSlots().slots()));
             }
             return result;
         }).setHeader("Slots").setTextAlign(ColumnTextAlign.CENTER);
@@ -72,7 +74,7 @@ public class BucketList extends VerticalLayout {
         return grid;
     }
 
-    private HorizontalLayout createManageButtons(BucketRepository.BucketInfo bucket) {
+    private HorizontalLayout createManageButtons(Bucket bucket) {
         var layout = new HorizontalLayout();
 
         {
@@ -92,16 +94,16 @@ public class BucketList extends VerticalLayout {
         return layout;
     }
 
-    private void clickDetailsButton(BucketRepository.BucketInfo bucket) {
+    private void clickDetailsButton(Bucket bucket) {
         getUI().ifPresent(ui -> {
             ui.navigate("/nodes/" + nodeIdentifier +
-                    "/buckets/" + bucket.identifier());
+                    "/buckets/" + bucket.getIdentifier());
         });
     }
 
-    private void clickRemoveButton(BucketRepository.BucketInfo bucket) {
+    private void clickRemoveButton(Bucket bucket) {
         var dialog = new Dialog("Confirm bucket deletion");
-        dialog.add(new Paragraph("Confirm that you want to delete bucket. Enter '" + bucket.identifier() + "' to field below and confirm."));
+        dialog.add(new Paragraph("Confirm that you want to delete bucket. Enter '" + bucket.getIdentifier() + "' to field below and confirm."));
 
         var inputField = new TextField();
         dialog.add(inputField);
@@ -110,14 +112,14 @@ public class BucketList extends VerticalLayout {
             var button = new Button("Confirm");
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
             button.addClickListener(event -> {
-                if (!bucket.identifier().equals(inputField.getValue())) {
+                if (!bucket.getIdentifier().equals(inputField.getValue())) {
                     Notification.show("Invalid input", 3000, Notification.Position.TOP_END)
                             .addThemeVariants(NotificationVariant.LUMO_ERROR);
                     return;
                 }
 
                 removeBucket(bucket);
-                Notification.show("Bucket '" + bucket.identifier() + "' was successfully removed!", 3000, Notification.Position.TOP_END)
+                Notification.show("Bucket '" + bucket.getIdentifier() + "' was successfully removed!", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 dialog.close();
             });
@@ -134,12 +136,14 @@ public class BucketList extends VerticalLayout {
         dialog.open();
     }
 
-    public void update(List<BucketRepository.BucketInfo> buckets) {
+    public void update(List<Bucket> buckets) {
         cachedBuckets = buckets;
         applySearch(searchField.getValue());
     }
 
-    private void removeBucket(BucketRepository.BucketInfo bucket) {
-        // TODO: send remove request and getting list
+    private void removeBucket(Bucket bucket) {
+        if (removeMethod != null) {
+            removeMethod.accept(bucket);
+        }
     }
 }

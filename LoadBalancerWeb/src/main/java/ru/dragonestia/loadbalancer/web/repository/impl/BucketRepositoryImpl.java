@@ -22,7 +22,7 @@ public class BucketRepositoryImpl implements BucketRepository {
     private final RestUtil rest;
 
     @Override
-    public List<BucketInfo> all(Node node) {
+    public List<Bucket> all(Node node) {
         var entity = rest.getEntity(URI.create("/nodes/" + node.identifier() + "/buckets"),
                 BucketListResponse.class);
 
@@ -44,12 +44,13 @@ public class BucketRepositoryImpl implements BucketRepository {
                     BucketRegisterResponse.class,
                     params -> {
                         params.put("identifier", bucket.getIdentifier());
-                        params.put("slots", Integer.toString(bucket.getSlots().getSlots()));
+                        params.put("slots", Integer.toString(bucket.getSlots().slots()));
                         params.put("payload", bucket.getPayload());
                         params.put("locked", Boolean.toString(bucket.isLocked()));
                     });
 
             if (response.success()) return;
+            throw new Error(response.message());
         } catch (HttpClientErrorException ex) {
             var response = ex.getResponseBodyAs(BucketRegisterResponse.class);
 
@@ -60,5 +61,10 @@ public class BucketRepositoryImpl implements BucketRepository {
             log.throwing(ex);
             throw new Error("Internal error. Check logs");
         }
+    }
+
+    @Override
+    public void remove(Bucket bucket) {
+        rest.delete(URI.create("/nodes/" + bucket.getNodeIdentifier() + "/buckets/" + bucket.getIdentifier()), params -> {});
     }
 }

@@ -2,6 +2,8 @@ package ru.dragonestia.loadbalancer.model.type;
 
 import lombok.Getter;
 
+import java.beans.Transient;
+
 @Getter
 public class SlotLimit {
 
@@ -21,6 +23,7 @@ public class SlotLimit {
         return new SlotLimit(slots);
     }
 
+    @Transient
     public boolean isUnlimited() {
         return slots == UNLIMITED_VALUE;
     }

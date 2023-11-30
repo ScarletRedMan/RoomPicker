@@ -1,8 +1,7 @@
 package ru.dragonestia.loadbalancer.controller.response;
 
+import ru.dragonestia.loadbalancer.model.Bucket;
+
 import java.util.List;
 
-public record BucketListResponse(String node, List<BucketInfo> buckets) {
-
-    public record BucketInfo(String identifier, int slots) {}
-}
+public record BucketListResponse(String node, List<Bucket> buckets) {}

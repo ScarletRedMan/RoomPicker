@@ -11,6 +11,7 @@ import ru.dragonestia.loadbalancer.model.Bucket;
 import ru.dragonestia.loadbalancer.model.type.SlotLimit;
 import ru.dragonestia.loadbalancer.service.BucketService;
 import ru.dragonestia.loadbalancer.service.NodeService;
+import ru.dragonestia.loadbalancer.util.NamingValidator;
 
 @Log4j2
 @RestController
@@ -25,9 +26,7 @@ public class BucketController {
     ResponseEntity<BucketListResponse> allBuckets(@PathVariable(name = "nodeIdentifier") String nodeId) {
         var nodeOpt = nodeService.findNode(nodeId);
         return nodeOpt.map(node -> ResponseEntity.ok(new BucketListResponse(nodeId,
-                bucketService.allBuckets(node).stream()
-                        .map(bucket -> new BucketListResponse.BucketInfo(bucket.getIdentifier(), bucket.getSlots().getSlots()))
-                        .toList()
+                bucketService.allBuckets(node).stream().toList()
         ))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -55,5 +54,19 @@ public class BucketController {
         } catch (Exception ex) {
             return ResponseEntity.status(500).body(new BucketRegisterResponse(false, ex.getMessage()));
         }
+    }
+
+    @DeleteMapping("/{identifier}")
+    ResponseEntity<?> removeBucket(@PathVariable("nodeIdentifier") String nodeId,
+                                   @PathVariable("identifier") String bucketId) {
+        if (!NamingValidator.validateNodeIdentifier(nodeId) || !NamingValidator.validateBucketIdentifier(bucketId)) {
+            return ResponseEntity.ok().build();
+        }
+
+        var nodeOpt = nodeService.findNode(nodeId);
+        nodeOpt.flatMap(node -> bucketService.findBucket(node, bucketId))
+                .ifPresent(bucketService::removeBucket);
+
+        return ResponseEntity.ok().build();
     }
 }

@@ -66,7 +66,7 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
         initComponents(node, bucketRepository.all(node));
     }
 
-    private void initComponents(Node node, List<BucketRepository.BucketInfo> buckets) {
+    private void initComponents(Node node, List<Bucket> buckets) {
         printNodeDetails(node);
         add(new Hr());
         add(registerBucket = new RegisterBucket(node, (bucket) -> {
@@ -81,6 +81,10 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
         }));
         add(new Hr());
         add(bucketList = new BucketList(node.identifier(), buckets));
+        bucketList.setRemoveMethod(bucket -> {
+            bucketRepository.remove(bucket);
+            bucketList.update(bucketRepository.all(node));
+        });
     }
 
     private void printNodeDetails(Node node) {

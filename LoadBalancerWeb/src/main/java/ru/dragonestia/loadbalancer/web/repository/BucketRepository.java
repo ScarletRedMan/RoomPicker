@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface BucketRepository {
 
-    List<BucketInfo> all(Node node);
+    List<Bucket> all(Node node);
 
     void register(Bucket bucket);
 
-    record BucketInfo(String identifier, int slots) {}
+    void remove(Bucket bucket);
 }

@@ -1,12 +1,13 @@
 package ru.dragonestia.loadbalancer.web.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import ru.dragonestia.loadbalancer.web.model.type.SlotLimit;
 
 @Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Bucket {
 
     private final String identifier;
@@ -15,8 +16,21 @@ public class Bucket {
     private final String payload;
     private boolean locked = false;
 
+    @JsonCreator
+    private Bucket(@JsonProperty("identifier") String identifier,
+                   @JsonProperty("nodeIdentifier") String nodeIdentifier,
+                   @JsonProperty("slots") SlotLimit slots,
+                   @JsonProperty("payload") String payload,
+                   @JsonProperty("locked") boolean locked) {
+        this.identifier = identifier;
+        this.nodeIdentifier = nodeIdentifier;
+        this.slots = slots;
+        this.payload = payload;
+        this.locked = locked;
+    }
+
     public static Bucket create(String identifier, Node node, SlotLimit limit, String payload) {
-        return new Bucket(identifier, node.identifier(), limit, payload);
+        return new Bucket(identifier, node.identifier(), limit, payload, false);
     }
 
     public void setLocked(boolean value) {
@@ -26,7 +40,7 @@ public class Bucket {
     public boolean isAvailable(int usedSlots, int requiredSlots) {
         if (locked) return false;
         if (slots.isUnlimited()) return true;
-        return slots.getSlots() >= usedSlots + requiredSlots;
+        return slots.slots() >= usedSlots + requiredSlots;
     }
 
     @Override

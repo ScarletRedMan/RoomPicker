@@ -50,6 +50,6 @@ public class BucketsPage extends VerticalLayout implements BeforeEnterObserver {
     private void printBucketDetails() {
         add(new Html("<span>Node identifier: <b>" + bucket.getNodeIdentifier() + "</b></span>"));
         add(new Html("<span>Bucket identifier: <b>" + bucket.getIdentifier() + "</b></span>"));
-        add(new Html("<span>Slots: <b>" + (bucket.getSlots().isUnlimited()? "Unlimited" : bucket.getSlots().getSlots()) + "</b></span>"));
+        add(new Html("<span>Slots: <b>" + (bucket.getSlots().isUnlimited()? "Unlimited" : bucket.getSlots().slots()) + "</b></span>"));
     }
 }
