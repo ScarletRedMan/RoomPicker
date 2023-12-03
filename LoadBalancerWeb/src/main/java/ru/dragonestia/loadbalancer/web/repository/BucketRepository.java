@@ -4,6 +4,7 @@ import ru.dragonestia.loadbalancer.web.model.Bucket;
 import ru.dragonestia.loadbalancer.web.model.Node;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BucketRepository {
 
@@ -12,4 +13,6 @@ public interface BucketRepository {
     void register(Bucket bucket);
 
     void remove(Bucket bucket);
+
+    Optional<Bucket> find(Node node, String identifier);
 }

@@ -7,12 +7,14 @@ import org.springframework.web.client.HttpClientErrorException;
 import ru.dragonestia.loadbalancer.web.model.Bucket;
 import ru.dragonestia.loadbalancer.web.model.Node;
 import ru.dragonestia.loadbalancer.web.repository.BucketRepository;
+import ru.dragonestia.loadbalancer.web.repository.impl.response.BucketInfoResponse;
 import ru.dragonestia.loadbalancer.web.repository.impl.response.BucketListResponse;
 import ru.dragonestia.loadbalancer.web.repository.impl.response.BucketRegisterResponse;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -66,5 +68,15 @@ public class BucketRepositoryImpl implements BucketRepository {
     @Override
     public void remove(Bucket bucket) {
         rest.delete(URI.create("/nodes/" + bucket.getNodeIdentifier() + "/buckets/" + bucket.getIdentifier()), params -> {});
+    }
+
+    @Override
+    public Optional<Bucket> find(Node node, String identifier) {
+        try {
+            var response = rest.get(URI.create("/nodes/" + node.identifier() + "/buckets/" + identifier), BucketInfoResponse.class, map -> {});
+            return Optional.of(response.bucket());
+        } catch (Exception ex) {
+            return Optional.empty();
+        }
     }
 }

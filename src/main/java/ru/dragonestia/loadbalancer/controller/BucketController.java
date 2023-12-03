@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.dragonestia.loadbalancer.controller.response.BucketInfoResponse;
 import ru.dragonestia.loadbalancer.controller.response.BucketListResponse;
 import ru.dragonestia.loadbalancer.controller.response.BucketRegisterResponse;
 import ru.dragonestia.loadbalancer.controller.response.NodeRegisterResponse;
@@ -12,6 +13,8 @@ import ru.dragonestia.loadbalancer.model.type.SlotLimit;
 import ru.dragonestia.loadbalancer.service.BucketService;
 import ru.dragonestia.loadbalancer.service.NodeService;
 import ru.dragonestia.loadbalancer.util.NamingValidator;
+
+import java.util.Objects;
 
 @Log4j2
 @RestController
@@ -68,5 +71,22 @@ public class BucketController {
                 .ifPresent(bucketService::removeBucket);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{identifier}")
+    ResponseEntity<BucketInfoResponse> info(@PathVariable("nodeIdentifier") String nodeId,
+                                            @PathVariable("identifier") String bucketId) {
+        if (!NamingValidator.validateNodeIdentifier(nodeId) || !NamingValidator.validateBucketIdentifier(bucketId)) {
+            return ResponseEntity.ok().build();
+        }
+
+        var nodeOpt = nodeService.findNode(nodeId);
+        if (nodeOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var bucketOpt = bucketService.findBucket(Objects.requireNonNull(nodeOpt.get()), bucketId);
+        return bucketOpt.map(bucket -> ResponseEntity.ok(new BucketInfoResponse(bucket)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
