@@ -45,7 +45,9 @@ public class TestConfig implements WebMvcConfigurer {
         }
 
         for (int i = 0; i < 5; i++) {
-            bucketRepository.createBucket(Bucket.create(UUID.randomUUID().toString(), node, SlotLimit.unlimited(), "Some payload"));
+            var bucket = Bucket.create(UUID.randomUUID().toString(), node, SlotLimit.unlimited(), "Some payload");
+            bucket.setLocked((i & 1) == 0);
+            bucketRepository.createBucket(bucket);
         }
     }
 }

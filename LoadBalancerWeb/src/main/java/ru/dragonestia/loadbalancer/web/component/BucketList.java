@@ -70,6 +70,16 @@ public class BucketList extends VerticalLayout {
             }
             return result;
         }).setHeader("Slots").setTextAlign(ColumnTextAlign.CENTER);
+        grid.addComponentColumn(bucket -> {
+            var result = new Span();
+            if (bucket.isLocked()) {
+                result.setText("Yes");
+                result.getElement().getThemeList().add("badge error");
+            } else {
+                result.setText("No");
+            }
+            return result;
+        }).setHeader("Locked").setTextAlign(ColumnTextAlign.CENTER);
         grid.addComponentColumn(this::createManageButtons).setHeader("Manage");
         return grid;
     }
