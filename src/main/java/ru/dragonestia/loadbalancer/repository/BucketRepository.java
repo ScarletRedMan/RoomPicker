@@ -26,8 +26,6 @@ public interface BucketRepository {
 
     Optional<Bucket> pickFreeBucket(Node node, Collection<User> users);
 
-    void freeBucket(Bucket bucket, Collection<User> users);
-
     void onCreateNode(Node node);
 
     void onRemoveNode(Node node);

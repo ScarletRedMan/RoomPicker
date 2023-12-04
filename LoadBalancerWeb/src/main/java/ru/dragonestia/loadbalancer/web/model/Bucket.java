@@ -63,4 +63,10 @@ public class Bucket {
     public URI createApiURI() {
         return URI.create("/nodes/" + nodeIdentifier + "/buckets/" + identifier);
     }
+
+    public String getUsingPercentage(int used) {
+        if (getSlots().isUnlimited()) return "0%";
+        double percent = used / (double) getSlots().slots() * 100;
+        return ((int) percent) + "%";
+    }
 }

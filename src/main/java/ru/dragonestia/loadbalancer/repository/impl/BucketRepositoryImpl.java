@@ -98,35 +98,11 @@ public class BucketRepositoryImpl implements BucketRepository {
 
             if (container.isPresent()) {
                 var cont = container.get();
-                var addedUsers = userRepository.linkWithBucket(cont.bucket(), users);
+                var addedUsers = userRepository.linkWithBucket(cont.bucket(), users, false);
                 cont.used().getAndAdd((int) addedUsers.values().stream().filter(Boolean.TRUE::equals).count());
             }
 
             return container.map(BucketContainer::bucket);
-        }
-    }
-
-    @Override
-    public void freeBucket(Bucket bucket, Collection<User> users) {
-        var nodeId = bucket.getNodeIdentifier();
-        var node = node2bucketsMap.keySet().stream()
-                .filter(n -> bucket.getNodeIdentifier().equals(n.identifier()))
-                .findFirst();
-
-        synchronized (node2bucketsMap) {
-            if (node.isEmpty()) {
-                throw new IllegalArgumentException("Node '" + nodeId + "' does not exist");
-            }
-
-            var buckets = node2bucketsMap.get(node.get());
-            if (!buckets.containsKey(bucket.getIdentifier())) {
-                throw new IllegalArgumentException("Bucket '" + nodeId + "' does not exist");
-            }
-
-            var delta = userRepository.unlinkWithBucket(bucket, users);
-            if (buckets.get(bucket.getIdentifier()).used().getAndAdd(-delta) < 0) {
-                throw new RuntimeException("Bucket has less than 0 users");
-            }
         }
     }
 

@@ -51,9 +51,4 @@ public class BucketServiceImpl implements BucketService {
     public Bucket pickAvailableBucket(Node node, List<User> users) {
         throw new RuntimeException("Not implemented");
     }
-
-    @Override
-    public void freeBucket(Bucket bucket, List<User> users) {
-        throw new RuntimeException("Not implemented");
-    }
 }

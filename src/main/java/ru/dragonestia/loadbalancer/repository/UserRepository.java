@@ -9,11 +9,13 @@ import java.util.Map;
 
 public interface UserRepository {
 
-    Map<User, Boolean> linkWithBucket(Bucket bucket, Collection<User> users);
+    Map<User, Boolean> linkWithBucket(Bucket bucket, Collection<User> users, boolean force);
 
     int unlinkWithBucket(Bucket bucket, Collection<User> users);
 
     List<Bucket> findAllLinkedUserBuckets(User user);
 
     void onRemoveBucket(Bucket bucket);
+
+    List<User> usersOf(Bucket bucket);
 }

@@ -18,26 +18,31 @@ import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.loadbalancer.web.component.AddUsers;
 import ru.dragonestia.loadbalancer.web.component.NavPath;
+import ru.dragonestia.loadbalancer.web.component.UserList;
 import ru.dragonestia.loadbalancer.web.model.Bucket;
 import ru.dragonestia.loadbalancer.web.model.Node;
 import ru.dragonestia.loadbalancer.web.repository.BucketRepository;
 import ru.dragonestia.loadbalancer.web.repository.NodeRepository;
+import ru.dragonestia.loadbalancer.web.repository.UserRepository;
 
 @Route("/nodes/:nodeId/buckets/:bucketId")
 public class BucketDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
     private final NodeRepository nodeRepository;
     private final BucketRepository bucketRepository;
+    private final UserRepository userRepository;
     private Node node;
     private Bucket bucket;
     private AddUsers addUsers;
+    private UserList userList;
     private Button lockBucketButton;
     private VerticalLayout bucketInfo;
 
     @Autowired
-    public BucketDetailsPage(NodeRepository nodeRepository, BucketRepository bucketRepository) {
+    public BucketDetailsPage(NodeRepository nodeRepository, BucketRepository bucketRepository, UserRepository userRepository) {
         this.nodeRepository = nodeRepository;
         this.bucketRepository = bucketRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -90,6 +95,7 @@ public class BucketDetailsPage extends VerticalLayout implements BeforeEnterObse
         add(addUsers = new AddUsers(bucket));
         add(new Hr());
         add(new H2("Users"));
+        add(userList = new UserList(bucket, userRepository.all(bucket)));
     }
 
     private void updateBucketInfo() {

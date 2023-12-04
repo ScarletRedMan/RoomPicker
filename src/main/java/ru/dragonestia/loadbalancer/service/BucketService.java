@@ -24,6 +24,4 @@ public interface BucketService {
     int countAvailableBuckets(Node node, int requiredSlots);
 
     Bucket pickAvailableBucket(Node node, List<User> users);
-
-    void freeBucket(Bucket bucket, List<User> users);
 }

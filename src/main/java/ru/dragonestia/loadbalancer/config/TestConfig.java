@@ -10,11 +10,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.dragonestia.loadbalancer.interceptor.DebugInterceptor;
 import ru.dragonestia.loadbalancer.model.Bucket;
 import ru.dragonestia.loadbalancer.model.Node;
+import ru.dragonestia.loadbalancer.model.User;
 import ru.dragonestia.loadbalancer.model.type.LoadBalancingMethod;
 import ru.dragonestia.loadbalancer.model.type.SlotLimit;
 import ru.dragonestia.loadbalancer.repository.BucketRepository;
 import ru.dragonestia.loadbalancer.repository.NodeRepository;
+import ru.dragonestia.loadbalancer.repository.UserRepository;
 
+import java.security.SecureRandom;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Profile("test")
@@ -24,6 +29,9 @@ public class TestConfig implements WebMvcConfigurer {
 
     private final NodeRepository nodeRepository;
     private final BucketRepository bucketRepository;
+    private final UserRepository userRepository;
+
+    private final Random rand = new Random(0);
 
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
@@ -41,13 +49,26 @@ public class TestConfig implements WebMvcConfigurer {
         nodeRepository.createNode(node);
 
         for (int i = 1; i <= 5; i++) {
-            bucketRepository.createBucket(Bucket.create("test-" + i, node, SlotLimit.of(5 * i), "Some payload"));
+            var slots = 5 * i;
+            var bucket = Bucket.create("test-" + i, node, SlotLimit.of(slots), "Some payload");
+            bucketRepository.createBucket(bucket);
+
+            for (int j = 0, n = rand.nextInt(slots + 1); j < n; j++) {
+                var user = new User("test-user-" + rand.nextInt(20));
+                userRepository.linkWithBucket(bucket, List.of(user), false);
+            }
         }
 
         for (int i = 0; i < 5; i++) {
-            var bucket = Bucket.create(UUID.randomUUID().toString(), node, SlotLimit.unlimited(), "Some payload");
+            var bucket = Bucket.create(randomUUID().toString(), node, SlotLimit.unlimited(), "Some payload");
             bucket.setLocked((i & 1) == 0);
             bucketRepository.createBucket(bucket);
         }
+    }
+
+    private UUID randomUUID() {
+        byte[] randomBytes = new byte[16];
+        rand.nextBytes(randomBytes);
+        return UUID.nameUUIDFromBytes(randomBytes);
     }
 }

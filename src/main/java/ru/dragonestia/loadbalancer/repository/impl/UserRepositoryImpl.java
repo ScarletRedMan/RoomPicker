@@ -13,17 +13,37 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class UserRepositoryImpl implements UserRepository {
 
     private final Map<User, Set<Bucket>> usersMap = new ConcurrentHashMap<>();
+    private final Map<NodeBucketPath, Set<User>> bucketUsers = new ConcurrentHashMap<>();
 
     @Override
-    public Map<User, Boolean> linkWithBucket(Bucket bucket, Collection<User> users) {
+    public Map<User, Boolean> linkWithBucket(Bucket bucket, Collection<User> users, boolean force) {
         var result = new HashMap<User, Boolean>();
 
         synchronized (usersMap) {
+            var path = new NodeBucketPath(bucket.getNodeIdentifier(), bucket.getIdentifier());
+            var usersSet = bucketUsers.getOrDefault(path, new HashSet<>());
+
+            if (force || bucket.getSlots().isUnlimited()) {
+                users.forEach(user -> result.put(user, true));
+            } else {
+                for (var user : users) {
+                    var set = usersMap.getOrDefault(user, new HashSet<>());
+                    result.put(user, !set.contains(bucket));
+                }
+
+                if (bucket.getSlots().getSlots() < usersSet.size() + users.size()) {
+                    throw new Error("Bucket are full");
+                }
+            }
+
             for (var user: users) {
                 var set = usersMap.getOrDefault(user, new HashSet<>());
-                result.put(user, set.add(bucket));
+                set.add(bucket);
                 usersMap.put(user, set);
             }
+
+            usersSet.addAll(users);
+            bucketUsers.put(path, usersSet);
         }
 
         return result;
@@ -43,6 +63,15 @@ public class UserRepositoryImpl implements UserRepository {
                     usersMap.remove(user);
                 }
             });
+
+            var path = new NodeBucketPath(bucket.getNodeIdentifier(), bucket.getIdentifier());
+            var set = bucketUsers.getOrDefault(path, new HashSet<>());
+            set.removeAll(users);
+            if (set.isEmpty()) {
+                bucketUsers.remove(path);
+            } else {
+                bucketUsers.put(path, set);
+            }
         }
         return counter.get();
     }
@@ -63,6 +92,33 @@ public class UserRepositoryImpl implements UserRepository {
                     usersMap.remove(user);
                 }
             });
+        }
+    }
+
+    @Override
+    public List<User> usersOf(Bucket bucket) {
+        synchronized (usersMap) {
+            return bucketUsers.getOrDefault(new NodeBucketPath(bucket.getNodeIdentifier(), bucket.getIdentifier()), new HashSet<>())
+                    .stream()
+                    .toList();
+        }
+    }
+
+    private record NodeBucketPath(String node, String bucket) {
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(node, bucket);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null) return false;
+            if (o == this) return true;
+            if (o instanceof NodeBucketPath other) {
+                return other.node().equals(node()) && other.bucket().equals(bucket());
+            }
+            return false;
         }
     }
 }

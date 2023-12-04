@@ -12,4 +12,8 @@ public class NamingValidator {
     public boolean validateBucketIdentifier(String input) {
         return input.matches("^[a-z\\d-]+$");
     }
+
+    public boolean validateUserIdentifier(String input) {
+        return input.matches("^[aA-zZ\\d-.\\s:/@%?!~$)(+=_|;*]+$");
+    }
 }
