@@ -16,10 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.loadbalancer.web.component.BucketList;
 import ru.dragonestia.loadbalancer.web.component.NavPath;
 import ru.dragonestia.loadbalancer.web.component.RegisterBucket;
-import ru.dragonestia.loadbalancer.web.model.Bucket;
 import ru.dragonestia.loadbalancer.web.model.Node;
-import ru.dragonestia.loadbalancer.web.model.type.LoadBalancingMethod;
-import ru.dragonestia.loadbalancer.web.model.type.SlotLimit;
+import ru.dragonestia.loadbalancer.web.model.dto.BucketDTO;
 import ru.dragonestia.loadbalancer.web.repository.BucketRepository;
 import ru.dragonestia.loadbalancer.web.repository.NodeRepository;
 
@@ -66,7 +64,7 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
         initComponents(node, bucketRepository.all(node));
     }
 
-    private void initComponents(Node node, List<Bucket> buckets) {
+    private void initComponents(Node node, List<BucketDTO> buckets) {
         printNodeDetails(node);
         add(new Hr());
         add(registerBucket = new RegisterBucket(node, (bucket) -> {
@@ -82,7 +80,7 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
         add(new Hr());
         add(bucketList = new BucketList(node.identifier(), buckets));
         bucketList.setRemoveMethod(bucket -> {
-            bucketRepository.remove(bucket);
+            bucketRepository.remove(node, bucket);
             bucketList.update(bucketRepository.all(node));
         });
     }

@@ -1,7 +1,7 @@
 package ru.dragonestia.loadbalancer.web.repository.impl.response;
 
-import ru.dragonestia.loadbalancer.web.model.Bucket;
+import ru.dragonestia.loadbalancer.web.model.dto.BucketDTO;
 
 import java.util.List;
 
-public record BucketListResponse(String node, List<Bucket> buckets) {}
+public record BucketListResponse(String node, List<BucketDTO> buckets) {}

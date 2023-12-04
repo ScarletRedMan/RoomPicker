@@ -28,7 +28,9 @@ public class BucketController {
     ResponseEntity<BucketListResponse> allBuckets(@PathVariable(name = "nodeIdentifier") String nodeId) {
         var nodeOpt = nodeService.findNode(nodeId);
         return nodeOpt.map(node -> ResponseEntity.ok(new BucketListResponse(nodeId,
-                bucketService.allBuckets(node).stream().toList()
+                bucketService.allBuckets(node).stream()
+                        .map(bucket -> new BucketListResponse.BucketDTO(bucket.getIdentifier(), bucket.getSlots().getSlots(), bucket.isLocked()))
+                        .toList()
         ))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 

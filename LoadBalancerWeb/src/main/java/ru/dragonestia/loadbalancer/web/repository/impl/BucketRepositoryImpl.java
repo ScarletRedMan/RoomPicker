@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.client.HttpClientErrorException;
 import ru.dragonestia.loadbalancer.web.model.Bucket;
 import ru.dragonestia.loadbalancer.web.model.Node;
+import ru.dragonestia.loadbalancer.web.model.dto.BucketDTO;
 import ru.dragonestia.loadbalancer.web.repository.BucketRepository;
 import ru.dragonestia.loadbalancer.web.repository.impl.response.BucketInfoResponse;
 import ru.dragonestia.loadbalancer.web.repository.impl.response.BucketListResponse;
@@ -24,7 +25,7 @@ public class BucketRepositoryImpl implements BucketRepository {
     private final RestUtil rest;
 
     @Override
-    public List<Bucket> all(Node node) {
+    public List<BucketDTO> all(Node node) {
         var entity = rest.getEntity(URI.create("/nodes/" + node.identifier() + "/buckets"),
                 BucketListResponse.class);
 
@@ -68,6 +69,11 @@ public class BucketRepositoryImpl implements BucketRepository {
     @Override
     public void remove(Bucket bucket) {
         rest.delete(URI.create("/nodes/" + bucket.getNodeIdentifier() + "/buckets/" + bucket.getIdentifier()), params -> {});
+    }
+
+    @Override
+    public void remove(Node node, BucketDTO bucket) {
+        rest.delete(URI.create("/nodes/" + node.identifier() + "/buckets/" + bucket.identifier()), params -> {});
     }
 
     @Override

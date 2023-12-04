@@ -7,7 +7,6 @@ import com.vaadin.flow.router.Route;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.client.RestTemplate;
 import ru.dragonestia.loadbalancer.web.component.NavPath;
 import ru.dragonestia.loadbalancer.web.component.NodeList;
 import ru.dragonestia.loadbalancer.web.component.RegisterNode;
