@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import ru.dragonestia.loadbalancer.web.model.type.SlotLimit;
 
+import java.net.URI;
+
 @Getter
 public class Bucket {
 
@@ -56,5 +58,9 @@ public class Bucket {
             return identifier.equals(other.identifier);
         }
         return false;
+    }
+
+    public URI createApiURI() {
+        return URI.create("/nodes/" + nodeIdentifier + "/buckets/" + identifier);
     }
 }

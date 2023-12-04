@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.dragonestia.loadbalancer.controller.response.BucketInfoResponse;
 import ru.dragonestia.loadbalancer.controller.response.BucketListResponse;
 import ru.dragonestia.loadbalancer.controller.response.BucketRegisterResponse;
-import ru.dragonestia.loadbalancer.controller.response.NodeRegisterResponse;
 import ru.dragonestia.loadbalancer.model.Bucket;
 import ru.dragonestia.loadbalancer.model.type.SlotLimit;
 import ru.dragonestia.loadbalancer.service.BucketService;
@@ -88,5 +87,29 @@ public class BucketController {
         var bucketOpt = bucketService.findBucket(Objects.requireNonNull(nodeOpt.get()), bucketId);
         return bucketOpt.map(bucket -> ResponseEntity.ok(new BucketInfoResponse(bucket)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{identifier}/lock")
+    ResponseEntity<Boolean> lockBucket(@PathVariable("nodeIdentifier") String nodeId,
+                                 @PathVariable("identifier") String bucketId,
+                                 @RequestParam(name = "state") boolean value) {
+
+        if (!NamingValidator.validateNodeIdentifier(nodeId) || !NamingValidator.validateBucketIdentifier(bucketId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var nodeOpt = nodeService.findNode(nodeId);
+        if (nodeOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var bucketOpt = bucketService.findBucket(Objects.requireNonNull(nodeOpt.get()), bucketId);
+        if (bucketOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        var bucket = bucketOpt.get();
+        bucket.setLocked(value);
+        return ResponseEntity.ok(true);
     }
 }

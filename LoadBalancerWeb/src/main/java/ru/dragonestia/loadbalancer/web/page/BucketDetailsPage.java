@@ -2,9 +2,13 @@ package ru.dragonestia.loadbalancer.web.page;
 
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.Unit;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -21,16 +25,18 @@ import ru.dragonestia.loadbalancer.web.repository.BucketRepository;
 import ru.dragonestia.loadbalancer.web.repository.NodeRepository;
 
 @Route("/nodes/:nodeId/buckets/:bucketId")
-public class BucketsPage extends VerticalLayout implements BeforeEnterObserver {
+public class BucketDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
     private final NodeRepository nodeRepository;
     private final BucketRepository bucketRepository;
     private Node node;
     private Bucket bucket;
     private AddUsers addUsers;
+    private Button lockBucketButton;
+    private VerticalLayout bucketInfo;
 
     @Autowired
-    public BucketsPage(NodeRepository nodeRepository, BucketRepository bucketRepository) {
+    public BucketDetailsPage(NodeRepository nodeRepository, BucketRepository bucketRepository) {
         this.nodeRepository = nodeRepository;
         this.bucketRepository = bucketRepository;
     }
@@ -87,16 +93,54 @@ public class BucketsPage extends VerticalLayout implements BeforeEnterObserver {
         add(new H2("Users"));
     }
 
+    private void updateBucketInfo() {
+        bucketInfo.removeAll();
+        bucketInfo.add(new Html("<span>Node identifier: <b>" + bucket.getNodeIdentifier() + "</b></span>"));
+        bucketInfo.add(new Html("<span>Bucket identifier: <b>" + bucket.getIdentifier() + "</b></span>"));
+        bucketInfo.add(new Html("<span>Slots: <b>" + (bucket.getSlots().isUnlimited()? "Unlimited" : bucket.getSlots().slots()) + "</b></span>"));
+        bucketInfo.add(new Html("<span>Locked: <b>" + (bucket.isLocked()? "Yes" : "No") + "</b></span>"));
+    }
+
     private void printBucketDetails() {
-        add(new Html("<span>Node identifier: <b>" + bucket.getNodeIdentifier() + "</b></span>"));
-        add(new Html("<span>Bucket identifier: <b>" + bucket.getIdentifier() + "</b></span>"));
-        add(new Html("<span>Slots: <b>" + (bucket.getSlots().isUnlimited()? "Unlimited" : bucket.getSlots().slots()) + "</b></span>"));
-        add(new Html("<span>Locked: <b>" + (bucket.isLocked()? "Yes" : "No") + "</b></span>"));
+        add(bucketInfo = new VerticalLayout());
+        bucketInfo.setPadding(false);
+
+        updateBucketInfo();
+        add(lockBucketButton = new Button("", event -> changeBucketLockedState()));
+        setLockBucketButtonState();
 
         var payload = new TextArea("Payload(" + bucket.getPayload().length() + ")");
         payload.setValue(bucket.getPayload());
         payload.setReadOnly(true);
         payload.setMinWidth(50, Unit.REM);
         add(payload);
+    }
+
+    private void setLockBucketButtonState() {
+        if (bucket.isLocked()) {
+            lockBucketButton.setText("Unlock");
+            lockBucketButton.setPrefixComponent(new Icon(VaadinIcon.UNLOCK));
+        } else {
+            lockBucketButton.setText("Lock");
+            lockBucketButton.setPrefixComponent(new Icon(VaadinIcon.LOCK));
+        }
+    }
+
+    private void changeBucketLockedState() {
+        var newValue = !bucket.isLocked();
+        try {
+            bucketRepository.lock(bucket, newValue);
+        } catch (Error error) {
+            Notification.show(error.getMessage(), 3000, Notification.Position.TOP_END)
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            return;
+        }
+
+        bucket.setLocked(newValue);
+        setLockBucketButtonState();
+        updateBucketInfo();
+
+        Notification.show("Success", 3000, Notification.Position.TOP_END)
+                .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
     }
 }

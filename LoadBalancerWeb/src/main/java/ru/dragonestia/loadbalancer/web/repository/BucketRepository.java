@@ -15,4 +15,6 @@ public interface BucketRepository {
     void remove(Bucket bucket);
 
     Optional<Bucket> find(Node node, String identifier);
+
+    void lock(Bucket bucket, boolean value);
 }

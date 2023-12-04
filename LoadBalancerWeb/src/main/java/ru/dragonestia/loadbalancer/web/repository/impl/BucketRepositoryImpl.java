@@ -79,4 +79,16 @@ public class BucketRepositoryImpl implements BucketRepository {
             return Optional.empty();
         }
     }
+
+    @Override
+    public void lock(Bucket bucket, boolean value) {
+        try {
+            rest.post(URI.create(bucket.createApiURI() + "/lock"), Boolean.class, params -> {
+                params.put("state", Boolean.toString(value));
+            });
+        } catch (Exception ex) {
+            log.throwing(ex);
+            throw new Error("Error when changing bucket locked state");
+        }
+    }
 }
