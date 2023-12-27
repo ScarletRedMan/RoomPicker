@@ -24,7 +24,7 @@ import ru.dragonestia.picker.cp.repository.NodeRepository;
 import java.util.List;
 
 @Getter
-@PageTitle("Buckets")
+@PageTitle("Rooms")
 @Route("/nodes/:nodeId")
 public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
