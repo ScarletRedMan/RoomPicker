@@ -1,4 +1,4 @@
-rootProject.name = 'LoadBalancer'
+rootProject.name = 'RoomPicker'
 
 include 'app'
 include 'control-panel'
