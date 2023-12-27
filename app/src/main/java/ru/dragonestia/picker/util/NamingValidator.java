@@ -5,15 +5,15 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class NamingValidator {
 
-    public boolean validateNodeIdentifier(String input) {
+    public boolean validateNodeId(String input) {
         return input.matches("^[a-z\\d-]+$");
     }
 
-    public boolean validateBucketIdentifier(String input) {
+    public boolean validateRoomId(String input) {
         return input.matches("^[a-z\\d-]+$");
     }
 
-    public boolean validateUserIdentifier(String input) {
+    public boolean validateUserId(String input) {
         return input.matches("^[aA-zZ\\d-.\\s:/@%?!~$)(+=_|;*]+$");
     }
 }

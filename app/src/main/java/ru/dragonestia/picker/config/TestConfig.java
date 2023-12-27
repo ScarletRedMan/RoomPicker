@@ -8,12 +8,12 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.dragonestia.picker.interceptor.DebugInterceptor;
-import ru.dragonestia.picker.model.Bucket;
+import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.User;
-import ru.dragonestia.picker.model.type.LoadBalancingMethod;
+import ru.dragonestia.picker.model.type.PickingMode;
 import ru.dragonestia.picker.model.type.SlotLimit;
-import ru.dragonestia.picker.repository.BucketRepository;
+import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.repository.UserRepository;
 
@@ -27,7 +27,7 @@ import java.util.UUID;
 public class TestConfig implements WebMvcConfigurer {
 
     private final NodeRepository nodeRepository;
-    private final BucketRepository bucketRepository;
+    private final RoomRepository roomRepository;
     private final UserRepository userRepository;
 
     private final Random rand = new Random(0);
@@ -39,29 +39,29 @@ public class TestConfig implements WebMvcConfigurer {
 
     @Bean
     void createNodes() {
-        createNodeWithContent(new Node("game-servers", LoadBalancingMethod.ROUND_ROBIN));
-        createNodeWithContent(new Node("game-lobbies", LoadBalancingMethod.LEAST_PICKED));
-        createNodeWithContent(new Node("hub", LoadBalancingMethod.SEQUENTIAL_FILLING));
+        createNodeWithContent(new Node("game-servers", PickingMode.ROUND_ROBIN));
+        createNodeWithContent(new Node("game-lobbies", PickingMode.LEAST_PICKED));
+        createNodeWithContent(new Node("hub", PickingMode.SEQUENTIAL_FILLING));
     }
 
     private void createNodeWithContent(Node node) {
-        nodeRepository.createNode(node);
+        nodeRepository.create(node);
 
         for (int i = 1; i <= 5; i++) {
             var slots = 5 * i;
-            var bucket = Bucket.create("test-" + i, node, SlotLimit.of(slots), "Some payload");
-            bucketRepository.createBucket(bucket);
+            var room = Room.create("test-" + i, node, SlotLimit.of(slots), "Some payload");
+            roomRepository.create(room);
 
             for (int j = 0, n = rand.nextInt(slots + 1); j < n; j++) {
                 var user = new User("test-user-" + rand.nextInt(20));
-                userRepository.linkWithBucket(bucket, List.of(user), false);
+                userRepository.linkWithRoom(room, List.of(user), false);
             }
         }
 
         for (int i = 0; i < 5; i++) {
-            var bucket = Bucket.create(randomUUID().toString(), node, SlotLimit.unlimited(), "Some payload");
-            bucket.setLocked((i & 1) == 0);
-            bucketRepository.createBucket(bucket);
+            var room = Room.create(randomUUID().toString(), node, SlotLimit.unlimited(), "Some payload");
+            room.setLocked((i & 1) == 0);
+            roomRepository.create(room);
         }
     }
 

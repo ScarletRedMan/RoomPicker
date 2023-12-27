@@ -8,7 +8,7 @@ import ru.dragonestia.picker.controller.response.NodeDetailsResponse;
 import ru.dragonestia.picker.controller.response.NodeListResponse;
 import ru.dragonestia.picker.controller.response.NodeRegisterResponse;
 import ru.dragonestia.picker.model.Node;
-import ru.dragonestia.picker.model.type.LoadBalancingMethod;
+import ru.dragonestia.picker.model.type.PickingMode;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.util.NamingValidator;
 
@@ -21,15 +21,15 @@ public class NodeController {
 
     @GetMapping
     NodeListResponse allNodes() {
-        return new NodeListResponse(nodeService.allNodes());
+        return new NodeListResponse(nodeService.all());
     }
 
     @PostMapping
-    NodeRegisterResponse registerNode(@RequestParam(name = "identifier") String identifier,
-                                      @RequestParam(name = "method") LoadBalancingMethod method) {
+    NodeRegisterResponse registerNode(@RequestParam(name = "nodeId") String nodeId,
+                                      @RequestParam(name = "method") PickingMode method) {
 
         try {
-            nodeService.createNode(new Node(identifier, method));
+            nodeService.create(new Node(nodeId, method));
         } catch (IllegalArgumentException ex) {
             return new NodeRegisterResponse(false, ex.getMessage());
         } catch (Error error) {
@@ -39,25 +39,25 @@ public class NodeController {
         return new NodeRegisterResponse(true, "");
     }
 
-    @GetMapping("/{identifier}")
-    ResponseEntity<NodeDetailsResponse> nodeDetails(@PathVariable("identifier") String identifier) {
-        if (!NamingValidator.validateNodeIdentifier(identifier)) {
+    @GetMapping("/{nodeId}")
+    ResponseEntity<NodeDetailsResponse> nodeDetails(@PathVariable("nodeId") String nodeId) {
+        if (!NamingValidator.validateNodeId(nodeId)) {
             return new ResponseEntity<>(HttpStatusCode.valueOf(404));
         }
 
-        var nodeOpt = nodeService.findNode(identifier);
+        var nodeOpt = nodeService.find(nodeId);
         return nodeOpt.map(node -> ResponseEntity.ok(new NodeDetailsResponse(node)))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatusCode.valueOf(404)));
     }
 
-    @DeleteMapping("/{identifier}")
-    ResponseEntity<?> removeNode(@PathVariable("identifier") String identifier) {
-        if (!NamingValidator.validateNodeIdentifier(identifier)) {
+    @DeleteMapping("/{nodeId}")
+    ResponseEntity<?> removeNode(@PathVariable("nodeId") String nodeId) {
+        if (!NamingValidator.validateNodeId(nodeId)) {
             return ResponseEntity.ok().build();
         }
 
-        var nodeOpt = nodeService.findNode(identifier);
-        nodeOpt.ifPresent(nodeService::removeNode);
+        var nodeOpt = nodeService.find(nodeId);
+        nodeOpt.ifPresent(nodeService::remove);
 
         return ResponseEntity.ok().build();
     }

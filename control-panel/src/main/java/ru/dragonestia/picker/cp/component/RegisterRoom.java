@@ -13,28 +13,28 @@ import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import org.springframework.lang.Nullable;
-import ru.dragonestia.picker.cp.model.Bucket;
+import ru.dragonestia.picker.cp.model.Room;
 import ru.dragonestia.picker.cp.model.Node;
 import ru.dragonestia.picker.cp.model.type.SlotLimit;
 
 import java.util.function.Function;
 
-public class RegisterBucket extends Details {
+public class RegisterRoom extends Details {
 
     private final Node node;
-    private final Function<Bucket, Response> onSubmit;
+    private final Function<Room, Response> onSubmit;
     private final TextField identifierField;
     private final TextArea payloadField;
     private final Checkbox lockedField;
 
-    public RegisterBucket(Node node, Function<Bucket, Response> onSubmit) {
-        super(new H2("Register bucket"));
+    public RegisterRoom(Node node, Function<Room, Response> onSubmit) {
+        super(new H2("Register room"));
         this.node = node;
         this.onSubmit = onSubmit;
 
         var layout = new VerticalLayout();
         layout.add(createNodeIdentifierField());
-        layout.add(identifierField = createBucketIdentifierField());
+        layout.add(identifierField = createRoomIdentifierField());
         layout.add(payloadField = createPayloadField());
         layout.add(lockedField = createLockedField());
         layout.add(createSubmitButton());
@@ -45,15 +45,15 @@ public class RegisterBucket extends Details {
     private TextField createNodeIdentifierField() {
         var field = new TextField("Node identifier");
         field.setMinWidth(20, Unit.REM);
-        field.setValue(node.identifier());
+        field.setValue(node.id());
         field.setReadOnly(true);
         return field;
     }
 
-    private TextField createBucketIdentifierField() {
+    private TextField createRoomIdentifierField() {
         var field = new TextField("Identifier");
         field.setMinWidth(20, Unit.REM);
-        field.setPlaceholder("example-bucket-id");
+        field.setPlaceholder("example-room-id");
         field.setHelperText("The field can contain only lowercase letters, numbers and a dash character");
         field.setRequired(true);
         field.setPattern("^[a-z\\d-]+$");
@@ -103,7 +103,7 @@ public class RegisterBucket extends Details {
         String error = null;
         if (identifierField.isInvalid() || (error = validateForm(nodeIdentifier)) != null) {
             if (identifierField.isInvalid()) {
-                error = "Invalid bucket identifier format";
+                error = "Invalid room id format";
             }
 
             Notification.show(error, 3000, Notification.Position.TOP_END)
@@ -111,9 +111,9 @@ public class RegisterBucket extends Details {
             return;
         }
 
-        var bucket = Bucket.create(nodeIdentifier, node, SlotLimit.unlimited(), payloadField.getValue());
-        bucket.setLocked(lockedField.getValue());
-        var response = onSubmit.apply(bucket);
+        var room = Room.create(nodeIdentifier, node, SlotLimit.unlimited(), payloadField.getValue());
+        room.setLocked(lockedField.getValue());
+        var response = onSubmit.apply(room);
         clear();
         if (response.error()) {
             Notification.show(response.reason(), 3000, Notification.Position.TOP_END)
@@ -121,7 +121,7 @@ public class RegisterBucket extends Details {
             return;
         }
 
-        Notification.show("Bucket was successfully registered", 3000, Notification.Position.TOP_END)
+        Notification.show("Room was successfully registered", 3000, Notification.Position.TOP_END)
                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
     }
 

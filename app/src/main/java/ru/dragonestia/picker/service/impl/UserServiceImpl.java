@@ -2,7 +2,7 @@ package ru.dragonestia.picker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dragonestia.picker.model.Bucket;
+import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.service.UserService;
@@ -17,22 +17,22 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<Bucket> getUserBuckets(User user) {
-        return userRepository.findAllLinkedUserBuckets(user);
+    public List<Room> getUserRooms(User user) {
+        return userRepository.findAllLinkedUserRooms(user);
     }
 
     @Override
-    public void linkUsersWithBucket(Bucket bucket, Collection<User> users, boolean force) {
-        userRepository.linkWithBucket(bucket, users, force);
+    public void linkUsersWithRoom(Room room, Collection<User> users, boolean force) {
+        userRepository.linkWithRoom(room, users, force);
     }
 
     @Override
-    public void unlinkUsersFromBucket(Bucket bucket, Collection<User> users) {
-        userRepository.unlinkWithBucket(bucket, users);
+    public void unlinkUsersFromRoom(Room room, Collection<User> users) {
+        userRepository.unlinkWithRoom(room, users);
     }
 
     @Override
-    public List<User> getBucketUsers(Bucket bucket) {
-        return userRepository.usersOf(bucket);
+    public List<User> getRoomUsers(Room room) {
+        return userRepository.usersOf(room);
     }
 }

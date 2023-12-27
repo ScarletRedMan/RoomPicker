@@ -13,12 +13,12 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.dragonestia.picker.cp.component.BucketList;
+import ru.dragonestia.picker.cp.component.RoomList;
 import ru.dragonestia.picker.cp.component.NavPath;
-import ru.dragonestia.picker.cp.component.RegisterBucket;
+import ru.dragonestia.picker.cp.component.RegisterRoom;
 import ru.dragonestia.picker.cp.model.Node;
-import ru.dragonestia.picker.cp.model.dto.BucketDTO;
-import ru.dragonestia.picker.cp.repository.BucketRepository;
+import ru.dragonestia.picker.cp.model.dto.RoomDTO;
+import ru.dragonestia.picker.cp.repository.RoomRepository;
 import ru.dragonestia.picker.cp.repository.NodeRepository;
 
 import java.util.List;
@@ -29,16 +29,16 @@ import java.util.List;
 public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
     private final NodeRepository nodeRepository;
-    private final BucketRepository bucketRepository;
+    private final RoomRepository roomRepository;
     private Node node;
-    private RegisterBucket registerBucket;
-    private BucketList bucketList;
+    private RegisterRoom registerRoom;
+    private RoomList roomList;
 
     public NodeDetailsPage(@Autowired NodeRepository nodeRepository,
-                           @Autowired BucketRepository bucketRepository) {
+                           @Autowired RoomRepository roomRepository) {
 
         this.nodeRepository = nodeRepository;
-        this.bucketRepository = bucketRepository;
+        this.roomRepository = roomRepository;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
         var nodeId = nodeIdOpt.get();
         add(new NavPath(new NavPath.Point("Nodes", "/nodes"), new NavPath.Point(nodeId, "/nodes/" + nodeId)));
 
-        var nodeOpt = nodeRepository.findNode(nodeId);
+        var nodeOpt = nodeRepository.find(nodeId);
         if (nodeOpt.isEmpty()) {
             add(new H2("Error 404"));
             add(new Paragraph("Node not found"));
@@ -61,27 +61,27 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
         }
         node = nodeOpt.get();
 
-        initComponents(node, bucketRepository.all(node));
+        initComponents(node, roomRepository.all(node));
     }
 
-    private void initComponents(Node node, List<BucketDTO> buckets) {
+    private void initComponents(Node node, List<RoomDTO> rooms) {
         printNodeDetails(node);
         add(new Hr());
-        add(registerBucket = new RegisterBucket(node, (bucket) -> {
+        add(registerRoom = new RegisterRoom(node, (bucket) -> {
             try {
-                bucketRepository.register(bucket);
-                return new RegisterBucket.Response(false,  null);
+                roomRepository.register(bucket);
+                return new RegisterRoom.Response(false,  null);
             } catch (Error error) {
-                return new RegisterBucket.Response(true,  error.getMessage());
+                return new RegisterRoom.Response(true,  error.getMessage());
             } finally {
-                bucketList.update(bucketRepository.all(node));
+                roomList.update(roomRepository.all(node));
             }
         }));
         add(new Hr());
-        add(bucketList = new BucketList(node.identifier(), buckets));
-        bucketList.setRemoveMethod(bucket -> {
-            bucketRepository.remove(node, bucket);
-            bucketList.update(bucketRepository.all(node));
+        add(roomList = new RoomList(node.id(), rooms));
+        roomList.setRemoveMethod(bucket -> {
+            roomRepository.remove(node, bucket);
+            roomList.update(roomRepository.all(node));
         });
     }
 
@@ -89,8 +89,8 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
         add(new H2("Node details"));
 
         var layout = new VerticalLayout();
-        layout.add(new Html("<span>Identifier: <b>" + node.identifier() + "</b></span>"));
-        layout.add(new Html("<span>Mode: <b>" + node.method().getName() + "</b></span>"));
+        layout.add(new Html("<span>Identifier: <b>" + node.id() + "</b></span>"));
+        layout.add(new Html("<span>Mode: <b>" + node.mode().getName() + "</b></span>"));
 
         add(layout);
     }

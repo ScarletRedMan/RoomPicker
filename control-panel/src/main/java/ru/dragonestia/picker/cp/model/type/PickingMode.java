@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum LoadBalancingMethod {
+public enum PickingMode {
     SEQUENTIAL_FILLING("Sequential filling"),
     ROUND_ROBIN("Round Robin"),
     LEAST_PICKED("Least Picked");

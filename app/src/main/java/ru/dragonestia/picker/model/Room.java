@@ -7,16 +7,16 @@ import ru.dragonestia.picker.model.type.SlotLimit;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class Bucket {
+public class Room {
 
-    private final String identifier;
-    private final String nodeIdentifier;
+    private final String id;
+    private final String nodeId;
     private final SlotLimit slots;
     private final String payload;
     private boolean locked = false;
 
-    public static Bucket create(String identifier, Node node, SlotLimit limit, String payload) {
-        return new Bucket(identifier, node.identifier(), limit, payload);
+    public static Room create(String roomId, Node node, SlotLimit limit, String payload) {
+        return new Room(roomId, node.id(), limit, payload);
     }
 
     public void setLocked(boolean value) {
@@ -31,15 +31,15 @@ public class Bucket {
 
     @Override
     public int hashCode() {
-        return identifier.hashCode();
+        return id.hashCode();
     }
 
     @Override
     public boolean equals(Object object) {
         if (object == this) return true;
         if (object == null) return false;
-        if (object instanceof Bucket other) {
-            return identifier.equals(other.identifier);
+        if (object instanceof Room other) {
+            return id.equals(other.id);
         }
         return false;
     }

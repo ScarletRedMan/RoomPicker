@@ -31,15 +31,15 @@ public class NodesPage extends VerticalLayout {
         add(new Hr());
         add(nodeList = createNodeListElement());
         nodeList.setRemoveMethod(nodeIdentifier -> {
-            nodeRepository.removeNode(nodeIdentifier);
-            nodeList.update(nodeRepository.getNodes());
+            nodeRepository.remove(nodeIdentifier);
+            nodeList.update(nodeRepository.all());
         });
     }
 
     protected RegisterNode createRegisterNodeElement() {
         return new RegisterNode(node -> {
             try {
-                nodeRepository.registerNode(node);
+                nodeRepository.register(node);
                 return new RegisterNode.Response(false, "");
             } catch (Error ex) {
                 return new RegisterNode.Response(true, ex.getMessage());
@@ -47,12 +47,12 @@ public class NodesPage extends VerticalLayout {
                 log.throwing(ex);
                 return new RegisterNode.Response(true, ex.getMessage());
             } finally {
-                nodeList.update(nodeRepository.getNodes());
+                nodeList.update(nodeRepository.all());
             }
         });
     }
 
     protected NodeList createNodeListElement() {
-        return new NodeList(nodeRepository.getNodes());
+        return new NodeList(nodeRepository.all());
     }
 }

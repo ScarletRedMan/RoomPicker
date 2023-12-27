@@ -21,14 +21,14 @@ public class NodeRepositoryImpl implements NodeRepository {
     private final RestUtil rest;
 
     @Override
-    public void registerNode(Node node) {
+    public void register(Node node) {
         NodeRegisterResponse response;
         try {
             response = rest.post(URI.create("nodes"),
                     NodeRegisterResponse.class,
                     params -> {
-                        params.put("identifier", node.identifier());
-                        params.put("method", node.method().name());
+                        params.put("nodeId", node.id());
+                        params.put("method", node.mode().name());
                     });
         } catch (Exception ex) {
             throw new RuntimeException("Internal error", ex);
@@ -40,14 +40,14 @@ public class NodeRepositoryImpl implements NodeRepository {
     }
 
     @Override
-    public List<Node> getNodes() {
+    public List<Node> all() {
         return rest.get(URI.create("nodes"), NodeListResponse.class).nodes();
     }
 
     @Override
-    public Optional<Node> findNode(String identifier) {
+    public Optional<Node> find(String nodeId) {
         try {
-            var response = rest.get(URI.create("nodes/" + identifier), NodeDetailsResponse.class);
+            var response = rest.get(URI.create("nodes/" + nodeId), NodeDetailsResponse.class);
             return Optional.of(response.node());
         } catch (Exception ex) {
             return Optional.empty();
@@ -55,7 +55,7 @@ public class NodeRepositoryImpl implements NodeRepository {
     }
 
     @Override
-    public void removeNode(String identifier) {
-        rest.delete(URI.create("nodes/" + identifier), params -> {});
+    public void remove(String nodeId) {
+        rest.delete(URI.create("nodes/" + nodeId), params -> {});
     }
 }

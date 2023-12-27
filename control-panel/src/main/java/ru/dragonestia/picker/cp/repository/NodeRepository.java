@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface NodeRepository {
 
-    void registerNode(Node node);
+    void register(Node node);
 
-    List<Node> getNodes();
+    List<Node> all();
 
-    Optional<Node> findNode(String identifier);
+    Optional<Node> find(String nodeId);
 
-    void removeNode(String identifier);
+    void remove(String nodeId);
 }

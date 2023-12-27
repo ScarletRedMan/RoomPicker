@@ -1,13 +1,13 @@
 package ru.dragonestia.picker.model;
 
 import lombok.NonNull;
-import ru.dragonestia.picker.model.type.LoadBalancingMethod;
+import ru.dragonestia.picker.model.type.PickingMode;
 
-public record Node(@NonNull String identifier, @NonNull LoadBalancingMethod method) {
+public record Node(@NonNull String id, @NonNull PickingMode mode) {
 
     @Override
     public int hashCode() {
-        return identifier.hashCode();
+        return id.hashCode();
     }
 
     @Override
@@ -15,7 +15,7 @@ public record Node(@NonNull String identifier, @NonNull LoadBalancingMethod meth
         if (object == this) return true;
         if (object == null) return false;
         if (object instanceof Node other) {
-            return identifier.equals(other.identifier);
+            return id.equals(other.id);
         }
         return false;
     }

@@ -3,7 +3,7 @@ package ru.dragonestia.picker.repository.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.dragonestia.picker.model.Node;
-import ru.dragonestia.picker.repository.BucketRepository;
+import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.NodeRepository;
 
 import java.util.List;
@@ -15,33 +15,33 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class NodeRepositoryImpl implements NodeRepository {
 
-    private final BucketRepository bucketRepository;
+    private final RoomRepository roomRepository;
     private final Map<String, Node> nodeMap = new ConcurrentHashMap<>();
 
     @Override
-    public void createNode(Node node) {
+    public void create(Node node) {
         synchronized (nodeMap) {
-            if (nodeMap.containsKey(node.identifier())) {
-                throw new IllegalArgumentException("Node with id '" + node.identifier() + "' already exists");
+            if (nodeMap.containsKey(node.id())) {
+                throw new IllegalArgumentException("Node with id '" + node.id() + "' already exists");
             }
 
-            nodeMap.put(node.identifier(), node);
+            nodeMap.put(node.id(), node);
         }
 
-        bucketRepository.onCreateNode(node);
+        roomRepository.onCreateNode(node);
     }
 
     @Override
-    public void deleteNode(Node node) {
+    public void delete(Node node) {
         synchronized (nodeMap) {
-            nodeMap.remove(node.identifier());
+            nodeMap.remove(node.id());
         }
 
-        bucketRepository.onRemoveNode(node);
+        roomRepository.onRemoveNode(node);
     }
 
     @Override
-    public Optional<Node> findNode(String nodeId) {
+    public Optional<Node> find(String nodeId) {
         synchronized (nodeMap) {
             return nodeMap.containsKey(nodeId)? Optional.of(nodeMap.get(nodeId)) : Optional.empty();
         }

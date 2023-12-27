@@ -4,13 +4,13 @@ import ru.dragonestia.picker.cp.model.Node;
 
 import java.net.URI;
 
-public record BucketDTO(String identifier, int slots, boolean locked) {
+public record RoomDTO(String id, int slots, boolean locked) {
 
     public URI uriAPI(Node node) {
-        return uriAPI(node.identifier());
+        return uriAPI(node.id());
     }
 
     public URI uriAPI(String nodeId) {
-        return URI.create("/nodes/" + nodeId + "/buckets/" + identifier);
+        return URI.create("/nodes/" + nodeId + "/rooms/" + id);
     }
 }

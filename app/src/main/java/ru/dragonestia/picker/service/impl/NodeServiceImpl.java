@@ -17,26 +17,26 @@ public class NodeServiceImpl implements NodeService {
     private final NodeRepository nodeRepository;
 
     @Override
-    public void createNode(Node node) {
-        if (!NamingValidator.validateNodeIdentifier(node.identifier())) {
-            throw new Error("Invalid node identifier format");
+    public void create(Node node) {
+        if (!NamingValidator.validateNodeId(node.id())) {
+            throw new Error("Invalid node id format");
         }
 
-        nodeRepository.createNode(node);
+        nodeRepository.create(node);
     }
 
     @Override
-    public void removeNode(Node node) {
-        nodeRepository.deleteNode(node);
+    public void remove(Node node) {
+        nodeRepository.delete(node);
     }
 
     @Override
-    public List<Node> allNodes() {
+    public List<Node> all() {
         return nodeRepository.all();
     }
 
     @Override
-    public Optional<Node> findNode(String identifier) {
-        return nodeRepository.findNode(identifier);
+    public Optional<Node> find(String nodeId) {
+        return nodeRepository.find(nodeId);
     }
 }

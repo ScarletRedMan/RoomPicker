@@ -1,6 +1,7 @@
 package ru.dragonestia.picker.cp.page;
 
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H2;
@@ -19,29 +20,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.picker.cp.component.AddUsers;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.UserList;
-import ru.dragonestia.picker.cp.model.Bucket;
+import ru.dragonestia.picker.cp.model.Room;
 import ru.dragonestia.picker.cp.model.Node;
-import ru.dragonestia.picker.cp.repository.BucketRepository;
+import ru.dragonestia.picker.cp.repository.RoomRepository;
 import ru.dragonestia.picker.cp.repository.NodeRepository;
 import ru.dragonestia.picker.cp.repository.UserRepository;
 
-@Route("/nodes/:nodeId/buckets/:bucketId")
-public class BucketDetailsPage extends VerticalLayout implements BeforeEnterObserver {
+@Route("/nodes/:nodeId/rooms/:roomId")
+public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
     private final NodeRepository nodeRepository;
-    private final BucketRepository bucketRepository;
+    private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private Node node;
-    private Bucket bucket;
+    private Room room;
     private AddUsers addUsers;
     private UserList userList;
-    private Button lockBucketButton;
-    private VerticalLayout bucketInfo;
+    private Button lockRoomButton;
+    private VerticalLayout roomInfo;
 
     @Autowired
-    public BucketDetailsPage(NodeRepository nodeRepository, BucketRepository bucketRepository, UserRepository userRepository) {
+    public RoomDetailsPage(NodeRepository nodeRepository, RoomRepository roomRepository, UserRepository userRepository) {
         this.nodeRepository = nodeRepository;
-        this.bucketRepository = bucketRepository;
+        this.roomRepository = roomRepository;
         this.userRepository = userRepository;
     }
 
@@ -53,19 +54,19 @@ public class BucketDetailsPage extends VerticalLayout implements BeforeEnterObse
             return;
         }
 
-        var bucketIdOpt = event.getRouteParameters().get("bucketId");
-        if (bucketIdOpt.isEmpty()) {
-            getUI().ifPresent(ui -> ui.navigate("/buckets/" + nodeIdOpt.get()));
+        var roomIdOpt = event.getRouteParameters().get("roomId");
+        if (roomIdOpt.isEmpty()) {
+            getUI().ifPresent(ui -> ui.navigate("/rooms/" + nodeIdOpt.get()));
             return;
         }
 
         var nodeId = nodeIdOpt.get();
-        var bucketId = bucketIdOpt.get();
+        var roomId = roomIdOpt.get();
         add(new NavPath(new NavPath.Point("Nodes", "/nodes"),
                 new NavPath.Point(nodeId, "/nodes/" + nodeId),
-                new NavPath.Point(bucketId, "/nodes/" + nodeId + "/buckets/" + bucketId)));
+                new NavPath.Point(roomId, "/nodes/" + nodeId + "/rooms/" + roomId)));
 
-        var nodeOpt = nodeRepository.findNode(nodeId);
+        var nodeOpt = nodeRepository.find(nodeId);
         if (nodeOpt.isEmpty()) {
             add(new H2("Error 404"));
             add(new Paragraph("Node not found!"));
@@ -75,75 +76,75 @@ public class BucketDetailsPage extends VerticalLayout implements BeforeEnterObse
         }
         node = nodeOpt.get();
 
-        var bucketOpt = bucketRepository.find(node, bucketId);
+        var bucketOpt = roomRepository.find(node, roomId);
         if (bucketOpt.isEmpty()) {
             add(new H2("Error 404"));
-            add(new Paragraph("Bucket not found!"));
-            Notification.show("Bucket '" + nodeId + "' does not exist", 3000, Notification.Position.TOP_END)
+            add(new Paragraph("Room not found!"));
+            Notification.show("Room '" + nodeId + "' does not exist", 3000, Notification.Position.TOP_END)
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
             return;
         }
-        bucket = bucketOpt.get();
+        room = bucketOpt.get();
 
         init();
     }
 
     private void init() {
-        add(new H2("Bucket details"));
-        printBucketDetails();
+        add(new H2("Room details"));
+        printRoomDetails();
         add(new Hr());
-        add(addUsers = new AddUsers(bucket));
+        add(addUsers = new AddUsers(room));
         add(new Hr());
         add(new H2("Users"));
-        add(userList = new UserList(bucket, userRepository.all(bucket)));
+        add(userList = new UserList(room, userRepository.all(room)));
     }
 
-    private void updateBucketInfo() {
-        bucketInfo.removeAll();
-        bucketInfo.add(new Html("<span>Node identifier: <b>" + bucket.getNodeIdentifier() + "</b></span>"));
-        bucketInfo.add(new Html("<span>Bucket identifier: <b>" + bucket.getIdentifier() + "</b></span>"));
-        bucketInfo.add(new Html("<span>Slots: <b>" + (bucket.getSlots().isUnlimited()? "Unlimited" : bucket.getSlots().slots()) + "</b></span>"));
-        bucketInfo.add(new Html("<span>Locked: <b>" + (bucket.isLocked()? "Yes" : "No") + "</b></span>"));
+    private void updateRoomInfo() {
+        roomInfo.removeAll();
+        roomInfo.add(new Html("<span>Node identifier: <b>" + room.getNodeId() + "</b></span>"));
+        roomInfo.add(new Html("<span>Room identifier: <b>" + room.getId() + "</b></span>"));
+        roomInfo.add(new Html("<span>Slots: <b>" + (room.getSlots().isUnlimited()? "Unlimited" : room.getSlots().slots()) + "</b></span>"));
+        roomInfo.add(new Html("<span>Locked: <b>" + (room.isLocked()? "Yes" : "No") + "</b></span>"));
     }
 
-    private void printBucketDetails() {
-        add(bucketInfo = new VerticalLayout());
-        bucketInfo.setPadding(false);
+    private void printRoomDetails() {
+        add(roomInfo = new VerticalLayout());
+        roomInfo.setPadding(false);
 
-        updateBucketInfo();
-        add(lockBucketButton = new Button("", event -> changeBucketLockedState()));
-        setLockBucketButtonState();
+        updateRoomInfo();
+        add(lockRoomButton = new Button("", event -> changeBucketLockedState()));
+        setLockRoomButtonState();
 
-        var payload = new TextArea("Payload(" + bucket.getPayload().length() + ")");
-        payload.setValue(bucket.getPayload());
+        var payload = new TextArea("Payload(" + room.getPayload().length() + ")");
+        payload.setValue(room.getPayload());
         payload.setReadOnly(true);
         payload.setMinWidth(50, Unit.REM);
         add(payload);
     }
 
-    private void setLockBucketButtonState() {
-        if (bucket.isLocked()) {
-            lockBucketButton.setText("Unlock");
-            lockBucketButton.setPrefixComponent(new Icon(VaadinIcon.UNLOCK));
+    private void setLockRoomButtonState() {
+        if (room.isLocked()) {
+            lockRoomButton.setText("Unlock");
+            lockRoomButton.setPrefixComponent(new Icon(VaadinIcon.UNLOCK));
         } else {
-            lockBucketButton.setText("Lock");
-            lockBucketButton.setPrefixComponent(new Icon(VaadinIcon.LOCK));
+            lockRoomButton.setText("Lock");
+            lockRoomButton.setPrefixComponent(new Icon(VaadinIcon.LOCK));
         }
     }
 
     private void changeBucketLockedState() {
-        var newValue = !bucket.isLocked();
+        var newValue = !room.isLocked();
         try {
-            bucketRepository.lock(bucket, newValue);
+            roomRepository.lock(room, newValue);
         } catch (Error error) {
             Notification.show(error.getMessage(), 3000, Notification.Position.TOP_END)
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
             return;
         }
 
-        bucket.setLocked(newValue);
-        setLockBucketButtonState();
-        updateBucketInfo();
+        room.setLocked(newValue);
+        setLockRoomButtonState();
+        updateRoomInfo();
 
         Notification.show("Success", 3000, Notification.Position.TOP_END)
                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);

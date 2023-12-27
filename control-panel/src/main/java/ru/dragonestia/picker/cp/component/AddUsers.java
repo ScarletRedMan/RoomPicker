@@ -12,21 +12,21 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import lombok.Getter;
-import ru.dragonestia.picker.cp.model.Bucket;
+import ru.dragonestia.picker.cp.model.Room;
 import ru.dragonestia.picker.cp.model.User;
 
 import java.util.List;
 
 public class AddUsers extends Details {
 
-    private final Bucket bucket;
+    private final Room room;
     private final Checkbox ignoreSlots;
     private final VerticalLayout usersLayout;
 
-    public AddUsers(Bucket bucket) {
+    public AddUsers(Room room) {
         super(new H2("Add users"));
 
-        this.bucket = bucket;
+        this.room = room;
         usersLayout = new VerticalLayout();
 
         add(addUserToTransacionButton());
@@ -84,8 +84,8 @@ public class AddUsers extends Details {
         }
 
         private TextField createUserIdentifierField(boolean canBeDeleted) {
-            var field = new TextField("User identifier");
-            field.setPlaceholder("example-user-identifier");
+            var field = new TextField("User id");
+            field.setPlaceholder("example-user-id");
             field.setHelperText("It can be UUID, username, numeric ids, etc");
             field.setMinWidth(20, Unit.REM);
 

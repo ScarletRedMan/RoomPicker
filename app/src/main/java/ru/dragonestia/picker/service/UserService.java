@@ -1,6 +1,6 @@
 package ru.dragonestia.picker.service;
 
-import ru.dragonestia.picker.model.Bucket;
+import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 
 import java.util.Collection;
@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface UserService {
 
-    List<Bucket> getUserBuckets(User user);
+    List<Room> getUserRooms(User user);
 
-    void linkUsersWithBucket(Bucket bucket, Collection<User> users, boolean force);
+    void linkUsersWithRoom(Room room, Collection<User> users, boolean force);
 
-    void unlinkUsersFromBucket(Bucket bucket, Collection<User> users);
+    void unlinkUsersFromRoom(Room room, Collection<User> users);
 
-    List<User> getBucketUsers(Bucket bucket);
+    List<User> getRoomUsers(Room room);
 }

@@ -59,8 +59,9 @@ For use api methods from main application you need add http headers with usernam
 and password (`Room_Picker-Password`).
 
 Example:
+
 ```http request
-GET http://localhost:8080/nodes/hub/buckets/test-3/users
+GET http://localhost:8080/nodes/hub/rooms/test-3/users
 RoomPicker-User: admin
 RoomPicker-Password: admin
 ```

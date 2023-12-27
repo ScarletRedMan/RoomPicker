@@ -1,15 +1,15 @@
 package ru.dragonestia.picker.cp.model;
 
 import lombok.NonNull;
-import ru.dragonestia.picker.cp.model.type.LoadBalancingMethod;
+import ru.dragonestia.picker.cp.model.type.PickingMode;
 
 import java.io.Serializable;
 
-public record Node(@NonNull String identifier, @NonNull LoadBalancingMethod method) implements Serializable {
+public record Node(@NonNull String id, @NonNull PickingMode mode) implements Serializable {
 
     @Override
     public int hashCode() {
-        return identifier.hashCode();
+        return id.hashCode();
     }
 
     @Override
@@ -17,7 +17,7 @@ public record Node(@NonNull String identifier, @NonNull LoadBalancingMethod meth
         if (object == this) return true;
         if (object == null) return false;
         if (object instanceof Node other) {
-            return identifier.equals(other.identifier);
+            return id.equals(other.id);
         }
         return false;
     }

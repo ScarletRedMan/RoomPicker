@@ -16,32 +16,32 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import lombok.Setter;
-import ru.dragonestia.picker.cp.model.dto.BucketDTO;
+import ru.dragonestia.picker.cp.model.dto.RoomDTO;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-public class BucketList extends VerticalLayout {
+public class RoomList extends VerticalLayout {
 
     private final String nodeIdentifier;
-    private final Grid<BucketDTO> bucketsGrid;
+    private final Grid<RoomDTO> roomsGrid;
     private final TextField searchField;
-    private List<BucketDTO> cachedBuckets;
-    @Setter private Consumer<BucketDTO> removeMethod;
+    private List<RoomDTO> cachedRooms;
+    @Setter private Consumer<RoomDTO> removeMethod;
 
-    public BucketList(String nodeIdentifier, List<BucketDTO> buckets) {
+    public RoomList(String nodeIdentifier, List<RoomDTO> buckets) {
         this.nodeIdentifier = nodeIdentifier;
-        cachedBuckets = buckets;
+        cachedRooms = buckets;
 
-        add(new H2("Buckets"));
+        add(new H2("Rooms"));
         add(searchField = createSearchField());
-        add(bucketsGrid = createGrid());
+        add(roomsGrid = createGrid());
 
         update(buckets);
     }
 
     private TextField createSearchField() {
-        var field = new TextField("Search bucket");
+        var field = new TextField("Search room");
         field.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
         field.setClearButtonVisible(true);
         field.setHelperText("Press Enter to search");
@@ -52,27 +52,27 @@ public class BucketList extends VerticalLayout {
     private void applySearch(String input) {
         var temp = input.trim();
 
-        bucketsGrid.setItems(cachedBuckets.stream()
-                .filter(bucket -> bucket.identifier().startsWith(temp))
+        roomsGrid.setItems(cachedRooms.stream()
+                .filter(room -> room.id().startsWith(temp))
                 .toList());
     }
 
-    private Grid<BucketDTO> createGrid() {
-        var grid = new Grid<>(BucketDTO.class, false);
-        grid.addColumn(BucketDTO::identifier).setHeader("Identifier");
-        grid.addComponentColumn(bucket -> {
+    private Grid<RoomDTO> createGrid() {
+        var grid = new Grid<>(RoomDTO.class, false);
+        grid.addColumn(RoomDTO::id).setHeader("Identifier");
+        grid.addComponentColumn(room -> {
             var result = new Span();
-            if (bucket.slots() == -1) {
+            if (room.slots() == -1) {
                 result.setText("Unlimited");
                 result.getElement().getThemeList().add("badge contrast");
             } else {
-                result.setText(Integer.toString(bucket.slots()));
+                result.setText(Integer.toString(room.slots()));
             }
             return result;
         }).setHeader("Slots").setTextAlign(ColumnTextAlign.CENTER);
-        grid.addComponentColumn(bucket -> {
+        grid.addComponentColumn(room -> {
             var result = new Span();
-            if (bucket.locked()) {
+            if (room.locked()) {
                 result.setText("Yes");
                 result.getElement().getThemeList().add("badge error");
             } else {
@@ -84,19 +84,19 @@ public class BucketList extends VerticalLayout {
         return grid;
     }
 
-    private HorizontalLayout createManageButtons(BucketDTO bucket) {
+    private HorizontalLayout createManageButtons(RoomDTO room) {
         var layout = new HorizontalLayout();
 
         {
             var button = new Button("Details");
-            button.addClickListener(event -> clickDetailsButton(bucket));
+            button.addClickListener(event -> clickDetailsButton(room));
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             layout.add(button);
         }
 
         {
             var button = new Button("Remove");
-            button.addClickListener(event -> clickRemoveButton(bucket));
+            button.addClickListener(event -> clickRemoveButton(room));
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
             layout.add(button);
         }
@@ -104,16 +104,16 @@ public class BucketList extends VerticalLayout {
         return layout;
     }
 
-    private void clickDetailsButton(BucketDTO bucket) {
+    private void clickDetailsButton(RoomDTO bucket) {
         getUI().ifPresent(ui -> {
             ui.navigate("/nodes/" + nodeIdentifier +
-                    "/buckets/" + bucket.identifier());
+                    "/rooms/" + bucket.id());
         });
     }
 
-    private void clickRemoveButton(BucketDTO bucket) {
+    private void clickRemoveButton(RoomDTO bucket) {
         var dialog = new Dialog("Confirm bucket deletion");
-        dialog.add(new Paragraph("Confirm that you want to delete bucket. Enter '" + bucket.identifier() + "' to field below and confirm."));
+        dialog.add(new Paragraph("Confirm that you want to delete bucket. Enter '" + bucket.id() + "' to field below and confirm."));
 
         var inputField = new TextField();
         dialog.add(inputField);
@@ -122,14 +122,14 @@ public class BucketList extends VerticalLayout {
             var button = new Button("Confirm");
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
             button.addClickListener(event -> {
-                if (!bucket.identifier().equals(inputField.getValue())) {
+                if (!bucket.id().equals(inputField.getValue())) {
                     Notification.show("Invalid input", 3000, Notification.Position.TOP_END)
                             .addThemeVariants(NotificationVariant.LUMO_ERROR);
                     return;
                 }
 
                 removeBucket(bucket);
-                Notification.show("Bucket '" + bucket.identifier() + "' was successfully removed!", 3000, Notification.Position.TOP_END)
+                Notification.show("Bucket '" + bucket.id() + "' was successfully removed!", 3000, Notification.Position.TOP_END)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 dialog.close();
             });
@@ -146,12 +146,12 @@ public class BucketList extends VerticalLayout {
         dialog.open();
     }
 
-    public void update(List<BucketDTO> buckets) {
-        cachedBuckets = buckets;
+    public void update(List<RoomDTO> buckets) {
+        cachedRooms = buckets;
         applySearch(searchField.getValue());
     }
 
-    private void removeBucket(BucketDTO bucket) {
+    private void removeBucket(RoomDTO bucket) {
         if (removeMethod != null) {
             removeMethod.accept(bucket);
         }

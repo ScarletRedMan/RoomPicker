@@ -17,7 +17,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import org.springframework.lang.Nullable;
 import ru.dragonestia.picker.cp.model.Node;
-import ru.dragonestia.picker.cp.model.type.LoadBalancingMethod;
+import ru.dragonestia.picker.cp.model.type.PickingMode;
 
 import java.util.function.Function;
 
@@ -25,7 +25,7 @@ public class RegisterNode extends Details {
 
     private final Function<Node, Response> onSubmit;
     private final TextField identifierField;
-    private final RadioButtonGroup<LoadBalancingMethod> modeRadio;
+    private final RadioButtonGroup<PickingMode> modeRadio;
 
     public RegisterNode(Function<Node, Response> onSubmit) {
         super(new H2("Register node"));
@@ -58,15 +58,15 @@ public class RegisterNode extends Details {
         return button;
     }
 
-    private RadioButtonGroup<LoadBalancingMethod> createModeRadio() {
-        var radio = new RadioButtonGroup<LoadBalancingMethod>("Mode");
+    private RadioButtonGroup<PickingMode> createModeRadio() {
+        var radio = new RadioButtonGroup<PickingMode>("Mode");
         radio.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
-        radio.setRenderer(new ComponentRenderer<Component, LoadBalancingMethod>(mode -> new Span(mode.getName())));
-        radio.setItems(LoadBalancingMethod.SEQUENTIAL_FILLING,
-                LoadBalancingMethod.ROUND_ROBIN,
-                LoadBalancingMethod.LEAST_PICKED);
+        radio.setRenderer(new ComponentRenderer<Component, PickingMode>(mode -> new Span(mode.getName())));
+        radio.setItems(PickingMode.SEQUENTIAL_FILLING,
+                PickingMode.ROUND_ROBIN,
+                PickingMode.LEAST_PICKED);
 
-        radio.setValue(LoadBalancingMethod.SEQUENTIAL_FILLING);
+        radio.setValue(PickingMode.SEQUENTIAL_FILLING);
         return radio;
     }
 
@@ -76,7 +76,7 @@ public class RegisterNode extends Details {
 
     private @Nullable String validateForm(String identifier) {
         if (identifier.isEmpty()) {
-            return "Node identifier cannot be empty";
+            return "Node id cannot be empty";
         }
 
         return null;
@@ -88,7 +88,7 @@ public class RegisterNode extends Details {
         String error = null;
         if (identifierField.isInvalid() || (error = validateForm(nodeIdentifier)) != null) {
             if (identifierField.isInvalid()) {
-                error = "Invalid node identifier format";
+                error = "Invalid node id format";
             }
 
             Notification.show(error, 3000, Notification.Position.TOP_END)

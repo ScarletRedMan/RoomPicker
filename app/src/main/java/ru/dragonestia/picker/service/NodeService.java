@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface NodeService {
 
-    void createNode(Node node);
+    void create(Node node);
 
-    void removeNode(Node node);
+    void remove(Node node);
 
-    List<Node> allNodes();
+    List<Node> all();
 
-    Optional<Node> findNode(String identifier);
+    Optional<Node> find(String nodeId);
 }
