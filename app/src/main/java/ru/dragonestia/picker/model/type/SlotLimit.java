@@ -7,7 +7,7 @@ import java.beans.Transient;
 @Getter
 public class SlotLimit {
 
-    private final static int UNLIMITED_VALUE = -1;
+    public final static int UNLIMITED_VALUE = -1;
 
     private final int slots;
 
