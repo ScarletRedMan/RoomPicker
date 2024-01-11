@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RoomRepositoryImpl implements RoomRepository {
 
     private final UserRepository userRepository;
+    private final PickerRepository pickerRepository;
     private final Map<Node, Rooms> node2roomsMap = new ConcurrentHashMap<>();
 
     @Override
@@ -37,6 +38,7 @@ public class RoomRepositoryImpl implements RoomRepository {
                 throw new IllegalArgumentException("Room already exists");
             }
             rooms.put(room.getId(), new RoomContainer(room, new AtomicInteger(0)));
+            pickerRepository.find(room.getNodeId()).add(room);
         }
     }
 
@@ -53,6 +55,7 @@ public class RoomRepositoryImpl implements RoomRepository {
             }
 
             node2roomsMap.get(node.get()).remove(room.getId());
+            pickerRepository.find(room.getNodeId()).remove(room);
         }
 
         userRepository.onRemoveRoom(room);
@@ -91,10 +94,14 @@ public class RoomRepositoryImpl implements RoomRepository {
                 throw new IllegalArgumentException("Node '" + node.id() + "' does not exist");
             }
 
-            var requiredSlots = users.size();
-            var container = node2roomsMap.get(node).values().stream() // TODO: pick room with used node balancing mode
-                    .filter(r -> r.isAvailable(requiredSlots))
-                    .findFirst();
+            Room room = null;
+            try {
+                room = pickerRepository.pick(node.id(), users);
+            } catch (RuntimeException ignore) {} // TODO: may be problem. Check it later
+
+            Optional<RoomContainer> container = room == null?
+                    Optional.empty() :
+                    Optional.of(node2roomsMap.get(node).get(room.getId()));
 
             if (container.isPresent()) {
                 var cont = container.get();

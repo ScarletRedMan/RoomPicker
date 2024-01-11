@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NodeRepositoryImpl implements NodeRepository {
 
     private final RoomRepository roomRepository;
+    private final PickerRepository pickerRepository;
     private final Map<String, Node> nodeMap = new ConcurrentHashMap<>();
 
     @Override
@@ -26,6 +27,7 @@ public class NodeRepositoryImpl implements NodeRepository {
             }
 
             nodeMap.put(node.id(), node);
+            pickerRepository.create(node.id(), node.mode());
         }
 
         roomRepository.onCreateNode(node);
@@ -35,6 +37,7 @@ public class NodeRepositoryImpl implements NodeRepository {
     public void delete(Node node) {
         synchronized (nodeMap) {
             nodeMap.remove(node.id());
+            pickerRepository.remove(node.id());
         }
 
         roomRepository.onRemoveNode(node);
