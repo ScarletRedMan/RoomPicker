@@ -36,6 +36,27 @@ public class QueuedLinkedListTests {
         }
     }
 
+    @Test
+    void testEmptyList() {
+        var list = new QueuedLinkedList<Item>();
+        for (int i = 0; i < 10; i++) {
+            list.add(new Item(Integer.toString(i)));
+        }
+
+        printList(list);
+
+        for (int i = 0; i < 10; i++) {
+            var id = Integer.toString(i);
+
+            list.remove(new Item(id));
+            System.out.println("Removed: " + id);
+        }
+
+        printList(list);
+
+        Assertions.assertThrows(RuntimeException.class, list::pick);
+    }
+
     private void printList(QueuedLinkedList<Item> list) {
         list.resetCursor();
 
