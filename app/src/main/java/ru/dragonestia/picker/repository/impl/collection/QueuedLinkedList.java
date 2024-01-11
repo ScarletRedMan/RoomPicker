@@ -1,4 +1,4 @@
-package ru.dragonestia.picker.service.impl.collection;
+package ru.dragonestia.picker.repository.impl.collection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +24,12 @@ public class QueuedLinkedList<ITEM extends QueuedLinkedList.Item> {
         }
 
         itemMap.put(item.getId(), node);
+    }
+
+    public void removeById(String id) {
+        if (!itemMap.containsKey(id)) return;
+
+        remove(itemMap.get(id).object);
     }
 
     public void remove(ITEM item) {

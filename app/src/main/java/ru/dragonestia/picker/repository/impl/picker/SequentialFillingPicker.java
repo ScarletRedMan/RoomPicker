@@ -1,4 +1,4 @@
-package ru.dragonestia.picker.service.impl.picker;
+package ru.dragonestia.picker.repository.impl.picker;
 
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;

@@ -1,10 +1,10 @@
-package ru.dragonestia.picker.service.impl.picker;
+package ru.dragonestia.picker.repository.impl.picker;
 
 import ru.dragonestia.picker.model.type.SlotLimit;
 
 public interface ItemWrapper<ITEM> {
 
-    String getIdentifier();
+    String getId();
 
     int countUnits();
 

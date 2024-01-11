@@ -1,4 +1,4 @@
-package ru.dragonestia.picker.service.impl.picker;
+package ru.dragonestia.picker.repository.impl.picker;
 
 import java.util.Collection;
 

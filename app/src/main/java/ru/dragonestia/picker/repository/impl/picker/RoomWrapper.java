@@ -1,10 +1,11 @@
-package ru.dragonestia.picker.service.impl.picker;
+package ru.dragonestia.picker.repository.impl.picker;
 
 import ru.dragonestia.picker.model.Room;
+import ru.dragonestia.picker.repository.impl.collection.QueuedLinkedList;
 
 import java.util.function.Supplier;
 
-public class RoomWrapper implements ItemWrapper<Room> {
+public class RoomWrapper implements ItemWrapper<Room>, QueuedLinkedList.Item {
 
     private final Room room;
     private final Supplier<Integer> userCountSupplier;
@@ -15,7 +16,7 @@ public class RoomWrapper implements ItemWrapper<Room> {
     }
 
     @Override
-    public String getIdentifier() {
+    public String getId() {
         return room.getId();
     }
 

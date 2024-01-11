@@ -2,7 +2,7 @@ package ru.dragonestia.picker.collection;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.dragonestia.picker.service.impl.collection.QueuedLinkedList;
+import ru.dragonestia.picker.repository.impl.collection.QueuedLinkedList;
 
 import java.util.HashSet;
 
