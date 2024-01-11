@@ -1,7 +1,6 @@
 package ru.dragonestia.picker.cp.page;
 
 import com.vaadin.flow.component.Html;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H2;
@@ -23,9 +22,13 @@ import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.UserList;
 import ru.dragonestia.picker.cp.model.Room;
 import ru.dragonestia.picker.cp.model.Node;
+import ru.dragonestia.picker.cp.model.User;
 import ru.dragonestia.picker.cp.repository.RoomRepository;
 import ru.dragonestia.picker.cp.repository.NodeRepository;
 import ru.dragonestia.picker.cp.repository.UserRepository;
+
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @PageTitle("Room details")
 @Route("/nodes/:nodeId/rooms/:roomId")
@@ -95,7 +98,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
         add(new H2("Room details"));
         printRoomDetails();
         add(new Hr());
-        add(addUsers = new AddUsers(room));
+        add(addUsers = new AddUsers(room, (users, ignoreLimitation) -> appendUsers(room, users, ignoreLimitation)));
         add(new Hr());
         add(new H2("Users"));
         add(userList = new UserList(room, userRepository.all(room)));
@@ -150,5 +153,35 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
 
         Notification.show("Success", 3000, Notification.Position.TOP_END)
                 .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+    }
+
+    private void appendUsers(Room room, Collection<User> users, boolean ignoreLimitation) {
+        AtomicBoolean validationFail = new AtomicBoolean(false);
+
+        var newUsers = users.stream()
+                .filter(user -> {
+                    if (user.id().matches("^[aA-zZ\\d-.\\s:/@%?!~$)(+=_|;*]+$")) {
+                        return true;
+                    }
+
+                    validationFail.set(true);
+                    return false;
+                }).toList();
+
+        userRepository.linkWithRoom(room, newUsers, ignoreLimitation);
+        userList.update(userRepository.all(room));
+
+        if (validationFail.get()) {
+            if (newUsers.isEmpty()) {
+                Notification.show("All users entered were added because they do not comply with the rule for writing the user identifier", 3000, Notification.Position.TOP_END)
+                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            } else {
+                Notification.show("Not all users entered were added because they do not comply with the rule for writing the user identifier", 3000, Notification.Position.TOP_END)
+                        .addThemeVariants(NotificationVariant.LUMO_WARNING);
+            }
+        } else {
+            Notification.show("Success", 3000, Notification.Position.TOP_END)
+                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        }
     }
 }

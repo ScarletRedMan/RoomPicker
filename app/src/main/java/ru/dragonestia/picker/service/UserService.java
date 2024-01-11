@@ -10,7 +10,7 @@ public interface UserService {
 
     List<Room> getUserRooms(User user);
 
-    void linkUsersWithRoom(Room room, Collection<User> users, boolean force);
+    int linkUsersWithRoom(Room room, Collection<User> users, boolean force);
 
     void unlinkUsersFromRoom(Room room, Collection<User> users);
 

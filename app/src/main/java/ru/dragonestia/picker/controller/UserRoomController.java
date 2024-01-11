@@ -52,7 +52,7 @@ public class UserRoomController {
             var temp = getNodeAndRoom(nodeId, roomId);
             room = temp.room();
         } catch (Error error) {
-            return ResponseEntity.status(404).body(new LinkUsersWithRoomResponse(false, error.getMessage()));
+            return ResponseEntity.status(404).body(new LinkUsersWithRoomResponse(false, error.getMessage(), -1, -1));
         }
 
         var list = new LinkedList<User>();
@@ -63,12 +63,12 @@ public class UserRoomController {
         }
 
         try {
-            userService.linkUsersWithRoom(room, list, force);
-        } catch (Error error) {
-            return ResponseEntity.status(400).body(new LinkUsersWithRoomResponse(false, error.getMessage()));
-        }
+            int usedSlots = userService.linkUsersWithRoom(room, list, force);
 
-        return ResponseEntity.ok(new LinkUsersWithRoomResponse(true, "Success"));
+            return ResponseEntity.ok(new LinkUsersWithRoomResponse(true, "Success", usedSlots, room.getSlots().getSlots()));
+        } catch (Error error) {
+            return ResponseEntity.status(400).body(new LinkUsersWithRoomResponse(false, error.getMessage(), -1, -1));
+        }
     }
 
     @DeleteMapping
@@ -76,17 +76,24 @@ public class UserRoomController {
                                 @PathVariable(name = "roomId") String roomId,
                                 @RequestParam(name = "userIds") String userIds) {
 
-        Node node;
         Room room;
         try {
             var temp = getNodeAndRoom(nodeId, roomId);
-            node = temp.node();
             room = temp.room();
+
+            var list = new LinkedList<User>();
+            for (var username: userIds.split(",")) {
+                if (!NamingValidator.validateUserId(username)) continue;
+
+                list.add(new User(username));
+            }
+
+            userService.unlinkUsersFromRoom(room, list);
         } catch (Error error) {
             return ResponseEntity.notFound().build();
         }
 
-        return null;
+        return ResponseEntity.ok().build();
     }
 
     private record NodeAndRoom(Node node, Room room) {}
