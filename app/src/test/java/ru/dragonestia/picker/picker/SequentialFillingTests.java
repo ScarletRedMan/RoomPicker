@@ -1,9 +1,6 @@
 package ru.dragonestia.picker.picker;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -65,5 +62,12 @@ public class SequentialFillingTests {
                     Arguments.of("room-4-0", 4)
             );
         }
+    }
+
+    @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
+    @Test
+    void testNoOneRoomExpected() { // Take 9 users. expected none result
+        var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(9));
+        Assertions.assertTrue(roomOpt.isEmpty());
     }
 }
