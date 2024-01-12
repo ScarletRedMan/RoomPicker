@@ -59,7 +59,10 @@ public class SequentialFillingTests {
                     Arguments.of("room-1-0", 1),
                     Arguments.of("room-2-0", 2),
                     Arguments.of("room-1-1", 1),
-                    Arguments.of("room-4-0", 4)
+                    Arguments.of("room-4-0", 4),
+                    Arguments.of("room-1-2", 1),
+                    Arguments.of("room-2-1", 1),
+                    Arguments.of("room-2-1", 1)
             );
         }
     }
