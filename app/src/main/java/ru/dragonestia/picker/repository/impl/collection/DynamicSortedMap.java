@@ -10,9 +10,7 @@ public class DynamicSortedMap<ITEM extends DynamicSortedMap.Item> {
     private final HashMap<String, Node<ITEM>> indexes = new HashMap<>();
 
     public void put(ITEM item) {
-        var node = new Node<>(item, room -> {
-            // TODO: update map state
-        });
+        var node = new Node<>(item);
 
         indexes.put(node.object.getId(), node);
         var list = tree.getOrDefault(node.cachedScore, new LinkedList<>());
@@ -128,13 +126,12 @@ public class DynamicSortedMap<ITEM extends DynamicSortedMap.Item> {
         private int cachedScore;
         private boolean removed = false;
 
-        private Node(ITEM object, Consumer<ITEM> onUpdate) {
+        private Node(ITEM object) {
             this.object = object;
             cachedScore = object.getScore();
 
             object.setOnUpdateScore(newScore -> {
                 cachedScore = newScore;
-                onUpdate.accept(object);
             });
         }
 
