@@ -2,13 +2,14 @@ package ru.dragonestia.picker.repository.impl.picker;
 
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.type.PickingMode;
 import ru.dragonestia.picker.repository.UserRepository;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class SequentialFillingPicker implements Picker<Room, User> {
+public class SequentialFillingPicker implements RoomPicker {
 
     private final UserRepository userRepository;
     private final Map<String, RoomWrapper> wrappers = new LinkedHashMap<>();
@@ -44,5 +45,10 @@ public class SequentialFillingPicker implements Picker<Room, User> {
         }
 
         throw new RuntimeException("There are no rooms available");
+    }
+
+    @Override
+    public PickingMode getPickingMode() {
+        return PickingMode.SEQUENTIAL_FILLING;
     }
 }

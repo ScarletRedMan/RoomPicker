@@ -6,10 +6,7 @@ import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.model.type.PickingMode;
 import ru.dragonestia.picker.repository.UserRepository;
-import ru.dragonestia.picker.repository.impl.picker.LeastPickedPicker;
-import ru.dragonestia.picker.repository.impl.picker.Picker;
-import ru.dragonestia.picker.repository.impl.picker.RoundRobinPicker;
-import ru.dragonestia.picker.repository.impl.picker.SequentialFillingPicker;
+import ru.dragonestia.picker.repository.impl.picker.*;
 
 import java.security.InvalidParameterException;
 import java.util.Collection;
@@ -21,17 +18,19 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PickerRepository {
 
     private final UserRepository userRepository;
-    private final Map<String, Picker<Room, User>> pickers = new ConcurrentHashMap<>();
+    private final Map<String, RoomPicker> pickers = new ConcurrentHashMap<>();
 
-    public void create(String nodeId, PickingMode mode) {
-        pickers.put(nodeId, of(mode));
+    public RoomPicker create(String nodeId, PickingMode mode) {
+        var picker = of(mode);
+        pickers.put(nodeId, picker);
+        return picker;
     }
 
     public void remove(String nodeId) {
         pickers.remove(nodeId);
     }
 
-    public Picker<Room, User> find(String nodeId) {
+    public RoomPicker find(String nodeId) {
         return pickers.get(nodeId);
     }
 
@@ -39,7 +38,7 @@ public class PickerRepository {
         return pickers.get(nodeId).pick(users);
     }
 
-    private Picker<Room, User> of(PickingMode mode) {
+    private RoomPicker of(PickingMode mode) {
         switch (mode) {
             case SEQUENTIAL_FILLING -> {
                 return new SequentialFillingPicker(userRepository);

@@ -1,17 +1,24 @@
 package ru.dragonestia.picker.repository.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.type.PickingMode;
+import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.repository.UserRepository;
+import ru.dragonestia.picker.repository.impl.cache.NodeId2PickerModeCache;
+import ru.dragonestia.picker.repository.impl.picker.LeastPickedPicker;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Repository
+@RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
 
+    private final NodeId2PickerModeCache nodeId2PickerModeCache;
     private final Map<User, Set<Room>> usersMap = new ConcurrentHashMap<>();
     private final Map<NodeRoomPath, Set<User>> roomUsers = new ConcurrentHashMap<>();
 
@@ -44,6 +51,11 @@ public class UserRepositoryImpl implements UserRepository {
 
             usersSet.addAll(users);
             roomUsers.put(path, usersSet);
+
+            var picker = nodeId2PickerModeCache.get(room.getNodeId());
+            if (picker instanceof LeastPickedPicker leastPickedPicker) {
+                leastPickedPicker.updateUsersAmount(room, roomUsers.get(path).size());
+            }
         }
 
         return result;
@@ -71,6 +83,11 @@ public class UserRepositoryImpl implements UserRepository {
                 roomUsers.remove(path);
             } else {
                 roomUsers.put(path, set);
+            }
+
+            var picker = nodeId2PickerModeCache.get(room.getNodeId());
+            if (picker instanceof LeastPickedPicker leastPickedPicker) {
+                leastPickedPicker.updateUsersAmount(room, roomUsers.get(path).size());
             }
         }
         return counter.get();

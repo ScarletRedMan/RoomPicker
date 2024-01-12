@@ -2,12 +2,13 @@ package ru.dragonestia.picker.repository.impl.picker;
 
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.type.PickingMode;
 import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.repository.impl.collection.QueuedLinkedList;
 
 import java.util.Collection;
 
-public class RoundRobinPicker implements Picker<Room, User> {
+public class RoundRobinPicker implements RoomPicker {
 
     private final UserRepository userRepository;
     private final QueuedLinkedList<RoomWrapper> list = new QueuedLinkedList<>();
@@ -44,5 +45,10 @@ public class RoundRobinPicker implements Picker<Room, User> {
         }
 
         return wrapper.getItem();
+    }
+
+    @Override
+    public PickingMode getPickingMode() {
+        return PickingMode.ROUND_ROBIN;
     }
 }

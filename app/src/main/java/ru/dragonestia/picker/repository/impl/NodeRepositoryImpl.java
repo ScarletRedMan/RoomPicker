@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.NodeRepository;
+import ru.dragonestia.picker.repository.impl.cache.NodeId2PickerModeCache;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ public class NodeRepositoryImpl implements NodeRepository {
 
     private final RoomRepository roomRepository;
     private final PickerRepository pickerRepository;
+    private final NodeId2PickerModeCache nodeId2PickerModeCache;
     private final Map<String, Node> nodeMap = new ConcurrentHashMap<>();
 
     @Override
@@ -27,7 +29,8 @@ public class NodeRepositoryImpl implements NodeRepository {
             }
 
             nodeMap.put(node.id(), node);
-            pickerRepository.create(node.id(), node.mode());
+            var picker = pickerRepository.create(node.id(), node.mode());
+            nodeId2PickerModeCache.put(node.id(), picker);
         }
 
         roomRepository.onCreateNode(node);
@@ -38,6 +41,7 @@ public class NodeRepositoryImpl implements NodeRepository {
         synchronized (nodeMap) {
             nodeMap.remove(node.id());
             pickerRepository.remove(node.id());
+            nodeId2PickerModeCache.remove(node.id());
         }
 
         roomRepository.onRemoveNode(node);

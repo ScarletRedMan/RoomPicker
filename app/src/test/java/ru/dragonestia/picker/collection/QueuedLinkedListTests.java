@@ -80,5 +80,20 @@ public class QueuedLinkedListTests {
         public String getId() {
             return id;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) return false;
+            if (obj == this) return true;
+            if (obj instanceof Item other) {
+                return id.equals(other.id);
+            }
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return "{Item id='%s' }".formatted(id);
+        }
     }
 }
