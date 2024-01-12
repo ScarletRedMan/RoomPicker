@@ -49,6 +49,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room pickAvailable(Node node, List<User> users) {
-        throw new RuntimeException("Not implemented");
+        return roomRepository.pickFree(node, users)
+                .orElseThrow(() -> new RuntimeException("There are no rooms available"));
     }
 }

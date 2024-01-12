@@ -8,9 +8,15 @@ import ru.dragonestia.picker.controller.response.NodeDetailsResponse;
 import ru.dragonestia.picker.controller.response.NodeListResponse;
 import ru.dragonestia.picker.controller.response.NodeRegisterResponse;
 import ru.dragonestia.picker.model.Node;
+import ru.dragonestia.picker.model.Room;
+import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.model.type.PickingMode;
 import ru.dragonestia.picker.service.NodeService;
+import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.util.NamingValidator;
+
+import java.util.LinkedList;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/nodes")
@@ -18,6 +24,7 @@ import ru.dragonestia.picker.util.NamingValidator;
 public class NodeController {
 
     private final NodeService nodeService;
+    private final RoomService roomService;
 
     @GetMapping
     NodeListResponse allNodes() {
@@ -60,5 +67,37 @@ public class NodeController {
         nodeOpt.ifPresent(nodeService::remove);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{nodeId}/pick")
+    ResponseEntity<?> pickRoom(@PathVariable("nodeId") String nodeId,
+                               @RequestParam(name = "userIds") String userIds) {
+
+        if (!NamingValidator.validateNodeId(nodeId)) {
+            return new ResponseEntity<>(HttpStatusCode.valueOf(404));
+        }
+
+        var nodeOpt = nodeService.find(nodeId);
+        if (nodeOpt.isEmpty()) {
+            return new ResponseEntity<>(HttpStatusCode.valueOf(404));
+        }
+
+        var node = nodeOpt.get();
+
+        var list = new LinkedList<User>();
+        for (var username: userIds.split(",")) { // TODO: create warnings about invalid usernames
+            if (!NamingValidator.validateUserId(username)) continue;
+
+            list.add(new User(username));
+        }
+
+        Room room;
+        try {
+            room = roomService.pickAvailable(node, list);
+        } catch (RuntimeException ex) {
+            return new ResponseEntity<>(HttpStatusCode.valueOf(409));
+        }
+
+        return ResponseEntity.ok(room); // TODO: make other json schema
     }
 }
