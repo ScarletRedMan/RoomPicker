@@ -2,13 +2,23 @@ package ru.dragonestia.picker.repository.impl.collection;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class QueuedLinkedList<ITEM extends QueuedLinkedList.Item> {
 
+    private final Function<ITEM, Boolean> selectorValidator;
     private Node<ITEM> first;
     private Node<ITEM> last;
     private Node<ITEM> cursor;
     private final Map<String, Node<ITEM>> itemMap = new HashMap<>();
+
+    public QueuedLinkedList() {
+        this(item -> true);
+    }
+
+    public QueuedLinkedList(Function<ITEM, Boolean> selectorValidator) {
+        this.selectorValidator = selectorValidator;
+    }
 
     public void add(ITEM item) {
         if (itemMap.containsKey(item.getId())) return;
@@ -77,11 +87,28 @@ public class QueuedLinkedList<ITEM extends QueuedLinkedList.Item> {
 
         if (cursor == null) cursor = first;
 
+        int rounds = 0;
         Node<ITEM> item = cursor;
-        while (item != null && item.removed) {
+        while(rounds < 1) {
+            while (item != null && item.removed) {
+                item = item.next;
+            }
+
+            if (item == null) {
+                item = first;
+                rounds++;
+                continue;
+            }
+
+            if (selectorValidator.apply(item.object)) {
+                break;
+            }
+
             item = item.next;
         }
-        if (item == null) item = first;
+        if (rounds > 0) {
+            throw new RuntimeException("Cannot get need object because no one fulfills all the conditions");
+        }
 
         cursor = item.next;
         return item.object;

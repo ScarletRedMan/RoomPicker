@@ -7,11 +7,13 @@ import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.repository.impl.collection.QueuedLinkedList;
 
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RoundRobinPicker implements RoomPicker {
 
     private final UserRepository userRepository;
-    private final QueuedLinkedList<RoomWrapper> list = new QueuedLinkedList<>();
+    private final AtomicInteger addition = new AtomicInteger(0);
+    private final QueuedLinkedList<RoomWrapper> list = new QueuedLinkedList<>(wrapper -> wrapper.canAddUnits(addition.get()));
 
     public RoundRobinPicker(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -38,7 +40,8 @@ public class RoundRobinPicker implements RoomPicker {
 
         synchronized (list) {
             try {
-                while (!(wrapper = list.pick()).canAddUnits(amount));
+                addition.set(amount);
+                wrapper = list.pick();
             } catch (RuntimeException ex) {
                 throw new RuntimeException("There are no rooms available");
             }
