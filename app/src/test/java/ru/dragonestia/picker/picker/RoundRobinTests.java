@@ -1,9 +1,9 @@
 package ru.dragonestia.picker.picker;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +14,9 @@ import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.util.UserFiller;
 
+import java.util.stream.Stream;
+
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
 @Import({FillingNodesConfig.class, UserFiller.class})
 public class RoundRobinTests {
@@ -32,10 +35,10 @@ public class RoundRobinTests {
     private Node node;
 
     @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
-    @Order(1)
-    @Test
-    void testFirstPicking() { // Take 2 users. expected take 'room-2-0'
-        var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(2));
+    @ParameterizedTest
+    @ArgumentsSource(PickingArgumentProvider.class)
+    void testPicking(String expectedRoomId, int usersAmount) {
+        var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(usersAmount));
         Assertions.assertTrue(roomOpt.isPresent());
 
         var room = roomOpt.get();
@@ -43,56 +46,26 @@ public class RoundRobinTests {
         var users = userRepository.usersOf(room);
         Assertions.assertTrue(slots.isUnlimited() || slots.getSlots() >= users.size()); // check slots limitation
 
-        Assertions.assertEquals("room-2-0", room.getId());
+        Assertions.assertEquals(expectedRoomId, room.getId());
+    }
+
+    public static class PickingArgumentProvider implements ArgumentsProvider {
+
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) {
+            return Stream.of( // note: dump taken from FillingNodesConfig
+                    Arguments.of("room-2-0", 2),
+                    Arguments.of("room-2-1", 2),
+                    Arguments.of("room-2-2", 1),
+                    Arguments.of("room-4-0", 4),
+                    Arguments.of("room-4-1", 4),
+                    Arguments.of("room-4-2", 4),
+                    Arguments.of("room-3-0", 3)
+            );
+        }
     }
 
     @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
-    @Order(2)
-    @Test
-    void testSecondPicking() { // Take 2 users. expected take 'room-2-1'
-        var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(2));
-        Assertions.assertTrue(roomOpt.isPresent());
-
-        var room = roomOpt.get();
-        var slots = room.getSlots();
-        var users = userRepository.usersOf(room);
-        Assertions.assertTrue(slots.isUnlimited() || slots.getSlots() >= users.size()); // check slots limitation
-
-        Assertions.assertEquals("room-2-1", room.getId());
-    }
-
-    @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
-    @Order(3)
-    @Test
-    void testThirdPicking() { // Take 1 user. expected take 'room-2-2'
-        var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(1));
-        Assertions.assertTrue(roomOpt.isPresent());
-
-        var room = roomOpt.get();
-        var slots = room.getSlots();
-        var users = userRepository.usersOf(room);
-        Assertions.assertTrue(slots.isUnlimited() || slots.getSlots() >= users.size()); // check slots limitation
-
-        Assertions.assertEquals("room-2-2", room.getId());
-    }
-
-    @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
-    @Order(4)
-    @Test
-    void testFourthPicking() { // Take 4 users. expected take 'room-2-2'
-        var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(4));
-        Assertions.assertTrue(roomOpt.isPresent());
-
-        var room = roomOpt.get();
-        var slots = room.getSlots();
-        var users = userRepository.usersOf(room);
-        Assertions.assertTrue(slots.isUnlimited() || slots.getSlots() >= users.size()); // check slots limitation
-
-        Assertions.assertEquals("room-4-0", room.getId());
-    }
-
-    @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
-    @Order(5)
     @Test
     void testNoOneRoomExpected() { // Take 9 users. expected none result
         var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(9));
