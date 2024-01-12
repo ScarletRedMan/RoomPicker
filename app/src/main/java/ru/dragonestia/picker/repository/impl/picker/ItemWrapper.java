@@ -19,7 +19,7 @@ public interface ItemWrapper<ITEM> {
     }
 
     default boolean canAddUnits(int amount) {
-        return maxUnits() == SlotLimit.UNLIMITED_VALUE || countUnits() + amount < maxUnits();
+        return maxUnits() == SlotLimit.UNLIMITED_VALUE || countUnits() + amount <= maxUnits();
     }
 
     ITEM getItem();

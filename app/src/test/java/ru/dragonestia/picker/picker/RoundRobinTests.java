@@ -39,7 +39,6 @@ public class RoundRobinTests {
             var slots = room.getSlots();
             var users = userRepository.usersOf(room);
             Assertions.assertTrue(slots.isUnlimited() || slots.getSlots() >= users.size()); // check slots limitation
-            System.out.printf("%s/%s%n", users.size(), slots.getSlots());
 
             Assertions.assertEquals("room-2-0", room.getId());
         }
