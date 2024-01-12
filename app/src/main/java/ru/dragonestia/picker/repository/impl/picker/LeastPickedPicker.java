@@ -39,7 +39,7 @@ public class LeastPickedPicker implements RoomPicker {
             try {
                 wrapper = map.getMinimum();
 
-                if (wrapper.isFull()) throw new RuntimeException();
+                if (!wrapper.canAddUnits(users.size())) throw new RuntimeException();
             } catch (RuntimeException ex) {
                 throw new RuntimeException("There are no rooms available");
             }
