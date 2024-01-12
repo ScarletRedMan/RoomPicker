@@ -38,7 +38,7 @@ public class SequentialFillingPicker implements RoomPicker {
 
         synchronized (wrappers) {
             for (var wrapper: wrappers.values()) {
-                if (wrapper.canAddUnits(amount)) continue;
+                if (!wrapper.canAddUnits(amount)) continue;
 
                 return wrapper.getItem();
             }
