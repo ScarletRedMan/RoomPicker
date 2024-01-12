@@ -56,7 +56,7 @@ public class UserRoomController {
         }
 
         var list = new LinkedList<User>();
-        for (var username: userIds.split(",")) {
+        for (var username: userIds.split(",")) { // TODO: create warnings about invalid usernames
             if (!NamingValidator.validateUserId(username)) continue;
 
             list.add(new User(username));
@@ -82,7 +82,7 @@ public class UserRoomController {
             room = temp.room();
 
             var list = new LinkedList<User>();
-            for (var username: userIds.split(",")) {
+            for (var username: userIds.split(",")) { // TODO: create warnings about invalid usernames
                 if (!NamingValidator.validateUserId(username)) continue;
 
                 list.add(new User(username));
