@@ -31,7 +31,7 @@ public class RoundRobinTests {
 
     @Test
     void testPickingRoundRobin() {
-        { // first iteration. Take 2 users. need take 'room-2-0'
+        { // first iteration. Take 2 users. expected take 'room-2-0'
             var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(2));
             Assertions.assertTrue(roomOpt.isPresent());
 
@@ -43,7 +43,7 @@ public class RoundRobinTests {
             Assertions.assertEquals("room-2-0", room.getId());
         }
 
-        { // second iteration. Take 2 users. need take 'room-2-1'
+        { // second iteration. Take 2 users. expected take 'room-2-1'
             var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(2));
             Assertions.assertTrue(roomOpt.isPresent());
 
@@ -53,6 +53,35 @@ public class RoundRobinTests {
             Assertions.assertTrue(slots.isUnlimited() || slots.getSlots() >= users.size()); // check slots limitation
 
             Assertions.assertEquals("room-2-1", room.getId());
+        }
+
+        { // third iteration. Take 1 user. expected take 'room-2-2'
+            var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(1));
+            Assertions.assertTrue(roomOpt.isPresent());
+
+            var room = roomOpt.get();
+            var slots = room.getSlots();
+            var users = userRepository.usersOf(room);
+            Assertions.assertTrue(slots.isUnlimited() || slots.getSlots() >= users.size()); // check slots limitation
+
+            Assertions.assertEquals("room-2-2", room.getId());
+        }
+
+        { // fourth iteration. Take 4 users. expected take 'room-2-2'
+            var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(4));
+            Assertions.assertTrue(roomOpt.isPresent());
+
+            var room = roomOpt.get();
+            var slots = room.getSlots();
+            var users = userRepository.usersOf(room);
+            Assertions.assertTrue(slots.isUnlimited() || slots.getSlots() >= users.size()); // check slots limitation
+
+            Assertions.assertEquals("room-4-0", room.getId());
+        }
+
+        { // fifth iteration. Take 9 users. expected none result
+            var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(9));
+            Assertions.assertTrue(roomOpt.isEmpty());
         }
     }
 }
