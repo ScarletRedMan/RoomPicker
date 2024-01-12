@@ -12,6 +12,8 @@ import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.util.UserFiller;
 
+import java.time.Duration;
+
 @SpringBootTest
 @Import({FillingNodesConfig.class, UserFiller.class})
 public class RoundRobinTests {
@@ -80,8 +82,10 @@ public class RoundRobinTests {
         }
 
         { // fifth iteration. Take 9 users. expected none result
-            var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(9));
-            Assertions.assertTrue(roomOpt.isEmpty());
+            Assertions.assertTimeoutPreemptively(Duration.ofSeconds(1), () -> {
+                var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(9));
+                Assertions.assertTrue(roomOpt.isEmpty());
+            });
         }
     }
 }
