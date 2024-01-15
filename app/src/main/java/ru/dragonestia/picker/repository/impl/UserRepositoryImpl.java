@@ -2,11 +2,9 @@ package ru.dragonestia.picker.repository.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.dragonestia.picker.exception.RoomAreFullException;
+import ru.dragonestia.picker.api.exception.RoomAreFullException;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
-import ru.dragonestia.picker.model.type.PickingMode;
-import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.repository.impl.cache.NodeId2PickerModeCache;
 import ru.dragonestia.picker.repository.impl.picker.LeastPickedPicker;

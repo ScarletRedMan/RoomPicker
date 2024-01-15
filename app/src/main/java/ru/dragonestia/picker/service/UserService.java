@@ -1,6 +1,6 @@
 package ru.dragonestia.picker.service;
 
-import ru.dragonestia.picker.exception.RoomAreFullException;
+import ru.dragonestia.picker.api.exception.RoomAreFullException;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 

@@ -1,6 +1,6 @@
 package ru.dragonestia.picker.repository;
 
-import ru.dragonestia.picker.exception.NodeAlreadyExistException;
+import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.model.Node;
 
 import java.util.List;

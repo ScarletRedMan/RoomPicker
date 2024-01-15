@@ -2,8 +2,8 @@ package ru.dragonestia.picker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dragonestia.picker.exception.InvalidNodeIdentifierException;
-import ru.dragonestia.picker.exception.NodeAlreadyExistException;
+import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
+import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.service.NodeService;

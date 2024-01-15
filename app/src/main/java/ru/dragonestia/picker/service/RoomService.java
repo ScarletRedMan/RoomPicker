@@ -1,7 +1,7 @@
 package ru.dragonestia.picker.service;
 
-import ru.dragonestia.picker.exception.InvalidRoomIdentifierException;
-import ru.dragonestia.picker.exception.RoomAlreadyExistException;
+import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
+import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.User;

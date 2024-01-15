@@ -1,7 +1,7 @@
 package ru.dragonestia.picker.service;
 
-import ru.dragonestia.picker.exception.InvalidNodeIdentifierException;
-import ru.dragonestia.picker.exception.NodeAlreadyExistException;
+import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
+import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.model.Node;
 
 import java.util.List;
