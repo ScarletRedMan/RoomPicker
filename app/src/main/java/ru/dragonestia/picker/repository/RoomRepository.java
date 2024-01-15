@@ -1,5 +1,6 @@
 package ru.dragonestia.picker.repository;
 
+import ru.dragonestia.picker.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.User;
@@ -10,7 +11,7 @@ import java.util.Optional;
 
 public interface RoomRepository {
 
-    void create(Room room);
+    void create(Room room) throws RoomAlreadyExistException;
 
     void remove(Room room);
 

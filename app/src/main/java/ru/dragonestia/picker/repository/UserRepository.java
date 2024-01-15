@@ -1,5 +1,6 @@
 package ru.dragonestia.picker.repository;
 
+import ru.dragonestia.picker.exception.RoomAreFullException;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 
@@ -9,7 +10,7 @@ import java.util.Map;
 
 public interface UserRepository {
 
-    Map<User, Boolean> linkWithRoom(Room room, Collection<User> users, boolean force);
+    Map<User, Boolean> linkWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException;
 
     int unlinkWithRoom(Room room, Collection<User> users);
 

@@ -2,6 +2,7 @@ package ru.dragonestia.picker.repository.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import ru.dragonestia.picker.exception.RoomAreFullException;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.model.type.PickingMode;
@@ -23,7 +24,7 @@ public class UserRepositoryImpl implements UserRepository {
     private final Map<NodeRoomPath, Set<User>> roomUsers = new ConcurrentHashMap<>();
 
     @Override
-    public Map<User, Boolean> linkWithRoom(Room room, Collection<User> users, boolean force) {
+    public Map<User, Boolean> linkWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException {
         var result = new HashMap<User, Boolean>();
 
         synchronized (usersMap) {
@@ -39,7 +40,7 @@ public class UserRepositoryImpl implements UserRepository {
                 }
 
                 if (room.getSlots().getSlots() < usersSet.size() + users.size()) {
-                    throw new Error("Room are full");
+                    throw new RoomAreFullException(room.getNodeId(), room.getId());
                 }
             }
 
