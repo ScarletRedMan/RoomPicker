@@ -9,18 +9,15 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import lombok.Getter;
-import ru.dragonestia.picker.cp.model.Room;
-import ru.dragonestia.picker.cp.model.User;
+import ru.dragonestia.picker.api.model.Room;
+import ru.dragonestia.picker.api.model.User;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class AddUsers extends Details {
 
@@ -79,8 +76,7 @@ public class AddUsers extends Details {
         try {
             onCommit.accept(readAllUsers(), ignoreSlots.getValue());
         } catch (Error error) {
-            Notification.show(error.getMessage(), 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            Notifications.error(error.getMessage());
         }
 
         clear();

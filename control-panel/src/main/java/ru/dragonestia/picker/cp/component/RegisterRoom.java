@@ -6,16 +6,13 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import org.springframework.lang.Nullable;
-import ru.dragonestia.picker.cp.model.Room;
-import ru.dragonestia.picker.cp.model.Node;
-import ru.dragonestia.picker.cp.model.type.SlotLimit;
+import ru.dragonestia.picker.api.model.Node;
+import ru.dragonestia.picker.api.model.Room;
 
 import java.util.function.Function;
 
@@ -45,7 +42,7 @@ public class RegisterRoom extends Details {
     private TextField createNodeIdentifierField() {
         var field = new TextField("Node identifier");
         field.setMinWidth(20, Unit.REM);
-        field.setValue(node.id());
+        field.setValue(node.getId());
         field.setReadOnly(true);
         return field;
     }
@@ -106,23 +103,20 @@ public class RegisterRoom extends Details {
                 error = "Invalid room id format";
             }
 
-            Notification.show(error, 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            Notifications.error(error);
             return;
         }
 
-        var room = Room.create(nodeIdentifier, node, SlotLimit.unlimited(), payloadField.getValue());
+        var room = new Room(nodeIdentifier, node, Room.INFINITE_SLOTS, payloadField.getValue());
         room.setLocked(lockedField.getValue());
         var response = onSubmit.apply(room);
         clear();
         if (response.error()) {
-            Notification.show(response.reason(), 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            Notifications.error(response.reason());
             return;
         }
 
-        Notification.show("Room was successfully registered", 3000, Notification.Position.TOP_END)
-                .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        Notifications.success("Room was successfully registered");
     }
 
     public record Response(boolean error, @Nullable String reason) {}

@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
-import ru.dragonestia.picker.controller.response.RoomInfoResponse;
-import ru.dragonestia.picker.controller.response.RoomListResponse;
+import ru.dragonestia.picker.api.repository.response.RoomInfoResponse;
+import ru.dragonestia.picker.api.repository.response.RoomListResponse;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.type.SlotLimit;
 import ru.dragonestia.picker.service.RoomService;
@@ -30,7 +30,7 @@ public class RoomController {
         return nodeService.find(nodeId)
                 .map(node -> ResponseEntity.ok(new RoomListResponse(nodeId,
                         roomService.all(node).stream()
-                                .map(room -> new RoomListResponse.RoomDTO(room.getId(), room.getSlots().getSlots(), room.isLocked()))
+                                .map(room -> new ru.dragonestia.picker.api.model.Room.Short(room.getId(), room.getSlots().getSlots(), room.isLocked()))
                                 .toList()
                 ))).orElseThrow(() -> new NodeNotFoundException(nodeId));
     }
@@ -73,11 +73,11 @@ public class RoomController {
 
         var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
         return roomService.find(node, roomId)
-                .map(room -> ResponseEntity.ok(new RoomInfoResponse(room)))
+                .map(room -> ResponseEntity.ok(new RoomInfoResponse(room.toResponseObject())))
                 .orElseThrow(() -> new RoomNotFoundException(nodeId, roomId));
     }
 
-    @PostMapping("/{roomId}/lock")
+    @PutMapping("/{roomId}/lock")
     ResponseEntity<Boolean> lockBucket(@PathVariable("nodeId") String nodeId,
                                        @PathVariable("roomId") String roomId,
                                        @RequestParam(name = "newState") boolean value) {

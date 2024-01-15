@@ -7,10 +7,10 @@ import com.vaadin.flow.router.Route;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.dragonestia.picker.api.repository.NodeRepository;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.NodeList;
 import ru.dragonestia.picker.cp.component.RegisterNode;
-import ru.dragonestia.picker.cp.repository.NodeRepository;
 
 @Log4j2
 @Getter

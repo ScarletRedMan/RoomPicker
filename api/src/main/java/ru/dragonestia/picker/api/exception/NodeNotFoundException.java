@@ -1,5 +1,9 @@
 package ru.dragonestia.picker.api.exception;
 
+import ru.dragonestia.picker.api.repository.response.ErrorResponse;
+
+import java.util.Map;
+
 public final class NodeNotFoundException extends ApiException {
 
     public static final String ERROR_ID = "err.node.not_found";
@@ -8,6 +12,10 @@ public final class NodeNotFoundException extends ApiException {
 
     public NodeNotFoundException(String nodeId) {
         this.nodeId = nodeId;
+    }
+
+    public NodeNotFoundException(ErrorResponse errorResponse) {
+        this(errorResponse.details().get("node"));
     }
 
     @Override
@@ -22,5 +30,10 @@ public final class NodeNotFoundException extends ApiException {
     @Override
     public String getErrorId() {
         return ERROR_ID;
+    }
+
+    @Override
+    public void appendDetailsToErrorResponse(Map<String, String> details) {
+        details.put("node", getNodeId());
     }
 }

@@ -1,6 +1,9 @@
 package ru.dragonestia.picker.api.exception;
 
-import java.util.List;
+import ru.dragonestia.picker.api.repository.response.ErrorResponse;
+
+import java.util.*;
+import java.util.function.Function;
 
 public final class InvalidUsernamesException extends ApiException {
 
@@ -12,6 +15,11 @@ public final class InvalidUsernamesException extends ApiException {
     public InvalidUsernamesException(List<String> givenUsernames, List<String> invalidUsernames) {
         this.givenUsernames = givenUsernames;
         this.invalidUsernames = invalidUsernames;
+    }
+
+    public InvalidUsernamesException(ErrorResponse errorResponse) {
+        this(Arrays.stream(errorResponse.details().get("givenUsernames").split(",")).toList(),
+                Arrays.stream(errorResponse.details().get("invalidUsernames").split(",")).toList());
     }
 
     @Override
@@ -30,5 +38,13 @@ public final class InvalidUsernamesException extends ApiException {
     @Override
     public String getErrorId() {
         return ERROR_ID;
+    }
+
+    @Override
+    public void appendDetailsToErrorResponse(Map<String, String> details) {
+        Function<Collection<String>, String> toString = input -> String.join(",", input);
+
+        details.put("givenUsernames", toString.apply(getGivenUsernames()));
+        details.put("invalidUsernames", toString.apply(getInvalidUsernames()));
     }
 }

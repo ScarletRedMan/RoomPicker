@@ -1,11 +1,18 @@
-package ru.dragonestia.picker.cp.model;
+package ru.dragonestia.picker.api.model;
 
-import lombok.NonNull;
-import ru.dragonestia.picker.cp.model.type.PickingMode;
+public class User {
 
-import java.io.Serializable;
+    private String id;
 
-public record Node(@NonNull String id, @NonNull PickingMode mode) implements Serializable {
+    private User() {}
+
+    public User(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
 
     @Override
     public int hashCode() {
@@ -16,7 +23,7 @@ public record Node(@NonNull String id, @NonNull PickingMode mode) implements Ser
     public boolean equals(Object object) {
         if (object == this) return true;
         if (object == null) return false;
-        if (object instanceof Node other) {
+        if (object instanceof User other) {
             return id.equals(other.id);
         }
         return false;

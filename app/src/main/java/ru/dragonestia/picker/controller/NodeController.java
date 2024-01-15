@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
-import ru.dragonestia.picker.controller.response.NodeDetailsResponse;
-import ru.dragonestia.picker.controller.response.NodeListResponse;
+import ru.dragonestia.picker.api.model.type.PickingMode;
+import ru.dragonestia.picker.api.repository.response.NodeDetailsResponse;
+import ru.dragonestia.picker.api.repository.response.NodeListResponse;
 import ru.dragonestia.picker.model.Node;
-import ru.dragonestia.picker.model.type.PickingMode;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.util.NamingValidator;
@@ -25,7 +25,7 @@ public class NodeController {
 
     @GetMapping
     NodeListResponse allNodes() {
-        return new NodeListResponse(nodeService.all());
+        return new NodeListResponse(nodeService.all().stream().map(Node::toResponseObject).toList());
     }
 
     @PostMapping
@@ -41,7 +41,7 @@ public class NodeController {
         namingValidator.validateNodeId(nodeId);
 
         return nodeService.find(nodeId)
-                .map(node -> ResponseEntity.ok(new NodeDetailsResponse(node)))
+                .map(node -> ResponseEntity.ok(new NodeDetailsResponse(node.toResponseObject())))
                 .orElseThrow(() -> new NodeNotFoundException(nodeId));
     }
 

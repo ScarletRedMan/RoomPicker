@@ -5,10 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
-import ru.dragonestia.picker.controller.response.RoomUserListResponse;
-import ru.dragonestia.picker.controller.response.LinkUsersWithRoomResponse;
+import ru.dragonestia.picker.api.repository.response.LinkUsersWithRoomResponse;
+import ru.dragonestia.picker.api.repository.response.RoomUserListResponse;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
+import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.service.UserService;
@@ -32,7 +33,7 @@ public class UserRoomController {
 
         var room = getNodeAndRoom(nodeId, roomId).room();
         var users = userService.getRoomUsers(room);
-        return ResponseEntity.ok(new RoomUserListResponse(room.getSlots().getSlots(), users.size(), users));
+        return ResponseEntity.ok(new RoomUserListResponse(room.getSlots().getSlots(), users.size(), users.stream().map(User::toResponseObject).toList()));
     }
 
     @PostMapping

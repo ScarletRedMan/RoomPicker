@@ -8,13 +8,11 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import lombok.Setter;
-import ru.dragonestia.picker.cp.model.Node;
+import ru.dragonestia.picker.api.model.Node;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -51,14 +49,14 @@ public class NodeList extends VerticalLayout {
         var temp = input.trim();
 
         nodesGrid.setItems(cachedNodes.stream()
-                .filter(node -> node.id().startsWith(temp))
+                .filter(node -> node.getId().startsWith(temp))
                 .toList());
     }
 
     private Grid<Node> createGrid() {
         var grid = new Grid<>(Node.class, false);
-        grid.addColumn(Node::id).setHeader("Identifier");
-        grid.addColumn(node -> node.mode().getName()).setHeader("Mode");
+        grid.addColumn(Node::getId).setHeader("Identifier");
+        grid.addColumn(node -> node.getMode().getName()).setHeader("Mode");
         grid.addComponentColumn(this::createManageButtons).setHeader("Manage");
         return grid;
     }
@@ -84,12 +82,12 @@ public class NodeList extends VerticalLayout {
     }
 
     private void clickDetailsButton(Node node) {
-        getUI().ifPresent(ui -> ui.navigate("/nodes/" + node.id()));
+        getUI().ifPresent(ui -> ui.navigate("/nodes/" + node.getId()));
     }
 
     private void clickRemoveButton(Node node) {
         var dialog = new Dialog("Confirm node deletion");
-        dialog.add(new Paragraph("Confirm that you want to delete node. Enter '" + node.id() + "' to field below and confirm."));
+        dialog.add(new Paragraph("Confirm that you want to delete node. Enter '" + node.getId() + "' to field below and confirm."));
 
         var inputField = new TextField();
         dialog.add(inputField);
@@ -98,15 +96,13 @@ public class NodeList extends VerticalLayout {
             var button = new Button("Confirm");
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
             button.addClickListener(event -> {
-                if (!node.id().equals(inputField.getValue())) {
-                    Notification.show("Invalid input", 3000, Notification.Position.TOP_END)
-                            .addThemeVariants(NotificationVariant.LUMO_ERROR);
+                if (!node.getId().equals(inputField.getValue())) {
+                    Notifications.error("Invalid input");
                     return;
                 }
 
                 removeNode(node);
-                Notification.show("Node '" + node.id() + "' was successfully removed!", 3000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                Notifications.success("Node '" + node.getId() + "' was successfully removed!");
                 dialog.close();
             });
 
@@ -129,7 +125,7 @@ public class NodeList extends VerticalLayout {
 
     private void removeNode(Node node) {
         if (removeMethod != null) {
-            removeMethod.accept(node.id());
+            removeMethod.accept(node.getId());
         }
     }
 }

@@ -1,3 +1,3 @@
-package ru.dragonestia.picker.controller.response;
+package ru.dragonestia.picker.api.repository.response;
 
 public record LinkUsersWithRoomResponse(int usedSlots, int totalSlots) {}

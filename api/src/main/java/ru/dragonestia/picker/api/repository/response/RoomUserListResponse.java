@@ -1,6 +1,6 @@
-package ru.dragonestia.picker.controller.response;
+package ru.dragonestia.picker.api.repository.response;
 
-import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.api.model.User;
 
 import java.util.List;
 

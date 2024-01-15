@@ -18,4 +18,8 @@ public record User(@NonNull String id) {
         }
         return false;
     }
+
+    public ru.dragonestia.picker.api.model.User toResponseObject() {
+        return new ru.dragonestia.picker.api.model.User(id);
+    }
 }

@@ -17,15 +17,15 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.dragonestia.picker.api.model.Node;
+import ru.dragonestia.picker.api.model.Room;
+import ru.dragonestia.picker.api.model.User;
+import ru.dragonestia.picker.api.repository.NodeRepository;
+import ru.dragonestia.picker.api.repository.RoomRepository;
+import ru.dragonestia.picker.api.repository.UserRepository;
 import ru.dragonestia.picker.cp.component.AddUsers;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.UserList;
-import ru.dragonestia.picker.cp.model.Room;
-import ru.dragonestia.picker.cp.model.Node;
-import ru.dragonestia.picker.cp.model.User;
-import ru.dragonestia.picker.cp.repository.RoomRepository;
-import ru.dragonestia.picker.cp.repository.NodeRepository;
-import ru.dragonestia.picker.cp.repository.UserRepository;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -108,7 +108,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
         roomInfo.removeAll();
         roomInfo.add(new Html("<span>Node identifier: <b>" + room.getNodeId() + "</b></span>"));
         roomInfo.add(new Html("<span>Room identifier: <b>" + room.getId() + "</b></span>"));
-        roomInfo.add(new Html("<span>Slots: <b>" + (room.getSlots().isUnlimited()? "Unlimited" : room.getSlots().slots()) + "</b></span>"));
+        roomInfo.add(new Html("<span>Slots: <b>" + (room.isUnlimited()? "Unlimited" : room.getSlots()) + "</b></span>"));
         roomInfo.add(new Html("<span>Locked: <b>" + (room.isLocked()? "Yes" : "No") + "</b></span>"));
     }
 
@@ -160,7 +160,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
 
         var newUsers = users.stream()
                 .filter(user -> {
-                    if (user.id().matches("^[aA-zZ\\d-.\\s:/@%?!~$)(+=_|;*]+$")) {
+                    if (user.getId().matches("^[aA-zZ\\d-.\\s:/@%?!~$)(+=_|;*]+$")) {
                         return true;
                     }
 

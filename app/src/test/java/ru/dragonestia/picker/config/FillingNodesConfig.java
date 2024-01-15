@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
-import ru.dragonestia.picker.model.type.PickingMode;
 import ru.dragonestia.picker.model.type.SlotLimit;
 import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.repository.RoomRepository;

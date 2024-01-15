@@ -3,13 +3,15 @@ package ru.dragonestia.picker.cp.repository.impl;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import ru.dragonestia.picker.cp.model.Node;
-import ru.dragonestia.picker.cp.repository.NodeRepository;
-import ru.dragonestia.picker.cp.repository.impl.response.NodeDetailsResponse;
-import ru.dragonestia.picker.cp.repository.impl.response.NodeListResponse;
-import ru.dragonestia.picker.cp.repository.impl.response.NodeRegisterResponse;
+import org.springframework.http.HttpMethod;
+import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
+import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
+import ru.dragonestia.picker.api.exception.NodeNotFoundException;
+import ru.dragonestia.picker.api.repository.response.NodeDetailsResponse;
+import ru.dragonestia.picker.api.repository.response.NodeListResponse;
+import ru.dragonestia.picker.api.model.Node;
+import ru.dragonestia.picker.api.repository.NodeRepository;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,41 +23,30 @@ public class NodeRepositoryImpl implements NodeRepository {
     private final RestUtil rest;
 
     @Override
-    public void register(Node node) {
-        NodeRegisterResponse response;
-        try {
-            response = rest.post(URI.create("nodes"),
-                    NodeRegisterResponse.class,
-                    params -> {
-                        params.put("nodeId", node.id());
-                        params.put("method", node.mode().name());
-                    });
-        } catch (Exception ex) {
-            throw new RuntimeException("Internal error", ex);
-        }
-
-        if (!response.success()) {
-            throw new Error(response.message());
-        }
+    public void register(Node node) throws InvalidNodeIdentifierException, NodeAlreadyExistException {
+        rest.query("nodes", HttpMethod.POST, params -> {
+            params.put("nodeId", node.getId());
+            params.put("method", node.getMode().name());
+        });
     }
 
     @Override
     public List<Node> all() {
-        return rest.get(URI.create("nodes"), NodeListResponse.class).nodes();
+        return rest.query("nodes", HttpMethod.GET, NodeListResponse.class, params -> {}).nodes();
     }
 
     @Override
     public Optional<Node> find(String nodeId) {
         try {
-            var response = rest.get(URI.create("nodes/" + nodeId), NodeDetailsResponse.class);
+            var response = rest.query("nodes/" + nodeId, HttpMethod.GET, NodeDetailsResponse.class, params -> {});
             return Optional.of(response.node());
-        } catch (Exception ex) {
+        } catch (NodeNotFoundException ex) {
             return Optional.empty();
         }
     }
 
     @Override
     public void remove(String nodeId) {
-        rest.delete(URI.create("nodes/" + nodeId), params -> {});
+        rest.query("nodes/" + nodeId, HttpMethod.DELETE, params -> {});
     }
 }
