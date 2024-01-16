@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
 import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
 import ru.dragonestia.picker.api.exception.InvalidUsernamesException;
+import ru.dragonestia.picker.api.utils.ValidateIdentifier;
 import ru.dragonestia.picker.model.User;
 
 import java.util.LinkedList;
@@ -13,19 +14,19 @@ import java.util.List;
 public class NamingValidator {
 
     public void validateNodeId(String input) throws InvalidNodeIdentifierException {
-        if (input.matches("^[a-z\\d-]+$")) return;
+        if (ValidateIdentifier.forNode(input)) return;
 
         throw new InvalidNodeIdentifierException(input);
     }
 
     public void validateRoomId(String input) throws InvalidRoomIdentifierException {
-        if (input.matches("^[a-z\\d-]+$")) return;
+        if (ValidateIdentifier.forRoom(input)) return;
 
         throw new InvalidRoomIdentifierException(input);
     }
 
     private boolean validateUserId(String input) {
-        return input.matches("^[aA-zZ\\d-.\\s:/@%?!~$)(+=_|;*]+$");
+        return ValidateIdentifier.forUser(input);
     }
 
     public List<User> validateUserIds(List<String> input) throws InvalidUsernamesException {
