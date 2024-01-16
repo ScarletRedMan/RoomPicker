@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
 @PageTitle("Room details")
-@Route("/nodes/:nodeId/rooms/:roomId")
+@Route(value = "/nodes/:nodeId/rooms/:roomId", layout = MainLayout.class)
 public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
     private final NodeRepository nodeRepository;

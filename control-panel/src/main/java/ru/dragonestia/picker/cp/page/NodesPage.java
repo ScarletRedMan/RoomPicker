@@ -16,7 +16,7 @@ import ru.dragonestia.picker.cp.component.RegisterNode;
 @Log4j2
 @Getter
 @PageTitle("Nodes")
-@Route("/nodes")
+@Route(value = "/nodes", layout = MainLayout.class)
 public class NodesPage extends VerticalLayout {
 
     private final NodeRepository nodeRepository;

@@ -27,7 +27,7 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 @PageTitle("Rooms")
-@Route("/nodes/:nodeId")
+@Route(value = "/nodes/:nodeId", layout = MainLayout.class)
 public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
     private final NodeRepository nodeRepository;
