@@ -139,13 +139,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
 
     private void changeBucketLockedState() {
         var newValue = !room.isLocked();
-        try {
-            roomRepository.lock(room, newValue);
-        } catch (Error error) {
-            Notification.show(error.getMessage(), 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            return;
-        }
+        roomRepository.lock(room, newValue);
 
         room.setLocked(newValue);
         setLockRoomButtonState();

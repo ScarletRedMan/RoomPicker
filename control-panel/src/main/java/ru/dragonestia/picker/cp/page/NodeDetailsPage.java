@@ -9,6 +9,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.picker.api.model.Node;
