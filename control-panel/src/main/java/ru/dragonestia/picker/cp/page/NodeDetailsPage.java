@@ -9,7 +9,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinSession;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.picker.api.model.Node;
@@ -55,7 +54,7 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
         if (nodeOpt.isEmpty()) {
             add(new H2("Error 404"));
             add(new Paragraph("Node not found"));
-            Notifications.error("Node '" + nodeId + "' does not exist");
+            Notifications.error("Node <b>'" + nodeId + "'</b> does not exist");
             return;
         }
         node = nodeOpt.get();

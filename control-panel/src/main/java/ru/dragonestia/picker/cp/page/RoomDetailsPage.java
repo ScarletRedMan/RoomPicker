@@ -8,8 +8,6 @@ import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -25,6 +23,7 @@ import ru.dragonestia.picker.api.repository.RoomRepository;
 import ru.dragonestia.picker.api.repository.UserRepository;
 import ru.dragonestia.picker.cp.component.AddUsers;
 import ru.dragonestia.picker.cp.component.NavPath;
+import ru.dragonestia.picker.cp.component.Notifications;
 import ru.dragonestia.picker.cp.component.UserList;
 
 import java.util.Collection;
@@ -75,8 +74,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
         if (nodeOpt.isEmpty()) {
             add(new H2("Error 404"));
             add(new Paragraph("Node not found!"));
-            Notification.show("Node '" + nodeId + "' does not exist", 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            Notifications.error("Node <b>'" + nodeId + "'</b> does not exist");
             return;
         }
         node = nodeOpt.get();
@@ -85,8 +83,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
         if (bucketOpt.isEmpty()) {
             add(new H2("Error 404"));
             add(new Paragraph("Room not found!"));
-            Notification.show("Room '" + nodeId + "' does not exist", 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            Notifications.error("Room <b>'" + nodeId + "'</b> does not exist");
             return;
         }
         room = bucketOpt.get();
@@ -145,8 +142,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
         setLockRoomButtonState();
         updateRoomInfo();
 
-        Notification.show("Success", 3000, Notification.Position.TOP_END)
-                .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        Notifications.success("Success");
     }
 
     private void appendUsers(Room room, Collection<User> users, boolean ignoreLimitation) {
@@ -167,15 +163,12 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
 
         if (validationFail.get()) {
             if (newUsers.isEmpty()) {
-                Notification.show("All users entered were added because they do not comply with the rule for writing the user identifier", 3000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+                Notifications.error("All users entered were added because they do not comply with the rule for writing the user identifier");
             } else {
-                Notification.show("Not all users entered were added because they do not comply with the rule for writing the user identifier", 3000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_WARNING);
+                Notifications.warn("Not all users entered were added because they do not comply with the rule for writing the user identifier");
             }
         } else {
-            Notification.show("Success", 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            Notifications.success("Success");
         }
     }
 }

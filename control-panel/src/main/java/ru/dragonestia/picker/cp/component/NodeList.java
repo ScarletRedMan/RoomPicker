@@ -1,5 +1,6 @@
 package ru.dragonestia.picker.cp.component;
 
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -87,9 +88,10 @@ public class NodeList extends VerticalLayout {
 
     private void clickRemoveButton(Node node) {
         var dialog = new Dialog("Confirm node deletion");
-        dialog.add(new Paragraph("Confirm that you want to delete node. Enter '" + node.getId() + "' to field below and confirm."));
+        dialog.add(new Html("<p>Confirm that you want to delete node. Enter <b><u>" + node.getId() + "</u></b> to field below and confirm.</p>"));
 
         var inputField = new TextField();
+        inputField.setWidth("100%");
         dialog.add(inputField);
 
         { // confirm
@@ -102,7 +104,7 @@ public class NodeList extends VerticalLayout {
                 }
 
                 removeNode(node);
-                Notifications.success("Node '" + node.getId() + "' was successfully removed!");
+                Notifications.success("Node <b>" + node.getId() + "</b> was successfully removed!");
                 dialog.close();
             });
 

@@ -1,5 +1,6 @@
 package ru.dragonestia.picker.cp.component;
 
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -111,9 +112,10 @@ public class RoomList extends VerticalLayout {
 
     private void clickRemoveButton(Room.Short bucket) {
         var dialog = new Dialog("Confirm bucket deletion");
-        dialog.add(new Paragraph("Confirm that you want to delete bucket. Enter '" + bucket.id() + "' to field below and confirm."));
+        dialog.add(new Html("<p>Confirm that you want to delete bucket. Enter <b><u>" + bucket.id() + "</u></b> to field below and confirm.</p>"));
 
         var inputField = new TextField();
+        inputField.setWidth("100%");
         dialog.add(inputField);
 
         { // confirm
@@ -126,7 +128,7 @@ public class RoomList extends VerticalLayout {
                 }
 
                 removeBucket(bucket);
-                Notifications.success("Bucket '" + bucket.id() + "' was successfully removed!");
+                Notifications.success("Bucket <b>" + bucket.id() + "</b> was successfully removed!");
                 dialog.close();
             });
 
