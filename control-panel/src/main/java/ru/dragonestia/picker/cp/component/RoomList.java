@@ -14,6 +14,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.Setter;
 import ru.dragonestia.picker.api.model.Room;
 
@@ -45,6 +46,7 @@ public class RoomList extends VerticalLayout {
         field.setClearButtonVisible(true);
         field.setHelperText("Press Enter to search");
         field.addValueChangeListener(event -> applySearch(event.getValue()));
+        field.setValueChangeMode(ValueChangeMode.EAGER);
         return field;
     }
 
