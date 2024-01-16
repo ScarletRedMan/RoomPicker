@@ -10,6 +10,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.picker.api.model.Node;
 import ru.dragonestia.picker.api.model.Room;
@@ -19,50 +20,33 @@ import ru.dragonestia.picker.cp.component.Notifications;
 import ru.dragonestia.picker.cp.component.RoomList;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.RegisterRoom;
+import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 
 import java.util.List;
 
 @Getter
+@RequiredArgsConstructor
 @PageTitle("Rooms")
 @Route("/nodes/:nodeId")
 public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
     private final NodeRepository nodeRepository;
     private final RoomRepository roomRepository;
+    private final RouteParamsExtractor paramsExtractor;
+
     private Node node;
     private RegisterRoom registerRoom;
     private RoomList roomList;
 
-    public NodeDetailsPage(@Autowired NodeRepository nodeRepository,
-                           @Autowired RoomRepository roomRepository) {
-
-        this.nodeRepository = nodeRepository;
-        this.roomRepository = roomRepository;
-    }
-
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        var nodeIdOpt = event.getRouteParameters().get("nodeId");
-        if (nodeIdOpt.isEmpty()) {
-            getUI().ifPresent(ui -> ui.navigate("/nodes"));
-            return;
-        }
-        var nodeId = nodeIdOpt.get();
-        add(new NavPath(new NavPath.Point("Nodes", "/nodes"), new NavPath.Point(nodeId, "/nodes/" + nodeId)));
-
-        var nodeOpt = nodeRepository.find(nodeId);
-        if (nodeOpt.isEmpty()) {
-            add(new H2("Error 404"));
-            add(new Paragraph("Node not found"));
-            Notifications.error("Node <b>'" + nodeId + "'</b> does not exist");
-            return;
-        }
-        node = nodeOpt.get();
+        node = paramsExtractor.extractNodeId(event);
 
         initComponents(node, roomRepository.all(node));
     }
 
     private void initComponents(Node node, List<Room.Short> rooms) {
+        add(NavPath.toNode(node.getId()));
         printNodeDetails(node);
         add(new Hr());
         add(registerRoom = new RegisterRoom(node, (room) -> {

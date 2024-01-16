@@ -14,6 +14,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.picker.api.model.Node;
 import ru.dragonestia.picker.api.model.Room;
@@ -25,10 +26,12 @@ import ru.dragonestia.picker.cp.component.AddUsers;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.Notifications;
 import ru.dragonestia.picker.cp.component.UserList;
+import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@RequiredArgsConstructor
 @PageTitle("Room details")
 @Route("/nodes/:nodeId/rooms/:roomId")
 public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserver {
@@ -36,6 +39,8 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
     private final NodeRepository nodeRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final RouteParamsExtractor paramsExtractor;
+
     private Node node;
     private Room room;
     private AddUsers addUsers;
@@ -43,55 +48,16 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
     private Button lockRoomButton;
     private VerticalLayout roomInfo;
 
-    @Autowired
-    public RoomDetailsPage(NodeRepository nodeRepository, RoomRepository roomRepository, UserRepository userRepository) {
-        this.nodeRepository = nodeRepository;
-        this.roomRepository = roomRepository;
-        this.userRepository = userRepository;
-    }
-
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        var nodeIdOpt = event.getRouteParameters().get("nodeId");
-        if (nodeIdOpt.isEmpty()) {
-            getUI().ifPresent(ui -> ui.navigate("/nodes"));
-            return;
-        }
-
-        var roomIdOpt = event.getRouteParameters().get("roomId");
-        if (roomIdOpt.isEmpty()) {
-            getUI().ifPresent(ui -> ui.navigate("/rooms/" + nodeIdOpt.get()));
-            return;
-        }
-
-        var nodeId = nodeIdOpt.get();
-        var roomId = roomIdOpt.get();
-        add(new NavPath(new NavPath.Point("Nodes", "/nodes"),
-                new NavPath.Point(nodeId, "/nodes/" + nodeId),
-                new NavPath.Point(roomId, "/nodes/" + nodeId + "/rooms/" + roomId)));
-
-        var nodeOpt = nodeRepository.find(nodeId);
-        if (nodeOpt.isEmpty()) {
-            add(new H2("Error 404"));
-            add(new Paragraph("Node not found!"));
-            Notifications.error("Node <b>'" + nodeId + "'</b> does not exist");
-            return;
-        }
-        node = nodeOpt.get();
-
-        var bucketOpt = roomRepository.find(node, roomId);
-        if (bucketOpt.isEmpty()) {
-            add(new H2("Error 404"));
-            add(new Paragraph("Room not found!"));
-            Notifications.error("Room <b>'" + nodeId + "'</b> does not exist");
-            return;
-        }
-        room = bucketOpt.get();
+        node = paramsExtractor.extractNodeId(event);
+        room = paramsExtractor.extractRoomId(event, node);
 
         init();
     }
 
     private void init() {
+        add(NavPath.toRoom(node.getId(), room.getId()));
         add(new H2("Room details"));
         printRoomDetails();
         add(new Hr());

@@ -27,7 +27,7 @@ public class NodesPage extends VerticalLayout {
         super();
         this.nodeRepository = nodeRepository;
 
-        add(new NavPath(new NavPath.Point("Nodes", "/nodes")));
+        add(NavPath.rootNodes());
         add(registerNode = createRegisterNodeElement());
         add(new Hr());
         add(nodeList = createNodeListElement());

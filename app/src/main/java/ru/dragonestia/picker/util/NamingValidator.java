@@ -19,10 +19,10 @@ public class NamingValidator {
         throw new InvalidNodeIdentifierException(input);
     }
 
-    public void validateRoomId(String input) throws InvalidRoomIdentifierException {
+    public void validateRoomId(String nodeId, String input) throws InvalidRoomIdentifierException {
         if (ValidateIdentifier.forRoom(input)) return;
 
-        throw new InvalidRoomIdentifierException(input);
+        throw new InvalidRoomIdentifierException(nodeId, input);
     }
 
     private boolean validateUserId(String input) {

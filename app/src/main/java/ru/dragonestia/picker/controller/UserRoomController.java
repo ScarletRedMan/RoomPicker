@@ -63,7 +63,7 @@ public class UserRoomController {
 
     private NodeAndRoom getNodeAndRoom(String nodeId, String roomId) {
         namingValidator.validateNodeId(nodeId);
-        namingValidator.validateRoomId(roomId);
+        namingValidator.validateRoomId(nodeId, roomId);
 
         var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
         var room = roomService.find(node, roomId).orElseThrow(() -> new RoomNotFoundException(nodeId, roomId));

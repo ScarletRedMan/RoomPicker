@@ -55,7 +55,7 @@ public class RoomController {
                              @PathVariable("roomId") String roomId) {
 
         namingValidator.validateNodeId(nodeId);
-        namingValidator.validateRoomId(roomId);
+        namingValidator.validateRoomId(nodeId, roomId);
 
         var nodeOpt = nodeService.find(nodeId);
         nodeOpt.flatMap(node -> roomService.find(node, roomId))
@@ -69,7 +69,7 @@ public class RoomController {
                                           @PathVariable("roomId") String roomId) {
 
         namingValidator.validateNodeId(nodeId);
-        namingValidator.validateRoomId(roomId);
+        namingValidator.validateRoomId(nodeId, roomId);
 
         var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
         return roomService.find(node, roomId)
@@ -83,7 +83,7 @@ public class RoomController {
                                        @RequestParam(name = "newState") boolean value) {
 
         namingValidator.validateNodeId(nodeId);
-        namingValidator.validateRoomId(roomId);
+        namingValidator.validateRoomId(nodeId, roomId);
 
         var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
         var room = roomService.find(node, roomId).orElseThrow(() -> new RoomNotFoundException(nodeId, roomId));

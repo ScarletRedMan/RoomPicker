@@ -23,7 +23,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void create(Room room) throws InvalidRoomIdentifierException, RoomAlreadyExistException {
-        namingValidator.validateRoomId(room.getId());
+        namingValidator.validateRoomId(room.getNodeId(), room.getId());
         roomRepository.create(room);
     }
 
