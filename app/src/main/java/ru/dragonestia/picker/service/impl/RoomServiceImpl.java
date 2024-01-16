@@ -2,6 +2,8 @@ package ru.dragonestia.picker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
+import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.User;
@@ -17,13 +19,11 @@ import java.util.Optional;
 public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
+    private final NamingValidator namingValidator;
 
     @Override
-    public void create(Room room) {
-        if (!NamingValidator.validateRoomId(room.getId())) {
-            throw new Error("Invalid room id format");
-        }
-
+    public void create(Room room) throws InvalidRoomIdentifierException, RoomAlreadyExistException {
+        namingValidator.validateRoomId(room.getNodeId(), room.getId());
         roomRepository.create(room);
     }
 

@@ -43,4 +43,10 @@ public class Room {
         }
         return false;
     }
+
+    public ru.dragonestia.picker.api.model.Room toResponseObject() {
+        var result = new ru.dragonestia.picker.api.model.Room(id, nodeId, slots.getSlots(), payload);
+        result.setLocked(locked);
+        return result;
+    }
 }

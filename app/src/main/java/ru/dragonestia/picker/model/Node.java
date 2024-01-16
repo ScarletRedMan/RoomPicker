@@ -1,7 +1,7 @@
 package ru.dragonestia.picker.model;
 
 import lombok.NonNull;
-import ru.dragonestia.picker.model.type.PickingMode;
+import ru.dragonestia.picker.api.model.type.PickingMode;
 
 public record Node(@NonNull String id, @NonNull PickingMode mode) {
 
@@ -18,5 +18,9 @@ public record Node(@NonNull String id, @NonNull PickingMode mode) {
             return id.equals(other.id);
         }
         return false;
+    }
+
+    public ru.dragonestia.picker.api.model.Node toResponseObject() {
+        return new ru.dragonestia.picker.api.model.Node(id, mode);
     }
 }

@@ -10,7 +10,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class NavPath extends HorizontalLayout{
 
-    public NavPath(Point root, Point... points) {
+    private NavPath(Point root, Point... points) {
         setWidth("100%");
         setAlignItems(Alignment.CENTER);
         getStyle().set("background-color", "#F3F3F3")
@@ -58,5 +58,20 @@ public class NavPath extends HorizontalLayout{
         return button;
     }
 
-    public record Point(String name, String uri) {}
+    public static NavPath rootNodes() {
+        return new NavPath(new NavPath.Point("Nodes", "/nodes"));
+    }
+
+    public static NavPath toNode(String nodeId) {
+        return new NavPath(new NavPath.Point("Nodes", "/nodes"),
+                new NavPath.Point(nodeId, "/nodes/" + nodeId));
+    }
+
+    public static NavPath toRoom(String nodeId, String roomId) {
+        return new NavPath(new NavPath.Point("Nodes", "/nodes"),
+                new NavPath.Point(nodeId, "/nodes/" + nodeId),
+                new NavPath.Point(roomId, "/nodes/" + nodeId + "/rooms/" + roomId));
+    }
+
+    private record Point(String name, String uri) {}
 }

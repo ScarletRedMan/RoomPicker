@@ -1,5 +1,7 @@
 package ru.dragonestia.picker.service;
 
+import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
+import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.User;
@@ -9,7 +11,7 @@ import java.util.Optional;
 
 public interface RoomService {
 
-    void create(Room room);
+    void create(Room room) throws InvalidRoomIdentifierException, RoomAlreadyExistException;
 
     void remove(Room room);
 

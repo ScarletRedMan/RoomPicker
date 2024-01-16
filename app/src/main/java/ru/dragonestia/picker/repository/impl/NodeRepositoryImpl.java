@@ -2,6 +2,7 @@ package ru.dragonestia.picker.repository.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.NodeRepository;
@@ -22,10 +23,10 @@ public class NodeRepositoryImpl implements NodeRepository {
     private final Map<String, Node> nodeMap = new ConcurrentHashMap<>();
 
     @Override
-    public void create(Node node) {
+    public void create(Node node) throws NodeAlreadyExistException {
         synchronized (nodeMap) {
             if (nodeMap.containsKey(node.id())) {
-                throw new IllegalArgumentException("Node with id '" + node.id() + "' already exists");
+                throw new NodeAlreadyExistException(node.id());
             }
 
             nodeMap.put(node.id(), node);

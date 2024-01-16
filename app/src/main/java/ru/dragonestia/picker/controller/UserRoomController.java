@@ -3,8 +3,10 @@ package ru.dragonestia.picker.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.dragonestia.picker.controller.response.RoomUserListResponse;
-import ru.dragonestia.picker.controller.response.LinkUsersWithRoomResponse;
+import ru.dragonestia.picker.api.exception.NodeNotFoundException;
+import ru.dragonestia.picker.api.exception.RoomNotFoundException;
+import ru.dragonestia.picker.api.repository.response.LinkUsersWithRoomResponse;
+import ru.dragonestia.picker.api.repository.response.RoomUserListResponse;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.User;
@@ -13,8 +15,7 @@ import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.service.UserService;
 import ru.dragonestia.picker.util.NamingValidator;
 
-import java.util.LinkedList;
-import java.util.Objects;
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,21 +25,15 @@ public class UserRoomController {
     private final NodeService nodeService;
     private final RoomService roomService;
     private final UserService userService;
+    private final NamingValidator namingValidator;
 
     @GetMapping
     ResponseEntity<RoomUserListResponse> usersInsideRoom(@PathVariable(name = "nodeId") String nodeId,
-                                                         @PathVariable(name = "roomId") String bucketId) {
+                                                         @PathVariable(name = "roomId") String roomId) {
 
-        Room room;
-        try {
-            var temp = getNodeAndRoom(nodeId, bucketId);
-            room = temp.room();
-        } catch (Error error) {
-            return ResponseEntity.notFound().build();
-        }
-
+        var room = getNodeAndRoom(nodeId, roomId).room();
         var users = userService.getRoomUsers(room);
-        return ResponseEntity.ok(new RoomUserListResponse(room.getSlots().getSlots(), users.size(), users));
+        return ResponseEntity.ok(new RoomUserListResponse(room.getSlots().getSlots(), users.size(), users.stream().map(User::toResponseObject).toList()));
     }
 
     @PostMapping
@@ -47,28 +42,10 @@ public class UserRoomController {
                                                                @RequestParam(name = "userIds") String userIds,
                                                                @RequestParam(name = "force") boolean force) {
 
-        Room room;
-        try {
-            var temp = getNodeAndRoom(nodeId, roomId);
-            room = temp.room();
-        } catch (Error error) {
-            return ResponseEntity.status(404).body(new LinkUsersWithRoomResponse(false, error.getMessage(), -1, -1));
-        }
-
-        var list = new LinkedList<User>();
-        for (var username: userIds.split(",")) { // TODO: create warnings about invalid usernames
-            if (!NamingValidator.validateUserId(username)) continue;
-
-            list.add(new User(username));
-        }
-
-        try {
-            int usedSlots = userService.linkUsersWithRoom(room, list, force);
-
-            return ResponseEntity.ok(new LinkUsersWithRoomResponse(true, "Success", usedSlots, room.getSlots().getSlots()));
-        } catch (Error error) {
-            return ResponseEntity.status(400).body(new LinkUsersWithRoomResponse(false, error.getMessage(), -1, -1));
-        }
+        var room = getNodeAndRoom(nodeId, roomId).room();
+        var users = namingValidator.validateUserIds(Arrays.stream(userIds.split(",")).toList());
+        var usedSlots = userService.linkUsersWithRoom(room, users, force);
+        return ResponseEntity.ok(new LinkUsersWithRoomResponse(usedSlots, room.getSlots().getSlots()));
     }
 
     @DeleteMapping
@@ -76,43 +53,21 @@ public class UserRoomController {
                                 @PathVariable(name = "roomId") String roomId,
                                 @RequestParam(name = "userIds") String userIds) {
 
-        Room room;
-        try {
-            var temp = getNodeAndRoom(nodeId, roomId);
-            room = temp.room();
-
-            var list = new LinkedList<User>();
-            for (var username: userIds.split(",")) { // TODO: create warnings about invalid usernames
-                if (!NamingValidator.validateUserId(username)) continue;
-
-                list.add(new User(username));
-            }
-
-            userService.unlinkUsersFromRoom(room, list);
-        } catch (Error error) {
-            return ResponseEntity.notFound().build();
-        }
-
+        var room = getNodeAndRoom(nodeId, roomId).room();
+        var users = namingValidator.validateUserIds(Arrays.stream(userIds.split(",")).toList());
+        userService.unlinkUsersFromRoom(room, users);
         return ResponseEntity.ok().build();
     }
 
     private record NodeAndRoom(Node node, Room room) {}
 
     private NodeAndRoom getNodeAndRoom(String nodeId, String roomId) {
-        if (!NamingValidator.validateNodeId(nodeId) || !NamingValidator.validateRoomId(roomId)) {
-            throw new Error();
-        }
+        namingValidator.validateNodeId(nodeId);
+        namingValidator.validateRoomId(nodeId, roomId);
 
-        var nodeOpt = nodeService.find(nodeId);
-        if (nodeOpt.isEmpty()) {
-            throw new Error();
-        }
+        var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
+        var room = roomService.find(node, roomId).orElseThrow(() -> new RoomNotFoundException(nodeId, roomId));
 
-        var roomOpt = roomService.find(Objects.requireNonNull(nodeOpt.get()), roomId);
-        if (roomOpt.isEmpty()) {
-            throw new Error();
-        }
-
-        return new NodeAndRoom(nodeOpt.get(), roomOpt.get());
+        return new NodeAndRoom(node, room);
     }
 }

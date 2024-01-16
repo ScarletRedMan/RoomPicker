@@ -1,19 +1,51 @@
 package ru.dragonestia.picker.util;
 
-import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Component;
+import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
+import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
+import ru.dragonestia.picker.api.exception.InvalidUsernamesException;
+import ru.dragonestia.picker.api.utils.ValidateIdentifier;
+import ru.dragonestia.picker.model.User;
 
-@UtilityClass
+import java.util.LinkedList;
+import java.util.List;
+
+@Component
 public class NamingValidator {
 
-    public boolean validateNodeId(String input) {
-        return input.matches("^[a-z\\d-]+$");
+    public void validateNodeId(String input) throws InvalidNodeIdentifierException {
+        if (ValidateIdentifier.forNode(input)) return;
+
+        throw new InvalidNodeIdentifierException(input);
     }
 
-    public boolean validateRoomId(String input) {
-        return input.matches("^[a-z\\d-]+$");
+    public void validateRoomId(String nodeId, String input) throws InvalidRoomIdentifierException {
+        if (ValidateIdentifier.forRoom(input)) return;
+
+        throw new InvalidRoomIdentifierException(nodeId, input);
     }
 
-    public boolean validateUserId(String input) {
-        return input.matches("^[aA-zZ\\d-.\\s:/@%?!~$)(+=_|;*]+$");
+    private boolean validateUserId(String input) {
+        return ValidateIdentifier.forUser(input);
+    }
+
+    public List<User> validateUserIds(List<String> input) throws InvalidUsernamesException {
+        var users = new LinkedList<User>();
+        var invalid = new LinkedList<String>();
+
+        for (var username: input) {
+            if (validateUserId(username)) {
+                users.add(new User(username));
+                continue;
+            }
+
+            invalid.add(username);
+        }
+
+        if (!invalid.isEmpty()) {
+            throw new InvalidUsernamesException(input, invalid);
+        }
+
+        return users;
     }
 }

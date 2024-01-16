@@ -17,7 +17,7 @@ public class RestApiConfig {
     }
 
     @Bean
-    Supplier<RestTemplate> restTemplate(@Autowired RestTemplateBuilder builder) {
+    Supplier<RestTemplate> restTemplateSupplier(@Autowired RestTemplateBuilder builder) {
         return builder::build;
     }
 }

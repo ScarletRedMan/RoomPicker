@@ -2,6 +2,7 @@ package ru.dragonestia.picker.repository.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.User;
@@ -21,7 +22,7 @@ public class RoomRepositoryImpl implements RoomRepository {
     private final Map<Node, Rooms> node2roomsMap = new ConcurrentHashMap<>();
 
     @Override
-    public void create(Room room) {
+    public void create(Room room) throws RoomAlreadyExistException {
         var nodeId = room.getNodeId();
 
         synchronized (node2roomsMap) {
@@ -35,7 +36,7 @@ public class RoomRepositoryImpl implements RoomRepository {
 
             var rooms = node2roomsMap.get(node.get());
             if (rooms.containsKey(room.getId())) {
-                throw new IllegalArgumentException("Room already exists");
+                throw new RoomAlreadyExistException(room.getNodeId(), room.getId());
             }
             rooms.put(room.getId(), new RoomContainer(room, new AtomicInteger(0)));
             pickerRepository.find(room.getNodeId()).add(room);

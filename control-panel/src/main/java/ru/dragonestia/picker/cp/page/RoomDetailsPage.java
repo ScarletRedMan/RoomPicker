@@ -8,28 +8,30 @@ import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.dragonestia.picker.api.model.Node;
+import ru.dragonestia.picker.api.model.Room;
+import ru.dragonestia.picker.api.model.User;
+import ru.dragonestia.picker.api.repository.NodeRepository;
+import ru.dragonestia.picker.api.repository.RoomRepository;
+import ru.dragonestia.picker.api.repository.UserRepository;
 import ru.dragonestia.picker.cp.component.AddUsers;
 import ru.dragonestia.picker.cp.component.NavPath;
+import ru.dragonestia.picker.cp.component.Notifications;
 import ru.dragonestia.picker.cp.component.UserList;
-import ru.dragonestia.picker.cp.model.Room;
-import ru.dragonestia.picker.cp.model.Node;
-import ru.dragonestia.picker.cp.model.User;
-import ru.dragonestia.picker.cp.repository.RoomRepository;
-import ru.dragonestia.picker.cp.repository.NodeRepository;
-import ru.dragonestia.picker.cp.repository.UserRepository;
+import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@RequiredArgsConstructor
 @PageTitle("Room details")
 @Route("/nodes/:nodeId/rooms/:roomId")
 public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserver {
@@ -37,6 +39,8 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
     private final NodeRepository nodeRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final RouteParamsExtractor paramsExtractor;
+
     private Node node;
     private Room room;
     private AddUsers addUsers;
@@ -44,57 +48,16 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
     private Button lockRoomButton;
     private VerticalLayout roomInfo;
 
-    @Autowired
-    public RoomDetailsPage(NodeRepository nodeRepository, RoomRepository roomRepository, UserRepository userRepository) {
-        this.nodeRepository = nodeRepository;
-        this.roomRepository = roomRepository;
-        this.userRepository = userRepository;
-    }
-
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        var nodeIdOpt = event.getRouteParameters().get("nodeId");
-        if (nodeIdOpt.isEmpty()) {
-            getUI().ifPresent(ui -> ui.navigate("/nodes"));
-            return;
-        }
-
-        var roomIdOpt = event.getRouteParameters().get("roomId");
-        if (roomIdOpt.isEmpty()) {
-            getUI().ifPresent(ui -> ui.navigate("/rooms/" + nodeIdOpt.get()));
-            return;
-        }
-
-        var nodeId = nodeIdOpt.get();
-        var roomId = roomIdOpt.get();
-        add(new NavPath(new NavPath.Point("Nodes", "/nodes"),
-                new NavPath.Point(nodeId, "/nodes/" + nodeId),
-                new NavPath.Point(roomId, "/nodes/" + nodeId + "/rooms/" + roomId)));
-
-        var nodeOpt = nodeRepository.find(nodeId);
-        if (nodeOpt.isEmpty()) {
-            add(new H2("Error 404"));
-            add(new Paragraph("Node not found!"));
-            Notification.show("Node '" + nodeId + "' does not exist", 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            return;
-        }
-        node = nodeOpt.get();
-
-        var bucketOpt = roomRepository.find(node, roomId);
-        if (bucketOpt.isEmpty()) {
-            add(new H2("Error 404"));
-            add(new Paragraph("Room not found!"));
-            Notification.show("Room '" + nodeId + "' does not exist", 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            return;
-        }
-        room = bucketOpt.get();
+        node = paramsExtractor.extractNodeId(event);
+        room = paramsExtractor.extractRoomId(event, node);
 
         init();
     }
 
     private void init() {
+        add(NavPath.toRoom(node.getId(), room.getId()));
         add(new H2("Room details"));
         printRoomDetails();
         add(new Hr());
@@ -108,7 +71,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
         roomInfo.removeAll();
         roomInfo.add(new Html("<span>Node identifier: <b>" + room.getNodeId() + "</b></span>"));
         roomInfo.add(new Html("<span>Room identifier: <b>" + room.getId() + "</b></span>"));
-        roomInfo.add(new Html("<span>Slots: <b>" + (room.getSlots().isUnlimited()? "Unlimited" : room.getSlots().slots()) + "</b></span>"));
+        roomInfo.add(new Html("<span>Slots: <b>" + (room.isUnlimited()? "Unlimited" : room.getSlots()) + "</b></span>"));
         roomInfo.add(new Html("<span>Locked: <b>" + (room.isLocked()? "Yes" : "No") + "</b></span>"));
     }
 
@@ -139,20 +102,13 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
 
     private void changeBucketLockedState() {
         var newValue = !room.isLocked();
-        try {
-            roomRepository.lock(room, newValue);
-        } catch (Error error) {
-            Notification.show(error.getMessage(), 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-            return;
-        }
+        roomRepository.lock(room, newValue);
 
         room.setLocked(newValue);
         setLockRoomButtonState();
         updateRoomInfo();
 
-        Notification.show("Success", 3000, Notification.Position.TOP_END)
-                .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        Notifications.success("Success");
     }
 
     private void appendUsers(Room room, Collection<User> users, boolean ignoreLimitation) {
@@ -160,7 +116,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
 
         var newUsers = users.stream()
                 .filter(user -> {
-                    if (user.id().matches("^[aA-zZ\\d-.\\s:/@%?!~$)(+=_|;*]+$")) {
+                    if (user.getId().matches("^[aA-zZ\\d-.\\s:/@%?!~$)(+=_|;*]+$")) {
                         return true;
                     }
 
@@ -173,15 +129,12 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
 
         if (validationFail.get()) {
             if (newUsers.isEmpty()) {
-                Notification.show("All users entered were added because they do not comply with the rule for writing the user identifier", 3000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_ERROR);
+                Notifications.error("All users entered were added because they do not comply with the rule for writing the user identifier");
             } else {
-                Notification.show("Not all users entered were added because they do not comply with the rule for writing the user identifier", 3000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_WARNING);
+                Notifications.warn("Not all users entered were added because they do not comply with the rule for writing the user identifier");
             }
         } else {
-            Notification.show("Success", 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            Notifications.success("Success");
         }
     }
 }

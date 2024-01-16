@@ -2,6 +2,8 @@ package ru.dragonestia.picker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
+import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.service.NodeService;
@@ -15,13 +17,11 @@ import java.util.Optional;
 public class NodeServiceImpl implements NodeService {
 
     private final NodeRepository nodeRepository;
+    private final NamingValidator namingValidator;
 
     @Override
-    public void create(Node node) {
-        if (!NamingValidator.validateNodeId(node.id())) {
-            throw new Error("Invalid node id format");
-        }
-
+    public void create(Node node) throws InvalidNodeIdentifierException, NodeAlreadyExistException {
+        namingValidator.validateNodeId(node.id());
         nodeRepository.create(node);
     }
 

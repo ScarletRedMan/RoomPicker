@@ -7,8 +7,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
@@ -16,8 +14,8 @@ import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import org.springframework.lang.Nullable;
-import ru.dragonestia.picker.cp.model.Node;
-import ru.dragonestia.picker.cp.model.type.PickingMode;
+import ru.dragonestia.picker.api.model.Node;
+import ru.dragonestia.picker.api.model.type.PickingMode;
 
 import java.util.function.Function;
 
@@ -91,8 +89,7 @@ public class RegisterNode extends Details {
                 error = "Invalid node id format";
             }
 
-            Notification.show(error, 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            Notifications.error(error);
             return;
         }
 
@@ -100,13 +97,11 @@ public class RegisterNode extends Details {
         var response = onSubmit.apply(node);
         clear();
         if (response.error()) {
-            Notification.show(response.reason(), 3000, Notification.Position.TOP_END)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+            Notifications.error(response.reason());
             return;
         }
 
-        Notification.show("Node was successfully registered", 3000, Notification.Position.TOP_END)
-                .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        Notifications.success("Node was successfully registered");
     }
 
     public record Response(boolean error, @Nullable String reason) {}

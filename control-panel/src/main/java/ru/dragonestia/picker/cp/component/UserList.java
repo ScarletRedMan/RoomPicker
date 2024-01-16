@@ -4,8 +4,8 @@ import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import ru.dragonestia.picker.cp.model.Room;
-import ru.dragonestia.picker.cp.model.User;
+import ru.dragonestia.picker.api.model.Room;
+import ru.dragonestia.picker.api.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class UserList extends VerticalLayout {
 
     private Grid<User> createUsersGrid() {
         var grid = new Grid<User>();
-        grid.addColumn(User::id).setHeader("User Identifier").setFooter(totalUsers);
+        grid.addColumn(User::getId).setHeader("User Identifier").setFooter(totalUsers);
         grid.addColumn(user -> 0).setTextAlign(ColumnTextAlign.CENTER).setHeader("Linked with rooms") // TODO
                 .setFooter(occupancy);
         grid.addComponentColumn(user -> new Span("buttons")).setHeader("Manage"); // TODO
@@ -39,6 +39,12 @@ public class UserList extends VerticalLayout {
         cachedUsers = users;
         usersGrid.setItems(users);
         totalUsers.setText("Total users: " + users.size());
-        occupancy.setText("Occupancy: %s".formatted(room.getUsingPercentage(users.size())));
+        occupancy.setText("Occupancy: %s".formatted(getUsingPercentage(room, users.size())));
+    }
+
+    private String getUsingPercentage(Room room, int usedSlots) {
+        if (room.isUnlimited()) return "0%";
+        double percent = usedSlots / (double) room.getSlots() * 100;
+        return ((int) percent) + "%";
     }
 }

@@ -1,8 +1,8 @@
 package ru.dragonestia.picker.repository.impl.picker;
 
+import ru.dragonestia.picker.api.model.type.PickingMode;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
-import ru.dragonestia.picker.model.type.PickingMode;
 import ru.dragonestia.picker.repository.UserRepository;
 
 import java.util.Collection;

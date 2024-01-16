@@ -7,10 +7,11 @@ import com.vaadin.flow.router.Route;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.dragonestia.picker.api.exception.ApiException;
+import ru.dragonestia.picker.api.repository.NodeRepository;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.NodeList;
 import ru.dragonestia.picker.cp.component.RegisterNode;
-import ru.dragonestia.picker.cp.repository.NodeRepository;
 
 @Log4j2
 @Getter
@@ -26,7 +27,7 @@ public class NodesPage extends VerticalLayout {
         super();
         this.nodeRepository = nodeRepository;
 
-        add(new NavPath(new NavPath.Point("Nodes", "/nodes")));
+        add(NavPath.rootNodes());
         add(registerNode = createRegisterNodeElement());
         add(new Hr());
         add(nodeList = createNodeListElement());
@@ -41,10 +42,7 @@ public class NodesPage extends VerticalLayout {
             try {
                 nodeRepository.register(node);
                 return new RegisterNode.Response(false, "");
-            } catch (Error ex) {
-                return new RegisterNode.Response(true, ex.getMessage());
-            } catch (RuntimeException ex) {
-                log.throwing(ex);
+            } catch (ApiException ex) {
                 return new RegisterNode.Response(true, ex.getMessage());
             } finally {
                 nodeList.update(nodeRepository.all());

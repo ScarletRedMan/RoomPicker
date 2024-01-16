@@ -1,5 +1,6 @@
 package ru.dragonestia.picker.cp.component;
 
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -10,13 +11,11 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import lombok.Setter;
-import ru.dragonestia.picker.cp.model.dto.RoomDTO;
+import ru.dragonestia.picker.api.model.Room;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,12 +23,12 @@ import java.util.function.Consumer;
 public class RoomList extends VerticalLayout {
 
     private final String nodeIdentifier;
-    private final Grid<RoomDTO> roomsGrid;
+    private final Grid<Room.Short> roomsGrid;
     private final TextField searchField;
-    private List<RoomDTO> cachedRooms;
-    @Setter private Consumer<RoomDTO> removeMethod;
+    private List<Room.Short> cachedRooms;
+    @Setter private Consumer<Room.Short> removeMethod;
 
-    public RoomList(String nodeIdentifier, List<RoomDTO> buckets) {
+    public RoomList(String nodeIdentifier, List<Room.Short> buckets) {
         this.nodeIdentifier = nodeIdentifier;
         cachedRooms = buckets;
 
@@ -57,9 +56,9 @@ public class RoomList extends VerticalLayout {
                 .toList());
     }
 
-    private Grid<RoomDTO> createGrid() {
-        var grid = new Grid<>(RoomDTO.class, false);
-        grid.addColumn(RoomDTO::id).setHeader("Identifier");
+    private Grid<Room.Short> createGrid() {
+        var grid = new Grid<>(Room.Short.class, false);
+        grid.addColumn(Room.Short::id).setHeader("Identifier");
         grid.addComponentColumn(room -> {
             var result = new Span();
             if (room.slots() == -1) {
@@ -84,7 +83,7 @@ public class RoomList extends VerticalLayout {
         return grid;
     }
 
-    private HorizontalLayout createManageButtons(RoomDTO room) {
+    private HorizontalLayout createManageButtons(Room.Short room) {
         var layout = new HorizontalLayout();
 
         {
@@ -104,18 +103,19 @@ public class RoomList extends VerticalLayout {
         return layout;
     }
 
-    private void clickDetailsButton(RoomDTO bucket) {
+    private void clickDetailsButton(Room.Short bucket) {
         getUI().ifPresent(ui -> {
             ui.navigate("/nodes/" + nodeIdentifier +
                     "/rooms/" + bucket.id());
         });
     }
 
-    private void clickRemoveButton(RoomDTO bucket) {
+    private void clickRemoveButton(Room.Short bucket) {
         var dialog = new Dialog("Confirm bucket deletion");
-        dialog.add(new Paragraph("Confirm that you want to delete bucket. Enter '" + bucket.id() + "' to field below and confirm."));
+        dialog.add(new Html("<p>Confirm that you want to delete bucket. Enter <b><u>" + bucket.id() + "</u></b> to field below and confirm.</p>"));
 
         var inputField = new TextField();
+        inputField.setWidth("100%");
         dialog.add(inputField);
 
         { // confirm
@@ -123,14 +123,12 @@ public class RoomList extends VerticalLayout {
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
             button.addClickListener(event -> {
                 if (!bucket.id().equals(inputField.getValue())) {
-                    Notification.show("Invalid input", 3000, Notification.Position.TOP_END)
-                            .addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    Notifications.error("Invalid input");
                     return;
                 }
 
                 removeBucket(bucket);
-                Notification.show("Bucket '" + bucket.id() + "' was successfully removed!", 3000, Notification.Position.TOP_END)
-                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                Notifications.success("Bucket <b>" + bucket.id() + "</b> was successfully removed!");
                 dialog.close();
             });
 
@@ -146,12 +144,12 @@ public class RoomList extends VerticalLayout {
         dialog.open();
     }
 
-    public void update(List<RoomDTO> buckets) {
+    public void update(List<Room.Short> buckets) {
         cachedRooms = buckets;
         applySearch(searchField.getValue());
     }
 
-    private void removeBucket(RoomDTO bucket) {
+    private void removeBucket(Room.Short bucket) {
         if (removeMethod != null) {
             removeMethod.accept(bucket);
         }
