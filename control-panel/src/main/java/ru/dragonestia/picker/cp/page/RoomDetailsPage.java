@@ -5,7 +5,6 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Hr;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -15,13 +14,13 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import ru.dragonestia.picker.api.model.Node;
-import ru.dragonestia.picker.api.model.Room;
-import ru.dragonestia.picker.api.model.User;
+import ru.dragonestia.picker.api.repository.response.type.RNode;
+import ru.dragonestia.picker.api.repository.response.type.RRoom;
+import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.api.repository.NodeRepository;
 import ru.dragonestia.picker.api.repository.RoomRepository;
 import ru.dragonestia.picker.api.repository.UserRepository;
+import ru.dragonestia.picker.api.repository.details.UserDetails;
 import ru.dragonestia.picker.cp.component.AddUsers;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.Notifications;
@@ -29,6 +28,7 @@ import ru.dragonestia.picker.cp.component.UserList;
 import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
@@ -41,8 +41,8 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
     private final UserRepository userRepository;
     private final RouteParamsExtractor paramsExtractor;
 
-    private Node node;
-    private Room room;
+    private RNode node;
+    private RRoom room;
     private AddUsers addUsers;
     private UserList userList;
     private Button lockRoomButton;
@@ -64,7 +64,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
         add(addUsers = new AddUsers(room, (users, ignoreLimitation) -> appendUsers(room, users, ignoreLimitation)));
         add(new Hr());
         add(new H2("Users"));
-        add(userList = new UserList(room, userRepository.all(room)));
+        add(userList = new UserList(room, userRepository.all(room, UserRepository.ALL_DETAILS)));
     }
 
     private void updateRoomInfo() {
@@ -111,7 +111,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
         Notifications.success("Success");
     }
 
-    private void appendUsers(Room room, Collection<User> users, boolean ignoreLimitation) {
+    private void appendUsers(RRoom room, Collection<RUser> users, boolean ignoreLimitation) {
         AtomicBoolean validationFail = new AtomicBoolean(false);
 
         var newUsers = users.stream()
@@ -125,7 +125,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
                 }).toList();
 
         userRepository.linkWithRoom(room, newUsers, ignoreLimitation);
-        userList.update(userRepository.all(room));
+        userList.update(userRepository.all(room, UserRepository.ALL_DETAILS));
 
         if (validationFail.get()) {
             if (newUsers.isEmpty()) {

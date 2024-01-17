@@ -11,20 +11,20 @@ import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import org.springframework.lang.Nullable;
-import ru.dragonestia.picker.api.model.Node;
-import ru.dragonestia.picker.api.model.Room;
+import ru.dragonestia.picker.api.repository.response.type.RNode;
+import ru.dragonestia.picker.api.repository.response.type.RRoom;
 
 import java.util.function.Function;
 
 public class RegisterRoom extends Details {
 
-    private final Node node;
-    private final Function<Room, Response> onSubmit;
+    private final RNode node;
+    private final Function<RRoom, Response> onSubmit;
     private final TextField identifierField;
     private final TextArea payloadField;
     private final Checkbox lockedField;
 
-    public RegisterRoom(Node node, Function<Room, Response> onSubmit) {
+    public RegisterRoom(RNode node, Function<RRoom, Response> onSubmit) {
         super(new H2("Register room"));
         this.node = node;
         this.onSubmit = onSubmit;
@@ -107,7 +107,7 @@ public class RegisterRoom extends Details {
             return;
         }
 
-        var room = new Room(nodeIdentifier, node, Room.INFINITE_SLOTS, payloadField.getValue());
+        var room = new RRoom(nodeIdentifier, node, RRoom.INFINITE_SLOTS, payloadField.getValue());
         room.setLocked(lockedField.getValue());
         var response = onSubmit.apply(room);
         clear();

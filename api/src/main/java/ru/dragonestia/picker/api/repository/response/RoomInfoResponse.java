@@ -1,5 +1,5 @@
 package ru.dragonestia.picker.api.repository.response;
 
-import ru.dragonestia.picker.api.model.Room;
+import ru.dragonestia.picker.api.repository.response.type.RRoom;
 
-public record RoomInfoResponse(Room room) {}
+public record RoomInfoResponse(RRoom room) {}

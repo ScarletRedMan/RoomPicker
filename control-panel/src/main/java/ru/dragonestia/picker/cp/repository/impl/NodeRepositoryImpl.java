@@ -7,13 +7,15 @@ import org.springframework.http.HttpMethod;
 import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
 import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
+import ru.dragonestia.picker.api.repository.details.NodeDetails;
 import ru.dragonestia.picker.api.repository.response.NodeDetailsResponse;
 import ru.dragonestia.picker.api.repository.response.NodeListResponse;
-import ru.dragonestia.picker.api.model.Node;
+import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.api.repository.NodeRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class NodeRepositoryImpl implements NodeRepository {
     private final RestUtil rest;
 
     @Override
-    public void register(Node node) throws InvalidNodeIdentifierException, NodeAlreadyExistException {
+    public void register(RNode node) throws InvalidNodeIdentifierException, NodeAlreadyExistException {
         rest.query("nodes", HttpMethod.POST, params -> {
             params.put("nodeId", node.getId());
             params.put("method", node.getMode().name());
@@ -31,12 +33,14 @@ public class NodeRepositoryImpl implements NodeRepository {
     }
 
     @Override
-    public List<Node> all() {
-        return rest.query("nodes", HttpMethod.GET, NodeListResponse.class, params -> {}).nodes();
+    public List<RNode> all(Set<NodeDetails> details) {
+        return rest.query("nodes", HttpMethod.GET, NodeListResponse.class, params -> {
+            params.put("requiredDetails", String.join(",", details.stream().map(Enum::toString).toList()));
+        }).nodes();
     }
 
     @Override
-    public Optional<Node> find(String nodeId) {
+    public Optional<RNode> find(String nodeId) {
         try {
             var response = rest.query("nodes/" + nodeId, HttpMethod.GET, NodeDetailsResponse.class, params -> {});
             return Optional.of(response.node());
