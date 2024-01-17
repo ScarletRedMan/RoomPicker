@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import ru.dragonestia.picker.api.model.type.PickingMode;
+import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
 import ru.dragonestia.picker.interceptor.DebugInterceptor;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;

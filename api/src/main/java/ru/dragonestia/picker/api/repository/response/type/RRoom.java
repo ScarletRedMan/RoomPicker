@@ -1,8 +1,12 @@
-package ru.dragonestia.picker.api.model;
+package ru.dragonestia.picker.api.repository.response.type;
+
+import ru.dragonestia.picker.api.repository.details.RoomDetails;
 
 import java.beans.Transient;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Room {
+public class RRoom {
 
     public final static int INFINITE_SLOTS = -1;
 
@@ -11,17 +15,19 @@ public class Room {
     private int slots;
     private String payload;
     private boolean locked = false;
+    private Map<RoomDetails, String> details;
 
-    private Room() {}
+    private RRoom() {}
 
-    public Room(String id, String nodeId, int slots, String payload) {
+    public RRoom(String id, String nodeId, int slots, String payload) {
         this.id = id;
         this.nodeId = nodeId;
         this.slots = slots;
         this.payload = payload;
+        this.details = new HashMap<>();
     }
 
-    public Room(String id, Node node, int limit, String payload) {
+    public RRoom(String id, RNode node, int limit, String payload) {
         this(id, node.getId(), limit, payload);
     }
 
@@ -54,6 +60,18 @@ public class Room {
         return slots == INFINITE_SLOTS;
     }
 
+    public void putDetail(RoomDetails detail, String value) {
+        details.put(detail, value);
+    }
+
+    public String getDetail(RoomDetails detail) {
+        return details.get(detail);
+    }
+
+    public Map<RoomDetails, String> getDetails() {
+        return details;
+    }
+
     @Override
     public int hashCode() {
         return id.hashCode();
@@ -63,11 +81,11 @@ public class Room {
     public boolean equals(Object object) {
         if (object == this) return true;
         if (object == null) return false;
-        if (object instanceof Room other) {
+        if (object instanceof RRoom other) {
             return id.equals(other.id);
         }
         return false;
     }
 
-    public record Short(String id, int slots, boolean locked) {}
+    public record Short(String id, int slots, boolean locked, Map<RoomDetails, String> details) {}
 }

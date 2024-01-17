@@ -12,8 +12,8 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import lombok.Getter;
-import ru.dragonestia.picker.api.model.Room;
-import ru.dragonestia.picker.api.model.User;
+import ru.dragonestia.picker.api.repository.response.type.RRoom;
+import ru.dragonestia.picker.api.repository.response.type.RUser;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,12 +21,12 @@ import java.util.function.BiConsumer;
 
 public class AddUsers extends Details {
 
-    private final Room room;
-    private final BiConsumer<Collection<User>, Boolean> onCommit;
+    private final RRoom room;
+    private final BiConsumer<Collection<RUser>, Boolean> onCommit;
     private final Checkbox ignoreSlots;
     private final VerticalLayout usersLayout;
 
-    public AddUsers(Room room, BiConsumer<Collection<User>, Boolean> onCommit) {
+    public AddUsers(RRoom room, BiConsumer<Collection<RUser>, Boolean> onCommit) {
         super(new H2("Add users"));
 
         this.room = room;
@@ -46,14 +46,14 @@ public class AddUsers extends Details {
         usersLayout.add(new UserEntry(false));
     }
 
-    public List<User> readAllUsers() {
+    public List<RUser> readAllUsers() {
         return usersLayout.getChildren()
                 .filter(component -> component instanceof UserEntry)
                 .map(component -> (UserEntry) component)
                 .map(user -> user.getUserIdentifierField().getValue())
                 .map(String::trim)
                 .filter(user -> !user.isEmpty())
-                .map(User::new)
+                .map(RUser::new)
                 .toList();
     }
 

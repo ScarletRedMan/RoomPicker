@@ -4,13 +4,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
 import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
+import ru.dragonestia.picker.api.repository.details.NodeDetails;
+import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.util.NamingValidator;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +37,21 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public List<Node> all() {
         return nodeRepository.all();
+    }
+
+    @Override
+    public List<RNode> getAllNodesWithDetailsResponse(Set<NodeDetails> details) {
+        var response = new LinkedList<RNode>();
+        for (var node: all()) {
+            var responseNode = node.toResponseObject();
+
+            for (var detail: details) {
+                // TODO...
+            }
+
+            response.add(responseNode);
+        }
+        return response;
     }
 
     @Override

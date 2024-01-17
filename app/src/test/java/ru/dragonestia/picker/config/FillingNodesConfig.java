@@ -3,7 +3,7 @@ package ru.dragonestia.picker.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import ru.dragonestia.picker.api.model.type.PickingMode;
+import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;

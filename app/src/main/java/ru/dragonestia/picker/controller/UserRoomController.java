@@ -5,17 +5,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
+import ru.dragonestia.picker.api.repository.details.UserDetails;
 import ru.dragonestia.picker.api.repository.response.LinkUsersWithRoomResponse;
 import ru.dragonestia.picker.api.repository.response.RoomUserListResponse;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
-import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.service.UserService;
 import ru.dragonestia.picker.util.NamingValidator;
 
 import java.util.Arrays;
+import java.util.HashSet;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,11 +30,21 @@ public class UserRoomController {
 
     @GetMapping
     ResponseEntity<RoomUserListResponse> usersInsideRoom(@PathVariable(name = "nodeId") String nodeId,
-                                                         @PathVariable(name = "roomId") String roomId) {
+                                                         @PathVariable(name = "roomId") String roomId,
+                                                         @RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq) {
 
         var room = getNodeAndRoom(nodeId, roomId).room();
-        var users = userService.getRoomUsers(room);
-        return ResponseEntity.ok(new RoomUserListResponse(room.getSlots().getSlots(), users.size(), users.stream().map(User::toResponseObject).toList()));
+
+        var details = new HashSet<UserDetails>();
+        for (var detailStr: detailsSeq.split(",")) {
+            try {
+                details.add(UserDetails.valueOf(detailStr.toUpperCase()));
+            } catch (IllegalArgumentException ignore) {}
+        }
+
+        var users = userService.getRoomUsersWithDetailsResponse(room, details);
+
+        return ResponseEntity.ok(new RoomUserListResponse(room.getSlots().getSlots(), users.size(), users));
     }
 
     @PostMapping

@@ -2,18 +2,26 @@ package ru.dragonestia.picker.api.repository;
 
 import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
 import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
-import ru.dragonestia.picker.api.model.Node;
+import ru.dragonestia.picker.api.repository.details.NodeDetails;
+import ru.dragonestia.picker.api.repository.response.type.RNode;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface NodeRepository {
 
-    void register(Node node) throws InvalidNodeIdentifierException, NodeAlreadyExistException;
+    Set<NodeDetails> ALL_DETAILS = Set.of();
 
-    List<Node> all();
+    void register(RNode node) throws InvalidNodeIdentifierException, NodeAlreadyExistException;
 
-    Optional<Node> find(String nodeId);
+    default List<RNode> all() {
+        return all(Set.of());
+    }
+
+    List<RNode> all(Set<NodeDetails> details);
+
+    Optional<RNode> find(String nodeId);
 
     void remove(String nodeId);
 }

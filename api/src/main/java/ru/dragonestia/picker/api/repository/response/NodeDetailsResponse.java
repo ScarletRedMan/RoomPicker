@@ -1,5 +1,5 @@
 package ru.dragonestia.picker.api.repository.response;
 
-import ru.dragonestia.picker.api.model.Node;
+import ru.dragonestia.picker.api.repository.response.type.RNode;
 
-public record NodeDetailsResponse(Node node) {}
+public record NodeDetailsResponse(RNode node) {}

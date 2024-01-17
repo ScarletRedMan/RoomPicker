@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
+import ru.dragonestia.picker.api.repository.details.RoomDetails;
+import ru.dragonestia.picker.api.repository.details.UserDetails;
+import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.response.RoomInfoResponse;
 import ru.dragonestia.picker.api.repository.response.RoomListResponse;
 import ru.dragonestia.picker.model.Room;
@@ -13,6 +16,8 @@ import ru.dragonestia.picker.model.type.SlotLimit;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.util.NamingValidator;
+
+import java.util.HashSet;
 
 @Log4j2
 @RestController
@@ -25,14 +30,19 @@ public class RoomController {
     private final NamingValidator namingValidator;
 
     @GetMapping
-    ResponseEntity<RoomListResponse> all(@PathVariable(name = "nodeId") String nodeId) {
+    ResponseEntity<RoomListResponse> all(@PathVariable(name = "nodeId") String nodeId,
+                                         @RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq) {
+
+        var details = new HashSet<RoomDetails>();
+        for (var detailStr: detailsSeq.split(",")) {
+            try {
+                details.add(RoomDetails.valueOf(detailStr.toUpperCase()));
+            } catch (IllegalArgumentException ignore) {}
+        }
 
         return nodeService.find(nodeId)
-                .map(node -> ResponseEntity.ok(new RoomListResponse(nodeId,
-                        roomService.all(node).stream()
-                                .map(room -> new ru.dragonestia.picker.api.model.Room.Short(room.getId(), room.getSlots().getSlots(), room.isLocked()))
-                                .toList()
-                ))).orElseThrow(() -> new NodeNotFoundException(nodeId));
+                .map(node -> ResponseEntity.ok(new RoomListResponse(nodeId, roomService.getAllRoomsWithDetailsResponse(node, details))))
+                .orElseThrow(() -> new NodeNotFoundException(nodeId));
     }
 
     @PostMapping

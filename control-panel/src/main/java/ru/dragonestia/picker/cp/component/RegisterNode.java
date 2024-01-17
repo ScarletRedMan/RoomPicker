@@ -14,18 +14,18 @@ import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import org.springframework.lang.Nullable;
-import ru.dragonestia.picker.api.model.Node;
-import ru.dragonestia.picker.api.model.type.PickingMode;
+import ru.dragonestia.picker.api.repository.response.type.RNode;
+import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
 
 import java.util.function.Function;
 
 public class RegisterNode extends Details {
 
-    private final Function<Node, Response> onSubmit;
+    private final Function<RNode, Response> onSubmit;
     private final TextField identifierField;
     private final RadioButtonGroup<PickingMode> modeRadio;
 
-    public RegisterNode(Function<Node, Response> onSubmit) {
+    public RegisterNode(Function<RNode, Response> onSubmit) {
         super(new H2("Register node"));
         this.onSubmit = onSubmit;
 
@@ -93,7 +93,7 @@ public class RegisterNode extends Details {
             return;
         }
 
-        var node = new Node(nodeIdentifier, modeRadio.getValue());
+        var node = new RNode(nodeIdentifier, modeRadio.getValue());
         var response = onSubmit.apply(node);
         clear();
         if (response.error()) {

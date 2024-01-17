@@ -1,4 +1,4 @@
-package ru.dragonestia.picker.api.model.type;
+package ru.dragonestia.picker.api.repository.response.type.type;
 
 public enum PickingMode {
     SEQUENTIAL_FILLING("Sequential filling"),

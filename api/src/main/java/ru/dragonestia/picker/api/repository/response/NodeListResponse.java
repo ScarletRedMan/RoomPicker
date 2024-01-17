@@ -1,7 +1,7 @@
 package ru.dragonestia.picker.api.repository.response;
 
-import ru.dragonestia.picker.api.model.Node;
+import ru.dragonestia.picker.api.repository.response.type.RNode;
 
 import java.util.List;
 
-public record NodeListResponse(List<Node> nodes) {}
+public record NodeListResponse(List<RNode> nodes) {}
