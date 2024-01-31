@@ -120,6 +120,16 @@ public class UserRepositoryImpl implements UserRepository {
         }
     }
 
+    @Override
+    public List<User> search(String input) {
+        synchronized (usersMap) {
+            return usersMap.keySet().stream()
+                    .filter(user -> user.id().startsWith(input))
+                    .sorted(Comparator.comparing(User::id))
+                    .toList();
+        }
+    }
+
     private record NodeRoomPath(String node, String bucket) {
 
         @Override

@@ -30,7 +30,7 @@ public class MainLayout extends AppLayout {
     private SideNav createSideNav() {
         var nav = new SideNav();
         nav.addItem(new SideNavItem("Nodes list", NodesPage.class, VaadinIcon.FOLDER_O.create()));
-        nav.addItem(new SideNavItem("Search users", HomePage.class, VaadinIcon.SEARCH.create()));
+        nav.addItem(new SideNavItem("Search users", UserSearchPage.class, VaadinIcon.SEARCH.create()));
         nav.addItem(new SideNavItem("Documentation", "https://github.com/ScarletRedMan/RoomPicker", VaadinIcon.BOOK.create()));
         nav.addItem(new SideNavItem("Sign-out", HomePage.class, VaadinIcon.SIGN_OUT.create()));
         return nav;

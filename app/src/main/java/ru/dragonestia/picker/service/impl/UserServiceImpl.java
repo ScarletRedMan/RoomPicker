@@ -56,4 +56,20 @@ public class UserServiceImpl implements UserService {
         }
         return users;
     }
+
+    @Override
+    public List<RUser> searchUsers(String input, Set<UserDetails> details) {
+        return userRepository.search(input).stream()
+                .map(user -> {
+                    var responseUser = user.toResponseObject();
+
+                    for (var detail: details) {
+                        if (detail == UserDetails.COUNT_ROOMS) {
+                            responseUser.putDetail(UserDetails.COUNT_ROOMS, Integer.toString(getUserRooms(user).size()));
+                        }
+                    }
+
+                    return responseUser;
+                }).toList();
+    }
 }

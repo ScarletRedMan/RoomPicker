@@ -25,7 +25,7 @@ public class NamingValidator {
         throw new InvalidRoomIdentifierException(nodeId, input);
     }
 
-    private boolean validateUserId(String input) {
+    public boolean validateUserId(String input) {
         return ValidateIdentifier.forUser(input);
     }
 
