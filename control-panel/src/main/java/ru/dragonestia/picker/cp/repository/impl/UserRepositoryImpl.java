@@ -7,6 +7,7 @@ import org.springframework.http.HttpMethod;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomAreFullException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
+import ru.dragonestia.picker.api.repository.response.SearchUserResponse;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.api.repository.UserRepository;
@@ -52,6 +53,19 @@ public class UserRepositoryImpl implements UserRepository {
                     var detailsStr = String.join(",", details.stream().map(Enum::toString).toList());
 
                     params.put("requiredDetails", detailsStr);
+                }).users();
+    }
+
+    @Override
+    public List<RUser> search(String input, Set<UserDetails> details) {
+        return rest.query("/users/search",
+                HttpMethod.GET,
+                SearchUserResponse.class,
+                params -> {
+                    var detailsStr = String.join(",", details.stream().map(Enum::toString).toList());
+
+                    params.put("requiredDetails", detailsStr);
+                    params.put("input", input);
                 }).users();
     }
 }

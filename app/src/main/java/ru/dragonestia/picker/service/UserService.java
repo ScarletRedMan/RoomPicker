@@ -21,4 +21,6 @@ public interface UserService {
     List<User> getRoomUsers(Room room);
 
     List<RUser> getRoomUsersWithDetailsResponse(Room room, Set<UserDetails> details);
+
+    List<RUser> searchUsers(String input, Set<UserDetails> details);
 }

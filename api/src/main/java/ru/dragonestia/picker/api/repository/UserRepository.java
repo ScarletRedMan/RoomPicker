@@ -24,4 +24,6 @@ public interface UserRepository {
     }
 
     List<RUser> all(RRoom room, Set<UserDetails> details) throws NodeNotFoundException, RoomNotFoundException;
+
+    List<RUser> search(String input, Set<UserDetails> details);
 }

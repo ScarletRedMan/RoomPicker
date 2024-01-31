@@ -1,6 +1,7 @@
 package ru.dragonestia.picker.repository;
 
 import ru.dragonestia.picker.api.exception.RoomAreFullException;
+import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 
@@ -19,4 +20,6 @@ public interface UserRepository {
     void onRemoveRoom(Room room);
 
     List<User> usersOf(Room room);
+
+    List<User> search(String input);
 }
