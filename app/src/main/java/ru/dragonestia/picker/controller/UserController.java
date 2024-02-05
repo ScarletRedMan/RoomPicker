@@ -1,16 +1,17 @@
 package ru.dragonestia.picker.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import ru.dragonestia.picker.api.repository.details.UserDetails;
+import org.springframework.web.bind.annotation.*;
+import ru.dragonestia.picker.api.repository.response.LinkedRoomsWithUserResponse;
 import ru.dragonestia.picker.api.repository.response.SearchUserResponse;
+import ru.dragonestia.picker.api.repository.response.UserDetailsResponse;
+import ru.dragonestia.picker.api.repository.response.type.RUser;
+import ru.dragonestia.picker.model.Room;
+import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.service.UserService;
+import ru.dragonestia.picker.util.DetailsParser;
 import ru.dragonestia.picker.util.NamingValidator;
 
-import java.util.HashSet;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final DetailsParser detailsParser;
     private final NamingValidator namingValidator;
 
     @GetMapping("/search")
@@ -29,13 +31,28 @@ public class UserController {
             return new SearchUserResponse(List.of());
         }
 
-        var details = new HashSet<UserDetails>();
-        for (var detailStr: detailsSeq.split(",")) {
-            try {
-                details.add(UserDetails.valueOf(detailStr.toUpperCase()));
-            } catch (IllegalArgumentException ignore) {}
+        return new SearchUserResponse(userService.searchUsers(input, detailsParser.parseUserDetails(detailsSeq)));
+    }
+
+    @GetMapping("/{userId}")
+    UserDetailsResponse find(@PathVariable(value = "userId") String userId,
+               @RequestParam(value = "requiredDetails", required = false) String detailsSeq) {
+
+        if (!namingValidator.validateUserId(userId)) {
+            return new UserDetailsResponse(new RUser(userId));
         }
 
-        return new SearchUserResponse(userService.searchUsers(input, details));
+        return new UserDetailsResponse(userService.getUserDetails(userId, detailsParser.parseUserDetails(detailsSeq)));
+    }
+
+    @GetMapping("/{userId}/rooms")
+    LinkedRoomsWithUserResponse roomsOf(@PathVariable(value = "userId") String userId,
+                                        @RequestParam(value = "requiredDetails", required = false) String detailsSeq) {
+
+        if (!namingValidator.validateUserId(userId)) {
+            return new LinkedRoomsWithUserResponse(List.of());
+        }
+
+        return new LinkedRoomsWithUserResponse(userService.getUserRoomsWithDetails(new User(userId), detailsParser.parseRoomDetails(detailsSeq)));
     }
 }

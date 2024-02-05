@@ -1,5 +1,7 @@
 package ru.dragonestia.picker.cp.component;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
@@ -32,8 +34,17 @@ public class UserList extends VerticalLayout {
         grid.addColumn(RUser::getId).setHeader("User Identifier").setFooter(totalUsers);
         grid.addColumn(user -> user.getDetail(UserDetails.COUNT_ROOMS)).setTextAlign(ColumnTextAlign.CENTER).setHeader("Linked with rooms")
                 .setFooter(occupancy);
-        grid.addComponentColumn(user -> new Span("buttons")).setHeader("Manage"); // TODO
+        grid.addComponentColumn(this::createManageButton).setHeader("Manage");
         return grid;
+    }
+
+    private Button createManageButton(RUser user) {
+        var button = new Button("Details");
+        button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        button.addClickListener(e -> {
+            getUI().ifPresent(ui -> ui.navigate("/users/" + user.getId()));
+        });
+        return button;
     }
 
     public void update(List<RUser> users) {
