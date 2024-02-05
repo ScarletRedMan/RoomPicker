@@ -45,6 +45,7 @@ public class UserSearchPage extends VerticalLayout {
         field.setPlaceholder("some-user-identifier");
         field.setRequired(true);
         field.setMinWidth(30, Unit.PERCENTAGE);
+        field.setAutofocus(true);
 
         var button = new Button(new Icon(VaadinIcon.SEARCH));
         button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
