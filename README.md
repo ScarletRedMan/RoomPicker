@@ -53,15 +53,3 @@ java -jar control-panel-0.0.1-SNAPSHOT.jar
 | Name            | Description             | Default value          |
 |-----------------|-------------------------|------------------------|
 | ROOM_PICKER_URL | URL to main application | http://localhost:8080/ | 
-
-## Authorisation
-For use api methods from main application you need add http headers with username (`RoomPicker-User`) 
-and password (`Room_Picker-Password`).
-
-Example:
-
-```http request
-GET http://localhost:8080/nodes/hub/rooms/test-3/users
-RoomPicker-User: admin
-RoomPicker-Password: admin
-```
