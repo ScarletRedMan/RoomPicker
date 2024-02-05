@@ -6,20 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
-import ru.dragonestia.picker.api.repository.details.RoomDetails;
-import ru.dragonestia.picker.api.repository.details.UserDetails;
-import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.response.RoomInfoResponse;
 import ru.dragonestia.picker.api.repository.response.RoomListResponse;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.type.SlotLimit;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.service.NodeService;
-import ru.dragonestia.picker.util.DetailsExtractor;
 import ru.dragonestia.picker.util.DetailsParser;
 import ru.dragonestia.picker.util.NamingValidator;
-
-import java.util.HashSet;
 
 @Log4j2
 @RestController
