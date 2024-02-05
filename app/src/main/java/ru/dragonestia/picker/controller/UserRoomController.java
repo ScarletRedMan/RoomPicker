@@ -13,6 +13,7 @@ import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.service.UserService;
+import ru.dragonestia.picker.util.DetailsParser;
 import ru.dragonestia.picker.util.NamingValidator;
 
 import java.util.Arrays;
@@ -27,6 +28,7 @@ public class UserRoomController {
     private final RoomService roomService;
     private final UserService userService;
     private final NamingValidator namingValidator;
+    private final DetailsParser detailsParser;
 
     @GetMapping
     ResponseEntity<RoomUserListResponse> usersInsideRoom(@PathVariable(name = "nodeId") String nodeId,
@@ -34,15 +36,7 @@ public class UserRoomController {
                                                          @RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq) {
 
         var room = getNodeAndRoom(nodeId, roomId).room();
-
-        var details = new HashSet<UserDetails>();
-        for (var detailStr: detailsSeq.split(",")) {
-            try {
-                details.add(UserDetails.valueOf(detailStr.toUpperCase()));
-            } catch (IllegalArgumentException ignore) {}
-        }
-
-        var users = userService.getRoomUsersWithDetailsResponse(room, details);
+        var users = userService.getRoomUsersWithDetailsResponse(room, detailsParser.parseUserDetails(detailsSeq));
 
         return ResponseEntity.ok(new RoomUserListResponse(room.getSlots().getSlots(), users.size(), users));
     }
