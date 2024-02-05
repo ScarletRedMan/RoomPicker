@@ -7,16 +7,17 @@ import org.springframework.http.HttpMethod;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomAreFullException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
+import ru.dragonestia.picker.api.repository.details.RoomDetails;
+import ru.dragonestia.picker.api.repository.response.LinkedRoomsWithUserResponse;
 import ru.dragonestia.picker.api.repository.response.SearchUserResponse;
+import ru.dragonestia.picker.api.repository.response.UserDetailsResponse;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.api.repository.UserRepository;
 import ru.dragonestia.picker.api.repository.details.UserDetails;
 import ru.dragonestia.picker.api.repository.response.RoomUserListResponse;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -67,5 +68,29 @@ public class UserRepositoryImpl implements UserRepository {
                     params.put("requiredDetails", detailsStr);
                     params.put("input", input);
                 }).users();
+    }
+
+    @Override
+    public RUser find(String userId, Set<UserDetails> details) {
+        return rest.query("/users/" + userId,
+                HttpMethod.GET,
+                UserDetailsResponse.class,
+                params -> {
+                    var detailsStr = String.join(",", details.stream().map(Enum::toString).toList());
+
+                    params.put("requiredDetails", detailsStr);
+                }).user();
+    }
+
+    @Override
+    public List<RRoom.Short> getLinkedRoomsWithUsers(RUser user, Set<RoomDetails> details) {
+        return rest.query("/users/" + user.getId() + "/rooms",
+                HttpMethod.GET,
+                LinkedRoomsWithUserResponse.class,
+                params -> {
+                    var detailsStr = String.join(",", details.stream().map(Enum::toString).toList());
+
+                    params.put("requiredDetails", detailsStr);
+                }).rooms(); // TODO
     }
 }

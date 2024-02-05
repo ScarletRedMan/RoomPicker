@@ -87,5 +87,5 @@ public class RRoom {
         return false;
     }
 
-    public record Short(String id, int slots, boolean locked, Map<RoomDetails, String> details) {}
+    public record Short(String id, String nodeId, int slots, boolean locked, Map<RoomDetails, String> details) {}
 }

@@ -54,6 +54,6 @@ public class Room {
     }
 
     public RRoom.Short toShortResponseObject() {
-        return new RRoom.Short(id, slots.getSlots(), locked, new HashMap<>());
+        return new RRoom.Short(id, nodeId, slots.getSlots(), locked, new HashMap<>());
     }
 }

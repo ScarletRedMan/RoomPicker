@@ -9,6 +9,7 @@ import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.service.NodeService;
+import ru.dragonestia.picker.util.DetailsExtractor;
 import ru.dragonestia.picker.util.NamingValidator;
 
 import java.util.LinkedList;
@@ -21,6 +22,7 @@ import java.util.Set;
 public class NodeServiceImpl implements NodeService {
 
     private final NodeRepository nodeRepository;
+    private final DetailsExtractor detailsExtractor;
     private final NamingValidator namingValidator;
 
     @Override
@@ -43,13 +45,7 @@ public class NodeServiceImpl implements NodeService {
     public List<RNode> getAllNodesWithDetailsResponse(Set<NodeDetails> details) {
         var response = new LinkedList<RNode>();
         for (var node: all()) {
-            var responseNode = node.toResponseObject();
-
-            for (var detail: details) {
-                // TODO...
-            }
-
-            response.add(responseNode);
+            response.add(detailsExtractor.extract(node, details));
         }
         return response;
     }

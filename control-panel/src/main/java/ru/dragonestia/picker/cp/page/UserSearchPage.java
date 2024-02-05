@@ -1,5 +1,6 @@
 package ru.dragonestia.picker.cp.page;
 
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -49,6 +50,7 @@ public class UserSearchPage extends VerticalLayout {
         button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         button.getStyle().set("color", "#FFFFFF");
         button.addClickListener(event -> search(fieldUsername.getValue().trim()));
+        button.addClickShortcut(Key.ENTER);
 
         field.setSuffixComponent(button);
         return field;
@@ -62,7 +64,14 @@ public class UserSearchPage extends VerticalLayout {
 
         grid.addColumn(user -> user.getDetail(UserDetails.COUNT_ROOMS)).setTextAlign(ColumnTextAlign.CENTER).setHeader("Linked with rooms");
 
-        grid.addComponentColumn(user -> new Span("buttons")).setHeader("Manage"); // TODO
+        grid.addComponentColumn(user -> {
+            var button = new Button("Details");
+            button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            button.addClickListener(event -> {
+                getUI().ifPresent(ui -> ui.navigate("/users/" + user.getId()));
+            });
+            return button;
+        }).setHeader("Manage");
 
         return grid;
     }
