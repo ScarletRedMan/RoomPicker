@@ -15,6 +15,8 @@ import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.type.SlotLimit;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.service.NodeService;
+import ru.dragonestia.picker.util.DetailsExtractor;
+import ru.dragonestia.picker.util.DetailsParser;
 import ru.dragonestia.picker.util.NamingValidator;
 
 import java.util.HashSet;
@@ -28,21 +30,18 @@ public class RoomController {
     private final NodeService nodeService;
     private final RoomService roomService;
     private final NamingValidator namingValidator;
+    private final DetailsParser detailsParser;
 
     @GetMapping
     ResponseEntity<RoomListResponse> all(@PathVariable(name = "nodeId") String nodeId,
                                          @RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq) {
 
-        var details = new HashSet<RoomDetails>();
-        for (var detailStr: detailsSeq.split(",")) {
-            try {
-                details.add(RoomDetails.valueOf(detailStr.toUpperCase()));
-            } catch (IllegalArgumentException ignore) {}
-        }
-
         return nodeService.find(nodeId)
-                .map(node -> ResponseEntity.ok(new RoomListResponse(nodeId, roomService.getAllRoomsWithDetailsResponse(node, details))))
-                .orElseThrow(() -> new NodeNotFoundException(nodeId));
+                .map(node -> {
+                    var details = detailsParser.parseRoomDetails(detailsSeq);
+                    var response = new RoomListResponse(nodeId, roomService.getAllRoomsWithDetailsResponse(node, details));
+                    return ResponseEntity.ok(response);
+                }).orElseThrow(() -> new NodeNotFoundException(nodeId));
     }
 
     @PostMapping
