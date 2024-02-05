@@ -1,11 +1,11 @@
 package ru.dragonestia.picker.cp.page;
 
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -70,5 +70,9 @@ public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserv
 
     public void update(List<RRoom.Short> rooms) {
         gridRooms.setItems(cachedRooms = rooms);
+    }
+
+    private Html createComponent(String defaultValue) {
+        return new Html("<span>" + defaultValue + "</span>");
     }
 }

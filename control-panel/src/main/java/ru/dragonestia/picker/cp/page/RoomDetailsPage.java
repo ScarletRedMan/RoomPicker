@@ -64,7 +64,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
         add(addUsers = new AddUsers(room, (users, ignoreLimitation) -> appendUsers(room, users, ignoreLimitation)));
         add(new Hr());
         add(new H2("Users"));
-        add(userList = new UserList(room, userRepository.all(room, UserRepository.ALL_DETAILS)));
+        add(userList = new UserList(room, userRepository.all(room, UserRepository.ALL_DETAILS), userRepository));
     }
 
     private void updateRoomInfo() {
