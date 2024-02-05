@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
-import ru.dragonestia.picker.api.repository.details.UserDetails;
 import ru.dragonestia.picker.api.repository.response.LinkUsersWithRoomResponse;
 import ru.dragonestia.picker.api.repository.response.RoomUserListResponse;
 import ru.dragonestia.picker.model.Room;
@@ -17,7 +16,6 @@ import ru.dragonestia.picker.util.DetailsParser;
 import ru.dragonestia.picker.util.NamingValidator;
 
 import java.util.Arrays;
-import java.util.HashSet;
 
 @RequiredArgsConstructor
 @RestController
