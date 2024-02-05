@@ -4,18 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
-import ru.dragonestia.picker.api.repository.details.NodeDetails;
-import ru.dragonestia.picker.api.repository.details.RoomDetails;
 import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
 import ru.dragonestia.picker.api.repository.response.NodeDetailsResponse;
 import ru.dragonestia.picker.api.repository.response.NodeListResponse;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.service.RoomService;
+import ru.dragonestia.picker.util.DetailsParser;
 import ru.dragonestia.picker.util.NamingValidator;
 
 import java.util.Arrays;
-import java.util.HashSet;
 
 @RestController
 @RequestMapping("/nodes")
@@ -24,18 +22,12 @@ public class NodeController {
 
     private final NodeService nodeService;
     private final RoomService roomService;
+    private final DetailsParser detailsParser;
     private final NamingValidator namingValidator;
 
     @GetMapping
     NodeListResponse allNodes(@RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq) {
-        var details = new HashSet<NodeDetails>();
-        for (var detailStr: detailsSeq.split(",")) {
-            try {
-                details.add(NodeDetails.valueOf(detailStr.toUpperCase()));
-            } catch (IllegalArgumentException ignore) {}
-        }
-
-        return new NodeListResponse(nodeService.getAllNodesWithDetailsResponse(details));
+        return new NodeListResponse(nodeService.getAllNodesWithDetailsResponse(detailsParser.parseNodeDetails(detailsSeq)));
     }
 
     @PostMapping
