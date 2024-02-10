@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - "./config/prometheus.yml:/etc/prometheus/prometheus.yml"
+    networks:
+      metrics:
+        aliases: [ 'prometheus' ]
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    networks:
+      metrics:
+        aliases: [ 'grafana' ]
+
+networks:
+  metrics:
