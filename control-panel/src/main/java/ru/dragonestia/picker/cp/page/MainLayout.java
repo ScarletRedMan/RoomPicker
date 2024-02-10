@@ -5,14 +5,22 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.dragonestia.picker.api.repository.RoomPickerRepository;
+import ru.dragonestia.picker.api.repository.response.RoomPickerInfoResponse;
 
 public class MainLayout extends AppLayout {
 
-    public MainLayout() {
+    private final RoomPickerInfoResponse info;
+
+    public MainLayout(RoomPickerRepository roomPickerRepository) {
+        info = roomPickerRepository.getInfo();
+
         var toggle = new DrawerToggle();
         var scroller = new Scroller(createSideNav());
 
@@ -22,8 +30,10 @@ public class MainLayout extends AppLayout {
 
     private Component createLogo() {
         var layout = new HorizontalLayout();
+        layout.setAlignItems(FlexComponent.Alignment.END);
         layout.setPadding(true);
         layout.add(new Html("<h2><u>RoomPicker!</u></h2>"));
+        layout.add(new Html("<sub>" + info.version() + "</sub>"));
         return layout;
     }
 
