@@ -10,7 +10,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
-import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.picker.api.repository.RoomPickerRepository;
 import ru.dragonestia.picker.api.repository.response.RoomPickerInfoResponse;
 
