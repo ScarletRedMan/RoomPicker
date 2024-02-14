@@ -8,3 +8,7 @@ management:
     metrics:
       export:
         enabled: true
+
+springdoc:
+  api-docs:
+    path: /api-docs
