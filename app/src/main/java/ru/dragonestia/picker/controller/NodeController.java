@@ -1,5 +1,8 @@
 package ru.dragonestia.picker.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +18,7 @@ import ru.dragonestia.picker.util.NamingValidator;
 
 import java.util.Arrays;
 
+@Tag(name = "Nodes", description = "Node management")
 @RestController
 @RequestMapping("/nodes")
 @RequiredArgsConstructor
@@ -25,21 +29,30 @@ public class NodeController {
     private final DetailsParser detailsParser;
     private final NamingValidator namingValidator;
 
+    @Operation(summary = "Get all nodes")
     @GetMapping
-    NodeListResponse allNodes(@RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq) {
+    NodeListResponse allNodes(
+            @RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq
+    ) {
         return new NodeListResponse(nodeService.getAllNodesWithDetailsResponse(detailsParser.parseNodeDetails(detailsSeq)));
     }
 
+    @Operation(summary = "Register new node")
     @PostMapping
-    ResponseEntity<?> registerNode(@RequestParam(name = "nodeId") String nodeId,
-                                      @RequestParam(name = "method") PickingMode method) {
+    ResponseEntity<?> registerNode(
+            @Parameter(description = "Node identifier") @RequestParam(name = "nodeId") String nodeId,
+            @Parameter(description = "Picking mode method") @RequestParam(name = "method") PickingMode method
+    ) {
 
         nodeService.create(new Node(nodeId, method));
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Get node details")
     @GetMapping("/{nodeId}")
-    ResponseEntity<NodeDetailsResponse> nodeDetails(@PathVariable("nodeId") String nodeId) {
+    ResponseEntity<NodeDetailsResponse> nodeDetails(
+            @Parameter(description = "Node identifier") @PathVariable("nodeId") String nodeId
+    ) {
         namingValidator.validateNodeId(nodeId);
 
         return nodeService.find(nodeId)
@@ -47,18 +60,23 @@ public class NodeController {
                 .orElseThrow(() -> new NodeNotFoundException(nodeId));
     }
 
+    @Operation(summary = "Unregister node")
     @DeleteMapping("/{nodeId}")
-    ResponseEntity<?> removeNode(@PathVariable("nodeId") String nodeId) {
+    ResponseEntity<?> removeNode(
+            @Parameter(description = "Node identifier") @PathVariable("nodeId") String nodeId
+    ) {
         namingValidator.validateNodeId(nodeId);
 
         nodeService.find(nodeId).ifPresent(nodeService::remove);
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Pick node for users")
     @PostMapping("/{nodeId}/pick")
-    ResponseEntity<?> pickRoom(@PathVariable("nodeId") String nodeId,
-                               @RequestParam(name = "userIds") String userIds) {
-
+    ResponseEntity<?> pickRoom(
+            @Parameter(description = "Node identifier") @PathVariable("nodeId") String nodeId,
+            @Parameter(description = "Users to add", example = "user1,user3,user3") @RequestParam(name = "userIds") String userIds
+    ) {
         namingValidator.validateNodeId(nodeId);
 
         var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
