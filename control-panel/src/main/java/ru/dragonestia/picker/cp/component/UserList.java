@@ -54,12 +54,22 @@ public class UserList extends VerticalLayout {
 
     private Grid<RUser> createUsersGrid() {
         var grid = new Grid<RUser>();
-        grid.addColumn(RUser::getId).setHeader("User Identifier").setFooter(totalUsers);
-        grid.addColumn(user -> user.getDetail(UserDetails.COUNT_ROOMS)).setTextAlign(ColumnTextAlign.CENTER).setHeader("Linked with rooms")
-                .setFooter(occupancy);
+
+        grid.addColumn(RUser::getId).setHeader("User Identifier").setSortable(true).setFooter(totalUsers);
+
+        grid.addColumn(user -> user.getDetail(UserDetails.COUNT_ROOMS)).setTextAlign(ColumnTextAlign.CENTER)
+                .setHeader("Linked with rooms").setComparator((user1, user2) -> {
+                    var r1 = Integer.parseInt(user1.getDetail(UserDetails.COUNT_ROOMS));
+                    var r2 = Integer.parseInt(user2.getDetail(UserDetails.COUNT_ROOMS));
+
+                    return Integer.compare(r1, r2);
+                }).setSortable(true).setFooter(occupancy);
+
         grid.addComponentColumn(this::createManageButton).setHeader("Manage");
+
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
         grid.addSelectionListener(event -> updateButtonRemove());
+        grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;
     }
 
