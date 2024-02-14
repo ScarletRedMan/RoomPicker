@@ -54,12 +54,22 @@ public class UserList extends VerticalLayout {
 
     private Grid<RUser> createUsersGrid() {
         var grid = new Grid<RUser>();
-        grid.addColumn(RUser::getId).setHeader("User Identifier").setFooter(totalUsers);
-        grid.addColumn(user -> user.getDetail(UserDetails.COUNT_ROOMS)).setTextAlign(ColumnTextAlign.CENTER).setHeader("Linked with rooms")
-                .setFooter(occupancy);
+
+        grid.addColumn(RUser::getId).setHeader("User Identifier").setSortable(true).setFooter(totalUsers);
+
+        grid.addColumn(user -> user.getDetail(UserDetails.COUNT_ROOMS)).setTextAlign(ColumnTextAlign.CENTER)
+                .setHeader("Linked with rooms").setComparator((user1, user2) -> {
+                    var r1 = Integer.parseInt(user1.getDetail(UserDetails.COUNT_ROOMS));
+                    var r2 = Integer.parseInt(user2.getDetail(UserDetails.COUNT_ROOMS));
+
+                    return Integer.compare(r1, r2);
+                }).setSortable(true).setFooter(occupancy);
+
         grid.addComponentColumn(this::createManageButton).setHeader("Manage");
+
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
         grid.addSelectionListener(event -> updateButtonRemove());
+        grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;
     }
 
@@ -76,7 +86,7 @@ public class UserList extends VerticalLayout {
         cachedUsers = users;
         usersGrid.setItems(users);
         totalUsers.setText("Total users: " + users.size());
-        occupancy.setText("Occupancy: %s".formatted(getUsingPercentage(room.getSlots(), users.size())));
+        occupancy.setText("Occupancy: %s".formatted(getUsingPercentage(room.getSlots(), users.size()) + "%"));
     }
 
     private void updateButtonRemove() {
@@ -92,9 +102,9 @@ public class UserList extends VerticalLayout {
         buttonRemove.setText("Unlink users(" + users.size() + ")");
     }
 
-    public static String getUsingPercentage(int slots, int usedSlots) {
-        if (slots == RRoom.INFINITE_SLOTS) return "N/A";
+    public static int getUsingPercentage(int slots, int usedSlots) {
+        if (slots == RRoom.INFINITE_SLOTS) return -1;
         double percent = usedSlots / (double) slots * 100;
-        return ((int) percent) + "%";
+        return (int) percent;
     }
 }

@@ -57,9 +57,12 @@ public class NodeList extends VerticalLayout {
 
     private Grid<RNode> createGrid() {
         var grid = new Grid<>(RNode.class, false);
-        grid.addColumn(RNode::getId).setHeader("Identifier");
-        grid.addColumn(node -> node.getMode().getName()).setHeader("Mode");
+
+        grid.addColumn(RNode::getId).setHeader("Identifier").setSortable(true);
+        grid.addColumn(node -> node.getMode().getName()).setHeader("Mode").setSortable(true);
         grid.addComponentColumn(this::createManageButtons).setHeader("Manage");
+
+        grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;
     }
 

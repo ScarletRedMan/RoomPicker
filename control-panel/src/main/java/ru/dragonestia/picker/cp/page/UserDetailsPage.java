@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import ru.dragonestia.picker.api.repository.RoomRepository;
 import ru.dragonestia.picker.api.repository.UserRepository;
 import ru.dragonestia.picker.api.repository.details.RoomDetails;
+import ru.dragonestia.picker.api.repository.details.UserDetails;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
@@ -51,11 +52,17 @@ public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserv
     private Grid<RRoom.Short> createGrid() {
         var grid = new Grid<RRoom.Short>();
 
-        grid.addColumn(RRoom.Short::id).setHeader("Room identifier");
+        grid.addColumn(RRoom.Short::id).setHeader("Room identifier").setSortable(true);
 
-        grid.addColumn(RRoom.Short::nodeId).setHeader("Node identifier");
+        grid.addColumn(RRoom.Short::nodeId).setHeader("Node identifier").setSortable(true);
 
-        grid.addColumn(room -> room.details().get(RoomDetails.COUNT_USERS)).setHeader("Users");
+        grid.addColumn(room -> room.details().get(RoomDetails.COUNT_USERS)).setHeader("Users")
+                .setComparator((room1, room2) -> {
+                    var r1 = Integer.parseInt(room1.details().get(RoomDetails.COUNT_USERS));
+                    var r2 = Integer.parseInt(room2.details().get(RoomDetails.COUNT_USERS));
+
+                    return Integer.compare(r1, r2);
+                }).setSortable(true);
 
         grid.addComponentColumn(room -> {
             var button = new Button("Details");
@@ -65,6 +72,8 @@ public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserv
             });
             return button;
         }).setHeader("Other");
+
+        grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;
     }
 
