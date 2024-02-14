@@ -14,3 +14,4 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /api-docs-ui
+    default-models-expand-depth: -1
