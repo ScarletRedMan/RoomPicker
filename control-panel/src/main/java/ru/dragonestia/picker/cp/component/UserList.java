@@ -76,7 +76,7 @@ public class UserList extends VerticalLayout {
         cachedUsers = users;
         usersGrid.setItems(users);
         totalUsers.setText("Total users: " + users.size());
-        occupancy.setText("Occupancy: %s".formatted(getUsingPercentage(room.getSlots(), users.size())));
+        occupancy.setText("Occupancy: %s".formatted(getUsingPercentage(room.getSlots(), users.size()) + "%"));
     }
 
     private void updateButtonRemove() {
@@ -92,9 +92,9 @@ public class UserList extends VerticalLayout {
         buttonRemove.setText("Unlink users(" + users.size() + ")");
     }
 
-    public static String getUsingPercentage(int slots, int usedSlots) {
-        if (slots == RRoom.INFINITE_SLOTS) return "N/A";
+    public static int getUsingPercentage(int slots, int usedSlots) {
+        if (slots == RRoom.INFINITE_SLOTS) return -1;
         double percent = usedSlots / (double) slots * 100;
-        return ((int) percent) + "%";
+        return (int) percent;
     }
 }
