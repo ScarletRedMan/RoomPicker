@@ -1,13 +1,18 @@
 package ru.dragonestia.picker.api.repository.response.type;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import ru.dragonestia.picker.api.repository.details.UserDetails;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Schema(title = "User")
 public class RUser {
 
+    @Schema(description = "User identifier", example = "test-user")
     private String id;
+
+    @Schema(description = "Additional data requested (Key-Value)")
     private Map<UserDetails, String> details = new HashMap<>();
 
     private RUser() {}

@@ -1,5 +1,8 @@
 package ru.dragonestia.picker.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,7 @@ import ru.dragonestia.picker.util.NamingValidator;
 
 import java.util.Arrays;
 
+@Tag(name = "Users", description = "User management")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/nodes/{nodeId}/rooms/{roomId}/users")
@@ -28,33 +32,40 @@ public class UserRoomController {
     private final NamingValidator namingValidator;
     private final DetailsParser detailsParser;
 
+    @Operation(summary = "Get users inside room")
     @GetMapping
-    ResponseEntity<RoomUserListResponse> usersInsideRoom(@PathVariable(name = "nodeId") String nodeId,
-                                                         @PathVariable(name = "roomId") String roomId,
-                                                         @RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq) {
-
+    ResponseEntity<RoomUserListResponse> usersInsideRoom(
+            @Parameter(description = "Node identifier") @PathVariable(name = "nodeId") String nodeId,
+            @Parameter(description = "Room identifier") @PathVariable(name = "roomId") String roomId,
+            @Parameter(description = "Required addition user data", example = "COUNT_ROOMS") @RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq
+    ) {
         var room = getNodeAndRoom(nodeId, roomId).room();
         var users = userService.getRoomUsersWithDetailsResponse(room, detailsParser.parseUserDetails(detailsSeq));
 
         return ResponseEntity.ok(new RoomUserListResponse(room.getSlots().getSlots(), users.size(), users));
     }
 
+    @Operation(summary = "Link users with room")
     @PostMapping
-    ResponseEntity<LinkUsersWithRoomResponse> linkUserWithRoom(@PathVariable(name = "nodeId") String nodeId,
-                                                               @PathVariable(name = "roomId") String roomId,
-                                                               @RequestParam(name = "userIds") String userIds,
-                                                               @RequestParam(name = "force") boolean force) {
-
+    ResponseEntity<LinkUsersWithRoomResponse> linkUserWithRoom(
+            @Parameter(description = "Node identifier") @PathVariable(name = "nodeId") String nodeId,
+            @Parameter(description = "Room identifier") @PathVariable(name = "roomId") String roomId,
+            @Parameter(description = "User identifiers", example = "user1,user2,user3") @RequestParam(name = "userIds") String userIds,
+            @Parameter(description = "Ignore slot limitation") @RequestParam(name = "force") boolean force
+    ) {
         var room = getNodeAndRoom(nodeId, roomId).room();
         var users = namingValidator.validateUserIds(Arrays.stream(userIds.split(",")).toList());
         var usedSlots = userService.linkUsersWithRoom(room, users, force);
         return ResponseEntity.ok(new LinkUsersWithRoomResponse(usedSlots, room.getSlots().getSlots()));
     }
 
+    @Operation(summary = "Unlink users from room")
     @DeleteMapping
-    ResponseEntity<?> unlinkUsersForBucket(@PathVariable(name = "nodeId") String nodeId,
-                                @PathVariable(name = "roomId") String roomId,
-                                @RequestParam(name = "userIds") String userIds) {
+    ResponseEntity<?> unlinkUsersForBucket(
+            @Parameter(description = "Node identifier") @PathVariable(name = "nodeId") String nodeId,
+            @Parameter(description = "Room identifier") @PathVariable(name = "roomId") String roomId,
+            @Parameter(description = "User identifiers", example = "user1,user2,user3") @RequestParam(name = "userIds") String userIds
+    ) {
 
         var room = getNodeAndRoom(nodeId, roomId).room();
         var users = namingValidator.validateUserIds(Arrays.stream(userIds.split(",")).toList());
