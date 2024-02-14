@@ -7,9 +7,7 @@ services:
       - "9090:9090"
     volumes:
       - "./config/prometheus.yml:/etc/prometheus/prometheus.yml"
-    networks:
-      metrics:
-        aliases: [ 'prometheus' ]
+
   grafana:
     image: grafana/grafana
     ports:
@@ -17,9 +15,5 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
-    networks:
-      metrics:
-        aliases: [ 'grafana' ]
-
-networks:
-  metrics:
+    volumes:
+      - "./appdata/grafana:/var/lib/grafana/"
