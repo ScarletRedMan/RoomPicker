@@ -10,15 +10,20 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.dragonestia.picker.api.repository.RoomPickerRepository;
 import ru.dragonestia.picker.api.repository.response.RoomPickerInfoResponse;
+
+import java.net.URI;
 
 public class MainLayout extends AppLayout {
 
     private final RoomPickerInfoResponse info;
+    private final String serverUrl;
 
-    public MainLayout(RoomPickerRepository roomPickerRepository) {
+public MainLayout(RoomPickerRepository roomPickerRepository, URI serverUrl) {
         info = roomPickerRepository.getInfo();
+        this.serverUrl = serverUrl.toString();
 
         var toggle = new DrawerToggle();
         var scroller = new Scroller(createSideNav());
@@ -41,6 +46,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new SideNavItem("Nodes list", NodesPage.class, VaadinIcon.FOLDER_O.create()));
         nav.addItem(new SideNavItem("Search users", UserSearchPage.class, VaadinIcon.SEARCH.create()));
         nav.addItem(new SideNavItem("Documentation", "https://github.com/ScarletRedMan/RoomPicker", VaadinIcon.BOOK.create()));
+        nav.addItem(new SideNavItem("Swagger UI", serverUrl + "api-docs-ui", VaadinIcon.CURLY_BRACKETS.create()));
         nav.addItem(new SideNavItem("Sign-out", HomePage.class, VaadinIcon.SIGN_OUT.create()));
         return nav;
     }
