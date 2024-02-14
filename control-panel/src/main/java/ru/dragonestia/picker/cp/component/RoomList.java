@@ -19,6 +19,7 @@ import lombok.extern.log4j.Log4j2;
 import ru.dragonestia.picker.api.repository.details.RoomDetails;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -63,7 +64,8 @@ public class RoomList extends VerticalLayout {
 
     private Grid<RRoom.Short> createGrid() {
         var grid = new Grid<>(RRoom.Short.class, false);
-        grid.addColumn(RRoom.Short::id).setHeader("Identifier");
+
+        grid.addColumn(RRoom.Short::id).setHeader("Identifier").setSortable(true);
 
         grid.addComponentColumn(room -> {
             var result = new Span();
@@ -74,12 +76,24 @@ public class RoomList extends VerticalLayout {
                 result.setText(Integer.toString(room.slots()));
             }
             return result;
-        }).setHeader("Slots").setTextAlign(ColumnTextAlign.CENTER);
+        }).setHeader("Slots").setComparator((room1, room2) -> {
+            var r1 = room1.slots() == -1? Integer.MAX_VALUE : room1.slots();
+            var r2 = room2.slots() == -1? Integer.MAX_VALUE : room2.slots();
 
-        grid.addColumn(this::getUsers).setHeader("Users").setTextAlign(ColumnTextAlign.CENTER).setFooter(totalUsers);
+            return Integer.compare(r1, r2);
+        }).setSortable(true).setTextAlign(ColumnTextAlign.CENTER);
 
-        grid.addColumn(room -> UserList.getUsingPercentage(room.slots(), getUsers(room)))
-                .setHeader("Occupancy").setTextAlign(ColumnTextAlign.CENTER);
+        grid.addColumn(this::getUsers).setHeader("Users")
+                .setComparator((room1, room2) -> Integer.compare(getUsers(room1), getUsers(room2))).setSortable(true)
+                .setTextAlign(ColumnTextAlign.CENTER).setFooter(totalUsers);
+
+        grid.addColumn(room -> Math.max(UserList.getUsingPercentage(room.slots(), getUsers(room)), 0) + "%")
+                .setComparator((room1, room2) -> {
+                    var p1 = UserList.getUsingPercentage(room1.slots(), getUsers(room1));
+                    var p2 = UserList.getUsingPercentage(room2.slots(), getUsers(room2));
+
+                    return Integer.compare(p1, p2);
+                }).setHeader("Occupancy").setTextAlign(ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(room -> {
             var result = new Span();
@@ -90,9 +104,12 @@ public class RoomList extends VerticalLayout {
                 result.setText("No");
             }
             return result;
-        }).setHeader("Locked").setTextAlign(ColumnTextAlign.CENTER);
+        }).setComparator((room1, room2) -> Boolean.compare(room1.locked(), room2.locked())).setSortable(true)
+                .setHeader("Locked").setTextAlign(ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(this::createManageButtons).setHeader("Manage");
+
+        grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;
     }
 
