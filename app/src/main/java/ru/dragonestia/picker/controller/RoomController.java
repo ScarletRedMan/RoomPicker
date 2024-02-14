@@ -1,8 +1,12 @@
 package ru.dragonestia.picker.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
@@ -15,7 +19,7 @@ import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.util.DetailsParser;
 import ru.dragonestia.picker.util.NamingValidator;
 
-@Log4j2
+@Tag(name = "Rooms", description = "Room management")
 @RestController
 @RequestMapping("/nodes/{nodeId}/rooms")
 @RequiredArgsConstructor
@@ -26,10 +30,12 @@ public class RoomController {
     private final NamingValidator namingValidator;
     private final DetailsParser detailsParser;
 
+    @Operation(summary = "Get all rooms from node")
     @GetMapping
-    ResponseEntity<RoomListResponse> all(@PathVariable(name = "nodeId") String nodeId,
-                                         @RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq) {
-
+    ResponseEntity<RoomListResponse> all(
+            @Parameter(description = "Node identifier") @PathVariable(name = "nodeId") String nodeId,
+            @Parameter(description = "Required addition data", example = "COUNT_USERS") @RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq
+    ) {
         return nodeService.find(nodeId)
                 .map(node -> {
                     var details = detailsParser.parseRoomDetails(detailsSeq);
@@ -38,13 +44,15 @@ public class RoomController {
                 }).orElseThrow(() -> new NodeNotFoundException(nodeId));
     }
 
+    @Operation(summary = "Register new room")
     @PostMapping
-    ResponseEntity<?> register(@PathVariable(name = "nodeId") String nodeId,
-                               @RequestParam(name = "roomId") String roomId,
-                               @RequestParam(name = "slots") int slots,
-                               @RequestParam(name = "payload") String payload,
-                               @RequestParam(name = "locked", defaultValue = "false") boolean locked) {
-
+    ResponseEntity<?> register(
+            @Parameter(description = "Node identifier") @PathVariable(name = "nodeId") String nodeId,
+            @Parameter(description = "Room identifier") @RequestParam(name = "roomId") String roomId,
+            @Parameter(description = "Maximum users count in room") @RequestParam(name = "slots") int slots,
+            @Parameter(description = "Payload. Some data") @RequestParam(name = "payload") String payload,
+            @Parameter(description = "Lock for picking") @RequestParam(name = "locked", defaultValue = "false") boolean locked
+    ) {
         var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
         var room = Room.create(roomId, node, SlotLimit.of(slots), payload);
         room.setLocked(locked);
@@ -53,10 +61,12 @@ public class RoomController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Unregister room")
     @DeleteMapping("/{roomId}")
-    ResponseEntity<?> remove(@PathVariable("nodeId") String nodeId,
-                             @PathVariable("roomId") String roomId) {
-
+    ResponseEntity<?> remove(
+            @Parameter(description = "Node identifier") @PathVariable("nodeId") String nodeId,
+            @Parameter(description = "Room identifier") @PathVariable("roomId") String roomId
+    ) {
         namingValidator.validateNodeId(nodeId);
         namingValidator.validateRoomId(nodeId, roomId);
 
@@ -67,10 +77,12 @@ public class RoomController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Get room details")
     @GetMapping("/{roomId}")
-    ResponseEntity<RoomInfoResponse> info(@PathVariable("nodeId") String nodeId,
-                                          @PathVariable("roomId") String roomId) {
-
+    ResponseEntity<RoomInfoResponse> info(
+            @Parameter(description = "Node identifier") @PathVariable("nodeId") String nodeId,
+            @Parameter(description = "Room identifier") @PathVariable("roomId") String roomId
+    ) {
         namingValidator.validateNodeId(nodeId);
         namingValidator.validateRoomId(nodeId, roomId);
 
@@ -80,11 +92,14 @@ public class RoomController {
                 .orElseThrow(() -> new RoomNotFoundException(nodeId, roomId));
     }
 
+    @Operation(summary = "Lock/unlock room")
+    @ApiResponse(description = "New lock state")
     @PutMapping("/{roomId}/lock")
-    ResponseEntity<Boolean> lockBucket(@PathVariable("nodeId") String nodeId,
-                                       @PathVariable("roomId") String roomId,
-                                       @RequestParam(name = "newState") boolean value) {
-
+    ResponseEntity<Boolean> lockRoom(
+            @Parameter(description = "Node identifier") @PathVariable("nodeId") String nodeId,
+            @Parameter(description = "Room identifier") @PathVariable("roomId") String roomId,
+            @Parameter(description = "New state for Lock property") @RequestParam(name = "newState") boolean value
+    ) {
         namingValidator.validateNodeId(nodeId);
         namingValidator.validateRoomId(nodeId, roomId);
 
