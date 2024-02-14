@@ -60,10 +60,15 @@ public class UserSearchPage extends VerticalLayout {
     private Grid<RUser> createUserGrid() {
         var grid = new Grid<RUser>();
 
-        grid.addColumn(RUser::getId).setHeader("Identifier")
+        grid.addColumn(RUser::getId).setHeader("Identifier").setSortable(true)
                 .setFooter("Found %s users".formatted(cachedUsers.size()));
 
-        grid.addColumn(user -> user.getDetail(UserDetails.COUNT_ROOMS)).setTextAlign(ColumnTextAlign.CENTER).setHeader("Linked with rooms");
+        grid.addColumn(user -> user.getDetail(UserDetails.COUNT_ROOMS)).setComparator((user1, user2) -> {
+            var r1 = Integer.parseInt(user1.getDetail(UserDetails.COUNT_ROOMS));
+            var r2 = Integer.parseInt(user2.getDetail(UserDetails.COUNT_ROOMS));
+
+            return Integer.compare(r1, r2);
+        }).setTextAlign(ColumnTextAlign.CENTER).setHeader("Linked with rooms");
 
         grid.addComponentColumn(user -> {
             var button = new Button("Details");
@@ -74,6 +79,7 @@ public class UserSearchPage extends VerticalLayout {
             return button;
         }).setHeader("Manage");
 
+        grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;
     }
 
