@@ -1,20 +1,33 @@
 package ru.dragonestia.picker.api.repository.response.type;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import ru.dragonestia.picker.api.repository.details.RoomDetails;
 
 import java.beans.Transient;
 import java.util.HashMap;
 import java.util.Map;
 
+@Schema(title = "Room")
 public class RRoom {
 
     public final static int INFINITE_SLOTS = -1;
 
+    @Schema(description = "Room identifier", example = "test-room")
     private String id;
+
+    @Schema(description = "Node identifier", example = "test-node")
     private String nodeId;
+
+    @Schema(description = "Slots for users. -1 - unlimited slots", example = "25")
     private int slots;
+
+    @Schema(description = "Payload. Some data")
     private String payload;
+
+    @Schema(description = "Does picking skip this room?")
     private boolean locked = false;
+
+    @Schema(description = "Additional data requested (Key-Value)")
     private Map<RoomDetails, String> details;
 
     private RRoom() {}
@@ -87,5 +100,12 @@ public class RRoom {
         return false;
     }
 
-    public record Short(String id, String nodeId, int slots, boolean locked, Map<RoomDetails, String> details) {}
+    @Schema(title = "Room (Short)")
+    public record Short(
+            @Schema(description = "Room identifier", example = "test-room") String id,
+            @Schema(description = "Node identifier", example = "test-node") String nodeId,
+            @Schema(description = "Slots for users. -1 - unlimited slots", example = "25") int slots,
+            @Schema(description = "Does picking skip this room?") boolean locked,
+            @Schema(description = "Additional data requested (Key-Value)") Map<RoomDetails, String> details
+    ) {}
 }
