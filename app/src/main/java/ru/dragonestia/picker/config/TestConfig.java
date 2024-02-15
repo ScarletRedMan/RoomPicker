@@ -1,6 +1,9 @@
 package ru.dragonestia.picker.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -44,12 +47,14 @@ public class TestConfig implements WebMvcConfigurer {
         createNodeWithContent(new Node("hub", PickingMode.SEQUENTIAL_FILLING));
     }
 
+    @SneakyThrows
     private void createNodeWithContent(Node node) {
         nodeRepository.create(node);
+        var json = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
         for (int i = 1; i <= 5; i++) {
             var slots = 5 * i;
-            var room = Room.create("test-" + i, node, SlotLimit.of(slots), "Some payload");
+            var room = Room.create("test-" + i, node, SlotLimit.of(slots), json.writeValueAsString(generatePayload()));
             roomRepository.create(room);
 
             for (int j = 0, n = rand.nextInt(slots + 1); j < n; j++) {
@@ -59,7 +64,7 @@ public class TestConfig implements WebMvcConfigurer {
         }
 
         for (int i = 0; i < 5; i++) {
-            var room = Room.create(randomUUID().toString(), node, SlotLimit.unlimited(), "Some payload");
+            var room = Room.create(randomUUID().toString(), node, SlotLimit.unlimited(), json.writeValueAsString(generatePayload()));
             room.setLocked((i & 1) == 0);
             roomRepository.create(room);
         }
@@ -70,4 +75,12 @@ public class TestConfig implements WebMvcConfigurer {
         rand.nextBytes(randomBytes);
         return UUID.nameUUIDFromBytes(randomBytes);
     }
+
+    private SomePayload generatePayload() {
+        return new SomePayload("Game server",
+                "game.dragonestia.ru:" + rand.nextInt(19000, 25000), randomUUID(),
+                new Base64().encodeAsString(randomUUID().toString().getBytes()));
+    }
+
+    private record SomePayload(String name, String host, UUID gameId, String secureKey) {}
 }
