@@ -17,6 +17,7 @@ import ru.dragonestia.picker.api.repository.response.type.RUser;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 public class AddUsers extends Details {
@@ -25,6 +26,7 @@ public class AddUsers extends Details {
     private final BiConsumer<Collection<RUser>, Boolean> onCommit;
     private final Checkbox ignoreSlots;
     private final VerticalLayout usersLayout;
+    private final AtomicInteger freeUserIdNumber = new AtomicInteger(1);
 
     public AddUsers(RRoom room, BiConsumer<Collection<RUser>, Boolean> onCommit) {
         super(new H2("Add users"));
@@ -35,15 +37,16 @@ public class AddUsers extends Details {
 
         add(addUserToTransacionButton());
         add(usersLayout);
-        usersLayout.add(new UserEntry(false));
+        usersLayout.add(new UserEntry(false, freeUserIdNumber.getAndIncrement()));
         add(ignoreSlots = new Checkbox("Ignore slot limitation", false));
         add(createAddUsersButton());
     }
 
     public void clear() {
+        freeUserIdNumber.set(1);
         ignoreSlots.setValue(false);
         usersLayout.removeAll();
-        usersLayout.add(new UserEntry(false));
+        usersLayout.add(new UserEntry(false, freeUserIdNumber.getAndIncrement()));
     }
 
     public List<RUser> readAllUsers() {
@@ -60,7 +63,7 @@ public class AddUsers extends Details {
     private Button addUserToTransacionButton() {
         var button = new Button("Add user to transaction");
         button.addClickListener(event -> {
-            usersLayout.add(new UserEntry(true));
+            usersLayout.add(new UserEntry(true, freeUserIdNumber.getAndIncrement()));
         });
         button.setPrefixComponent(new Icon(VaadinIcon.PLUS));
         return button;
@@ -87,14 +90,16 @@ public class AddUsers extends Details {
 
         private final TextField userIdentifierField;
 
-        public UserEntry(boolean canBeDeleted) {
-            add(userIdentifierField = createUserIdentifierField(canBeDeleted));
+        public UserEntry(boolean canBeDeleted, int number) {
+            add(userIdentifierField = createUserIdentifierField(canBeDeleted, number));
         }
 
-        private TextField createUserIdentifierField(boolean canBeDeleted) {
+        private TextField createUserIdentifierField(boolean canBeDeleted, int number) {
             var field = new TextField("User id");
-            field.setPlaceholder("example-user-id");
-            field.setHelperText("It can be UUID, username, numeric ids, etc");
+            field.setPlaceholder("example-user-id-" + number);
+            if (!canBeDeleted) {
+                field.setHelperText("It can be UUID, username, numeric ids, etc");
+            }
             field.setMinWidth(20, Unit.REM);
 
             if (canBeDeleted) {
