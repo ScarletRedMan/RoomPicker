@@ -19,7 +19,6 @@ import lombok.extern.log4j.Log4j2;
 import ru.dragonestia.picker.api.repository.details.RoomDetails;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -33,15 +32,15 @@ public class RoomList extends VerticalLayout {
     private final Span totalUsers = new Span();
     @Setter private Consumer<RRoom.Short> removeMethod;
 
-    public RoomList(String nodeIdentifier, List<RRoom.Short> buckets) {
+    public RoomList(String nodeIdentifier, List<RRoom.Short> rooms) {
         this.nodeIdentifier = nodeIdentifier;
-        cachedRooms = buckets;
+        cachedRooms = rooms;
 
         add(new H2("Rooms"));
         add(searchField = createSearchField());
         add(roomsGrid = createGrid());
 
-        update(buckets);
+        update(rooms);
     }
 
     private TextField createSearchField() {
@@ -133,16 +132,16 @@ public class RoomList extends VerticalLayout {
         return layout;
     }
 
-    private void clickDetailsButton(RRoom.Short bucket) {
+    private void clickDetailsButton(RRoom.Short room) {
         getUI().ifPresent(ui -> {
             ui.navigate("/nodes/" + nodeIdentifier +
-                    "/rooms/" + bucket.id());
+                    "/rooms/" + room.id());
         });
     }
 
-    private void clickRemoveButton(RRoom.Short bucket) {
-        var dialog = new Dialog("Confirm bucket deletion");
-        dialog.add(new Html("<p>Confirm that you want to delete bucket. Enter <b><u>" + bucket.id() + "</u></b> to field below and confirm.</p>"));
+    private void clickRemoveButton(RRoom.Short room) {
+        var dialog = new Dialog("Confirm room deletion");
+        dialog.add(new Html("<p>Confirm that you want to delete room. Enter <b><u>" + room.id() + "</u></b> to field below and confirm.</p>"));
 
         var inputField = new TextField();
         inputField.setWidth("100%");
@@ -152,13 +151,13 @@ public class RoomList extends VerticalLayout {
             var button = new Button("Confirm");
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
             button.addClickListener(event -> {
-                if (!bucket.id().equals(inputField.getValue())) {
+                if (!room.id().equals(inputField.getValue())) {
                     Notifications.error("Invalid input");
                     return;
                 }
 
-                removeBucket(bucket);
-                Notifications.success("Bucket <b>" + bucket.id() + "</b> was successfully removed!");
+                removeRemove(room);
+                Notifications.success("Room <b>" + room.id() + "</b> was successfully removed!");
                 dialog.close();
             });
 
@@ -174,8 +173,8 @@ public class RoomList extends VerticalLayout {
         dialog.open();
     }
 
-    public void update(List<RRoom.Short> buckets) {
-        cachedRooms = buckets;
+    public void update(List<RRoom.Short> rooms) {
+        cachedRooms = rooms;
         applySearch(searchField.getValue());
 
         int users = 0;
@@ -185,9 +184,9 @@ public class RoomList extends VerticalLayout {
         totalUsers.setText("Total users: " + users);
     }
 
-    private void removeBucket(RRoom.Short bucket) {
+    private void removeRemove(RRoom.Short room) {
         if (removeMethod != null) {
-            removeMethod.accept(bucket);
+            removeMethod.accept(room);
         }
     }
 
