@@ -86,7 +86,7 @@ public class UserRepositoryImpl implements UserRepository {
 
             var picker = nodeId2PickerModeCache.get(room.getNodeId());
             if (picker instanceof LeastPickedPicker leastPickedPicker) {
-                leastPickedPicker.updateUsersAmount(room, roomUsers.get(path).size());
+                leastPickedPicker.updateUsersAmount(room, set.size());
             }
         }
         return counter.get();
