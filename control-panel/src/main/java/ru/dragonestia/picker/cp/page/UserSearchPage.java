@@ -77,7 +77,7 @@ public class UserSearchPage extends VerticalLayout {
                 getUI().ifPresent(ui -> ui.navigate("/users/" + user.getId()));
             });
             return button;
-        }).setHeader("Manage");
+        }).setTextAlign(ColumnTextAlign.END).setFrozenToEnd(true);
 
         grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;

@@ -3,6 +3,7 @@ package ru.dragonestia.picker.cp.page;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
@@ -71,7 +72,7 @@ public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserv
                 getUI().ifPresent(ui -> ui.navigate("/nodes/%s/rooms/%s".formatted(room.nodeId(), room.id())));
             });
             return button;
-        }).setHeader("Other");
+        }).setTextAlign(ColumnTextAlign.END).setFrozenToEnd(true);
 
         grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;

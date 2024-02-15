@@ -60,14 +60,14 @@ public class NodeList extends VerticalLayout {
 
         grid.addColumn(RNode::getId).setHeader("Identifier").setSortable(true);
         grid.addColumn(node -> node.getMode().getName()).setHeader("Mode").setSortable(true);
-        grid.addComponentColumn(this::createManageButtons).setHeader("Manage");
+        grid.addComponentColumn(this::createManageButtons).setFrozenToEnd(true);
 
         grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;
     }
 
     private HorizontalLayout createManageButtons(RNode node) {
-        var layout = new HorizontalLayout();
+        var layout = new HorizontalLayout(JustifyContentMode.END);
 
         {
             var button = new Button("Details");

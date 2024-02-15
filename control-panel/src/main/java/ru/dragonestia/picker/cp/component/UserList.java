@@ -65,7 +65,7 @@ public class UserList extends VerticalLayout {
                     return Integer.compare(r1, r2);
                 }).setSortable(true).setFooter(occupancy);
 
-        grid.addComponentColumn(this::createManageButton).setHeader("Manage");
+        grid.addComponentColumn(this::createManageButton).setTextAlign(ColumnTextAlign.END).setFrozenToEnd(true);
 
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
         grid.addSelectionListener(event -> updateButtonRemove());

@@ -106,14 +106,14 @@ public class RoomList extends VerticalLayout {
         }).setComparator((room1, room2) -> Boolean.compare(room1.locked(), room2.locked())).setSortable(true)
                 .setHeader("Locked").setTextAlign(ColumnTextAlign.CENTER);
 
-        grid.addComponentColumn(this::createManageButtons).setHeader("Manage");
+        grid.addComponentColumn(this::createManageButtons).setFrozenToEnd(true);
 
         grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;
     }
 
     private HorizontalLayout createManageButtons(RRoom.Short room) {
-        var layout = new HorizontalLayout();
+        var layout = new HorizontalLayout(JustifyContentMode.END);
 
         {
             var button = new Button("Details");
