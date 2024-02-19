@@ -20,7 +20,6 @@ import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.api.repository.NodeRepository;
 import ru.dragonestia.picker.api.repository.RoomRepository;
 import ru.dragonestia.picker.api.repository.UserRepository;
-import ru.dragonestia.picker.api.repository.details.UserDetails;
 import ru.dragonestia.picker.cp.component.AddUsers;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.Notifications;
@@ -28,7 +27,6 @@ import ru.dragonestia.picker.cp.component.UserList;
 import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 
 import java.util.Collection;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiredArgsConstructor
@@ -64,7 +62,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
         add(addUsers = new AddUsers(room, (users, ignoreLimitation) -> appendUsers(room, users, ignoreLimitation)));
         add(new Hr());
         add(new H2("Users"));
-        add(userList = new UserList(room, userRepository.all(room, UserRepository.ALL_DETAILS), userRepository));
+        add(userList = new UserList(room, userRepository));
     }
 
     private void updateRoomInfo() {
@@ -125,7 +123,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
                 }).toList();
 
         userRepository.linkWithRoom(room, newUsers, ignoreLimitation);
-        userList.update(userRepository.all(room, UserRepository.ALL_DETAILS));
+        userList.refresh();
 
         if (validationFail.get()) {
             if (newUsers.isEmpty()) {
