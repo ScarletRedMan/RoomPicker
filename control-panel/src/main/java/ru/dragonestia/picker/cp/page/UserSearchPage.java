@@ -17,26 +17,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.picker.api.repository.UserRepository;
 import ru.dragonestia.picker.api.repository.details.UserDetails;
 import ru.dragonestia.picker.api.repository.response.type.RUser;
-import ru.dragonestia.picker.cp.component.Notifications;
+import ru.dragonestia.picker.cp.component.RefreshableTable;
 
 import java.util.LinkedList;
 import java.util.List;
 
 @PageTitle("Search users")
 @Route(value = "/users", layout = MainLayout.class)
-public class UserSearchPage extends VerticalLayout {
+public class UserSearchPage extends VerticalLayout implements RefreshableTable {
 
     private final UserRepository userRepository;
     private final TextField fieldUsername;
     private final Grid<RUser> userGrid;
+    private final Span foundUsers;
     private List<RUser> cachedUsers = new LinkedList<>();
 
     @Autowired
     public UserSearchPage(UserRepository userRepository) {
         this.userRepository = userRepository;
 
+        foundUsers = new Span();
         add(fieldUsername = createUsernameInputField());
         add(userGrid = createUserGrid());
+        refresh();
     }
 
     private TextField createUsernameInputField() {
@@ -50,7 +53,7 @@ public class UserSearchPage extends VerticalLayout {
         var button = new Button(new Icon(VaadinIcon.SEARCH));
         button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         button.getStyle().set("color", "#FFFFFF");
-        button.addClickListener(event -> search(fieldUsername.getValue().trim()));
+        button.addClickListener(event -> refresh());
         button.addClickShortcut(Key.ENTER);
 
         field.setSuffixComponent(button);
@@ -61,7 +64,7 @@ public class UserSearchPage extends VerticalLayout {
         var grid = new Grid<RUser>();
 
         grid.addColumn(RUser::getId).setHeader("Identifier").setSortable(true)
-                .setFooter("Found %s users".formatted(cachedUsers.size()));
+                .setFooter(foundUsers);
 
         grid.addColumn(user -> user.getDetail(UserDetails.COUNT_ROOMS)).setComparator((user1, user2) -> {
             var r1 = Integer.parseInt(user1.getDetail(UserDetails.COUNT_ROOMS));
@@ -77,7 +80,7 @@ public class UserSearchPage extends VerticalLayout {
                 getUI().ifPresent(ui -> ui.navigate("/users/" + user.getId()));
             });
             return button;
-        }).setTextAlign(ColumnTextAlign.END).setFrozenToEnd(true);
+        }).setTextAlign(ColumnTextAlign.END).setFrozenToEnd(true).setHeader(createRefreshButton());
 
         grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;
@@ -85,5 +88,11 @@ public class UserSearchPage extends VerticalLayout {
 
     private void search(String input) {
         userGrid.setItems(cachedUsers = userRepository.search(input, UserRepository.ALL_DETAILS));
+    }
+
+    @Override
+    public void refresh() {
+        search(fieldUsername.getValue().trim());
+        foundUsers.setText("Found %s users".formatted(cachedUsers.size()));
     }
 }
