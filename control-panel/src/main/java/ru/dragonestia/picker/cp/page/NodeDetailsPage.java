@@ -41,10 +41,10 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
     public void beforeEnter(BeforeEnterEvent event) {
         node = paramsExtractor.extractNodeId(event);
 
-        initComponents(node, roomRepository.all(node, RoomRepository.ALL_DETAILS));
+        initComponents(node);
     }
 
-    private void initComponents(RNode node, List<RRoom.Short> rooms) {
+    private void initComponents(RNode node) {
         add(NavPath.toNode(node.getId()));
         printNodeDetails(node);
         add(new Hr());
@@ -55,14 +55,14 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
             } catch (Error error) {
                 return new RegisterRoom.Response(true,  error.getMessage());
             } finally {
-                roomList.update(roomRepository.all(node, RoomRepository.ALL_DETAILS));
+                roomList.refresh();
             }
         }));
         add(new Hr());
-        add(roomList = new RoomList(node.getId(), rooms));
+        add(roomList = new RoomList(node, roomRepository));
         roomList.setRemoveMethod(room -> {
             roomRepository.remove(node, room);
-            roomList.update(roomRepository.all(node, RoomRepository.ALL_DETAILS));
+            roomList.refresh();
         });
     }
 
