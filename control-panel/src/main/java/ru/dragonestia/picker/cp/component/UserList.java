@@ -7,6 +7,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import ru.dragonestia.picker.api.repository.UserRepository;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
@@ -15,10 +16,8 @@ import ru.dragonestia.picker.api.repository.details.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
 
-public class UserList extends VerticalLayout {
+public class UserList extends VerticalLayout implements RefreshableTable {
 
     private final RRoom room;
     private final UserRepository userRepository;
@@ -28,26 +27,26 @@ public class UserList extends VerticalLayout {
     private final Span occupancy = new Span();
     private List<RUser> cachedUsers = new ArrayList<>();
 
-    public UserList(RRoom room, List<RUser> users, UserRepository userRepository) {
+    public UserList(RRoom room, UserRepository userRepository) {
         this.room = room;
         this.userRepository = userRepository;
 
-        add(buttonRemove = createButtonRemove());
+        buttonRemove = createButtonRemove();
         add(usersGrid = createUsersGrid());
 
-        update(users);
+        refresh();
         updateButtonRemove();
     }
 
     private Button createButtonRemove() {
-        var button = new Button("Unlink users");
+        var button = new Button("Unlink");
         button.setPrefixComponent(new Icon(VaadinIcon.UNLINK));
         button.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
         button.addClickListener(event -> {
             var users = usersGrid.getSelectedItems();
             if (users.isEmpty()) return;
             userRepository.unlinkFromRoom(room, users);
-            update(userRepository.all(room, UserRepository.ALL_DETAILS));
+            refresh();
         });
         return button;
     }
@@ -65,7 +64,8 @@ public class UserList extends VerticalLayout {
                     return Integer.compare(r1, r2);
                 }).setSortable(true).setFooter(occupancy);
 
-        grid.addComponentColumn(this::createManageButton).setTextAlign(ColumnTextAlign.END).setFrozenToEnd(true);
+        grid.addComponentColumn(this::createManageButton).setTextAlign(ColumnTextAlign.END).setFrozenToEnd(true)
+                .setTextAlign(ColumnTextAlign.END).setHeader(createManageTableButtons());
 
         grid.setSelectionMode(Grid.SelectionMode.MULTI);
         grid.addSelectionListener(event -> updateButtonRemove());
@@ -82,11 +82,14 @@ public class UserList extends VerticalLayout {
         return button;
     }
 
-    public void update(List<RUser> users) {
-        cachedUsers = users;
-        usersGrid.setItems(users);
-        totalUsers.setText("Total users: " + users.size());
-        occupancy.setText("Occupancy: %s".formatted(getUsingPercentage(room.getSlots(), users.size()) + "%"));
+    private HorizontalLayout createManageTableButtons() {
+        var layout = new HorizontalLayout();
+        layout.setJustifyContentMode(JustifyContentMode.END);
+
+        layout.add(buttonRemove);
+        layout.add(createRefreshButton());
+
+        return layout;
     }
 
     private void updateButtonRemove() {
@@ -94,17 +97,25 @@ public class UserList extends VerticalLayout {
 
         if (users.isEmpty()) {
             buttonRemove.setEnabled(false);
-            buttonRemove.setText("Unlink users");
+            buttonRemove.setText("Unlink");
             return;
         }
 
         buttonRemove.setEnabled(true);
-        buttonRemove.setText("Unlink users(" + users.size() + ")");
+        buttonRemove.setText("Unlink(" + users.size() + ")");
     }
 
     public static int getUsingPercentage(int slots, int usedSlots) {
         if (slots == RRoom.INFINITE_SLOTS) return -1;
         double percent = usedSlots / (double) slots * 100;
         return (int) percent;
+    }
+
+    @Override
+    public void refresh() {
+        cachedUsers = userRepository.all(room, UserRepository.ALL_DETAILS);
+        usersGrid.setItems(cachedUsers);
+        totalUsers.setText("Total users: " + cachedUsers.size());
+        occupancy.setText("Occupancy: %s".formatted(getUsingPercentage(room.getSlots(), cachedUsers.size()) + "%"));
     }
 }
