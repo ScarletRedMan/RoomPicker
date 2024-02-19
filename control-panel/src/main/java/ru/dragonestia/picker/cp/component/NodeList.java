@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.icon.Icon;
@@ -13,28 +14,29 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.Setter;
+import ru.dragonestia.picker.api.repository.NodeRepository;
 import ru.dragonestia.picker.api.repository.response.type.RNode;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-public class NodeList extends VerticalLayout {
+public class NodeList extends VerticalLayout implements RefreshableTable {
 
+    private final NodeRepository nodeRepository;
     private final Grid<RNode> nodesGrid;
     private final TextField searchField;
     private List<RNode> cachedNodes;
     @Setter private Consumer<String> removeMethod;
 
-    public NodeList(List<RNode> nodes) {
+    public NodeList(NodeRepository nodeRepository) {
         super();
-
-        cachedNodes = nodes;
+        this.nodeRepository = nodeRepository;
 
         add(new H2("Nodes"));
         add(searchField = createSearchField());
         add(nodesGrid = createGrid());
 
-        update(nodes);
+        refresh();
     }
 
     private TextField createSearchField() {
@@ -60,7 +62,8 @@ public class NodeList extends VerticalLayout {
 
         grid.addColumn(RNode::getId).setHeader("Identifier").setSortable(true);
         grid.addColumn(node -> node.getMode().getName()).setHeader("Mode").setSortable(true);
-        grid.addComponentColumn(this::createManageButtons).setFrozenToEnd(true);
+        grid.addComponentColumn(this::createManageButtons).setFrozenToEnd(true)
+                .setTextAlign(ColumnTextAlign.END).setHeader(createRefreshButton());
 
         grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;
@@ -124,14 +127,15 @@ public class NodeList extends VerticalLayout {
         dialog.open();
     }
 
-    public void update(List<RNode> nodes) {
-        cachedNodes = nodes;
-        applySearch(searchField.getValue());
-    }
-
     private void removeNode(RNode node) {
         if (removeMethod != null) {
             removeMethod.accept(node.getId());
         }
+    }
+
+    @Override
+    public void refresh() {
+        cachedNodes = nodeRepository.all(NodeRepository.ALL_DETAILS);
+        applySearch(searchField.getValue());
     }
 }
