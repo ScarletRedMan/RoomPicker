@@ -16,31 +16,34 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import ru.dragonestia.picker.api.repository.RoomRepository;
 import ru.dragonestia.picker.api.repository.details.RoomDetails;
+import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 @Log4j2
-public class RoomList extends VerticalLayout {
+public class RoomList extends VerticalLayout implements RefreshableTable {
 
-    private final String nodeIdentifier;
+    private final RNode node;
+    private final RoomRepository roomRepository;
     private final Grid<RRoom.Short> roomsGrid;
     private final TextField searchField;
     private List<RRoom.Short> cachedRooms;
     private final Span totalUsers = new Span();
     @Setter private Consumer<RRoom.Short> removeMethod;
 
-    public RoomList(String nodeIdentifier, List<RRoom.Short> rooms) {
-        this.nodeIdentifier = nodeIdentifier;
-        cachedRooms = rooms;
+    public RoomList(RNode node, RoomRepository roomRepository) {
+        this.node = node;
+        this.roomRepository = roomRepository;
 
         add(new H2("Rooms"));
         add(searchField = createSearchField());
         add(roomsGrid = createGrid());
 
-        update(rooms);
+        refresh();
     }
 
     private TextField createSearchField() {
@@ -106,7 +109,8 @@ public class RoomList extends VerticalLayout {
         }).setComparator((room1, room2) -> Boolean.compare(room1.locked(), room2.locked())).setSortable(true)
                 .setHeader("Locked").setTextAlign(ColumnTextAlign.CENTER);
 
-        grid.addComponentColumn(this::createManageButtons).setFrozenToEnd(true);
+        grid.addComponentColumn(this::createManageButtons).setFrozenToEnd(true)
+                .setTextAlign(ColumnTextAlign.END).setHeader(createRefreshButton());
 
         grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;
@@ -134,8 +138,7 @@ public class RoomList extends VerticalLayout {
 
     private void clickDetailsButton(RRoom.Short room) {
         getUI().ifPresent(ui -> {
-            ui.navigate("/nodes/" + nodeIdentifier +
-                    "/rooms/" + room.id());
+            ui.navigate("/nodes/%s/rooms/%s".formatted(node.getId(), room.id()));
         });
     }
 
@@ -173,17 +176,6 @@ public class RoomList extends VerticalLayout {
         dialog.open();
     }
 
-    public void update(List<RRoom.Short> rooms) {
-        cachedRooms = rooms;
-        applySearch(searchField.getValue());
-
-        int users = 0;
-        for (var room: cachedRooms) {
-            users += getUsers(room);
-        }
-        totalUsers.setText("Total users: " + users);
-    }
-
     private void removeRemove(RRoom.Short room) {
         if (removeMethod != null) {
             removeMethod.accept(room);
@@ -196,5 +188,17 @@ public class RoomList extends VerticalLayout {
         } catch (NumberFormatException ex) {
             return 0;
         }
+    }
+
+    @Override
+    public void refresh() {
+        cachedRooms = roomRepository.all(node, RoomRepository.ALL_DETAILS);
+        applySearch(searchField.getValue());
+
+        int users = 0;
+        for (var room: cachedRooms) {
+            users += getUsers(room);
+        }
+        totalUsers.setText("Total users: " + users);
     }
 }
