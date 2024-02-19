@@ -10,18 +10,13 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import ru.dragonestia.picker.api.repository.details.RoomDetails;
 import ru.dragonestia.picker.api.repository.response.type.RNode;
-import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.NodeRepository;
 import ru.dragonestia.picker.api.repository.RoomRepository;
 import ru.dragonestia.picker.cp.component.RoomList;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.RegisterRoom;
 import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
-
-import java.util.List;
-import java.util.Set;
 
 @Getter
 @RequiredArgsConstructor
