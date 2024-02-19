@@ -16,9 +16,9 @@ import lombok.RequiredArgsConstructor;
 import ru.dragonestia.picker.api.repository.RoomRepository;
 import ru.dragonestia.picker.api.repository.UserRepository;
 import ru.dragonestia.picker.api.repository.details.RoomDetails;
-import ru.dragonestia.picker.api.repository.details.UserDetails;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.response.type.RUser;
+import ru.dragonestia.picker.cp.component.RefreshableTable;
 import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 
 import java.util.LinkedList;
@@ -27,7 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @PageTitle("User details")
 @Route(value = "/users/:userId", layout = MainLayout.class)
-public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserver {
+public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserver, RefreshableTable {
 
     private final UserRepository userRepository;
     private final RouteParamsExtractor paramsExtractor;
@@ -47,7 +47,7 @@ public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserv
         add(new H3("Linked with rooms"));
         add(gridRooms = createGrid());
 
-        update(userRepository.getLinkedRoomsWithUsers(user, RoomRepository.ALL_DETAILS));
+        refresh();
     }
 
     private Grid<RRoom.Short> createGrid() {
@@ -72,17 +72,19 @@ public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserv
                 getUI().ifPresent(ui -> ui.navigate("/nodes/%s/rooms/%s".formatted(room.nodeId(), room.id())));
             });
             return button;
-        }).setTextAlign(ColumnTextAlign.END).setFrozenToEnd(true);
+        }).setTextAlign(ColumnTextAlign.END).setFrozenToEnd(true).setHeader(createRefreshButton());
 
         grid.setMultiSort(true, Grid.MultiSortPriority.APPEND);
         return grid;
     }
 
-    public void update(List<RRoom.Short> rooms) {
-        gridRooms.setItems(cachedRooms = rooms);
-    }
-
     private Html createComponent(String defaultValue) {
         return new Html("<span>" + defaultValue + "</span>");
+    }
+
+    @Override
+    public void refresh() {
+        cachedRooms = userRepository.getLinkedRoomsWithUsers(user, RoomRepository.ALL_DETAILS);
+        gridRooms.setItems(cachedRooms);
     }
 }
