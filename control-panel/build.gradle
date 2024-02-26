@@ -49,3 +49,7 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+tasks.named("bootJar") {
+    archiveFileName.set("control-panel.jar")
+}
