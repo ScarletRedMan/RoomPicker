@@ -22,6 +22,10 @@ ext {
     set('vaadinVersion', "24.2.2")
 }
 
+vaadin {
+    productionMode = true
+}
+
 dependencies {
     implementation project(":api")
 
