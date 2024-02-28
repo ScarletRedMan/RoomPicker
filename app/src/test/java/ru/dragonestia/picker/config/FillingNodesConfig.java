@@ -51,7 +51,7 @@ public class FillingNodesConfig {
 
     @Bean
     void createSequentialFillingNode() {
-        var node = new Node("seq", PickingMode.SEQUENTIAL_FILLING);
+        var node = new Node("seq", PickingMode.SEQUENTIAL_FILLING, false);
         nodeRepository.create(node);
 
         fillNode(node);
@@ -61,7 +61,7 @@ public class FillingNodesConfig {
 
     @Bean
     void createRoundRobinNode() {
-        var node = new Node("round", PickingMode.ROUND_ROBIN);
+        var node = new Node("round", PickingMode.ROUND_ROBIN, false);
         nodeRepository.create(node);
 
         fillNode(node);
@@ -71,7 +71,7 @@ public class FillingNodesConfig {
 
     @Bean
     void createLeastPickerNode() {
-        var node = new Node("least", PickingMode.LEAST_PICKED);
+        var node = new Node("least", PickingMode.LEAST_PICKED, false);
         nodeRepository.create(node);
 
         fillNode(node);
@@ -83,7 +83,7 @@ public class FillingNodesConfig {
         for (int i = 0, n = 5; i < n; i++) {
             for (int j = 0; j < 3; j++) {
                 var roomId = "room-" + i + "-" + j;
-                var room = Room.create(roomId, node, SlotLimit.of(n), "");
+                var room = Room.create(roomId, node, SlotLimit.of(n), "", false);
                 roomRepository.create(room);
 
                 var users = n - i;
