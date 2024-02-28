@@ -13,7 +13,7 @@ public interface RoomRepository {
 
     Set<RoomDetails> ALL_DETAILS = Set.of(RoomDetails.COUNT_USERS);
 
-    void register(RRoom room) throws NodeNotFoundException, InvalidRoomIdentifierException, RoomAlreadyExistException;
+    void register(RRoom room, boolean persist) throws NodeNotFoundException, InvalidRoomIdentifierException, RoomAlreadyExistException;
 
     void remove(RRoom room) throws NodeNotFoundException;
 

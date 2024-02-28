@@ -56,6 +56,11 @@ public class ExceptionHandlerController {
         return create(400, ex);
     }
 
+    @ExceptionHandler(NotPersistedNodeException.class)
+    ResponseEntity<?> notPersistedNode(NotPersistedNodeException ex) {
+        return create(400, ex);
+    }
+
     private ResponseEntity<ErrorResponse> create(int code, ApiException ex) {
         var details = new HashMap<String, String>();
         ex.appendDetailsToErrorResponse(details);
