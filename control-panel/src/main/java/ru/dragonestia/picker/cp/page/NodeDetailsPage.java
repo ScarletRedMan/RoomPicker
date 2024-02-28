@@ -43,9 +43,9 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
         add(NavPath.toNode(node.getId()));
         printNodeDetails(node);
         add(new Hr());
-        add(registerRoom = new RegisterRoom(node, (room) -> {
+        add(registerRoom = new RegisterRoom(node, (room, persist) -> {
             try {
-                roomRepository.register(room);
+                roomRepository.register(room, persist);
                 return new RegisterRoom.Response(false,  null);
             } catch (Error error) {
                 return new RegisterRoom.Response(true,  error.getMessage());

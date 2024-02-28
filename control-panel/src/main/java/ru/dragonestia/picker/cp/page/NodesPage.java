@@ -38,9 +38,9 @@ public class NodesPage extends VerticalLayout {
     }
 
     protected RegisterNode createRegisterNodeElement() {
-        return new RegisterNode(node -> {
+        return new RegisterNode((node, persist) -> {
             try {
-                nodeRepository.register(node);
+                nodeRepository.register(node, persist);
                 return new RegisterNode.Response(false, "");
             } catch (ApiException ex) {
                 return new RegisterNode.Response(true, ex.getMessage());
