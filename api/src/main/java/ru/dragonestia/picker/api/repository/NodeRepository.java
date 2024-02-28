@@ -13,7 +13,7 @@ public interface NodeRepository {
 
     Set<NodeDetails> ALL_DETAILS = Set.of();
 
-    void register(RNode node) throws InvalidNodeIdentifierException, NodeAlreadyExistException;
+    void register(RNode node, boolean persist) throws InvalidNodeIdentifierException, NodeAlreadyExistException;
 
     default List<RNode> all() {
         return all(Set.of());

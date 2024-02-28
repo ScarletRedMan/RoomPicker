@@ -24,6 +24,7 @@ public class ExceptionFactory {
         factory.put(RoomAlreadyExistException.ERROR_ID, RoomAlreadyExistException::new);
         factory.put(RoomAreFullException.ERROR_ID, RoomAreFullException::new);
         factory.put(RoomNotFoundException.ERROR_ID, RoomNotFoundException::new);
+        factory.put(NotPersistedNodeException.ERROR_ID, NotPersistedNodeException::new);
 
         return factory;
     }

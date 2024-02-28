@@ -4,12 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
+import ru.dragonestia.picker.api.exception.NodeNotFoundException;
+import ru.dragonestia.picker.api.exception.NotPersistedNodeException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.api.repository.details.RoomDetails;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.storage.NodeAndRoomStorage;
@@ -27,13 +30,20 @@ import java.util.Set;
 public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
+    private final NodeRepository nodeRepository;
     private final DetailsExtractor detailsExtractor;
     private final NamingValidator namingValidator;
     private final NodeAndRoomStorage storage;
 
     @Override
-    public void create(Room room) throws InvalidRoomIdentifierException, RoomAlreadyExistException {
+    public void create(Room room) throws InvalidRoomIdentifierException, RoomAlreadyExistException, NotPersistedNodeException {
         namingValidator.validateRoomId(room.getNodeId(), room.getId());
+
+        var node = nodeRepository.find(room.getNodeId()).orElseThrow(() -> new NodeNotFoundException(room.getNodeId()));
+        if (!node.persist() && room.isPersist()) {
+            throw new NotPersistedNodeException(node.id(), room.getId());
+        }
+
         roomRepository.create(room);
         storage.saveRoom(room);
     }
