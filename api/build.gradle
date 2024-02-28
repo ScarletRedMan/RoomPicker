@@ -16,3 +16,7 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+tasks.jar {
+    archiveFileName.set("api.jar")
+}
