@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.model.Node;
+import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.repository.impl.cache.NodeId2PickerModeCache;
@@ -38,14 +39,14 @@ public class NodeRepositoryImpl implements NodeRepository {
     }
 
     @Override
-    public void delete(Node node) {
+    public List<Room> delete(Node node) {
         synchronized (nodeMap) {
             nodeMap.remove(node.id());
             pickerRepository.remove(node.id());
             nodeId2PickerModeCache.remove(node.id());
         }
 
-        roomRepository.onRemoveNode(node);
+        return roomRepository.onRemoveNode(node);
     }
 
     @Override

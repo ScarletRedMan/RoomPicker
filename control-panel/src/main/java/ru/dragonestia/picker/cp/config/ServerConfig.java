@@ -9,7 +9,7 @@ import java.net.URI;
 @Configuration
 public class ServerConfig {
 
-    @Value("${DLB_HOST_URL:http://localhost:8080/}")
+    @Value("${ROOMPICKER_HOST_URL:http://localhost:8080/}")
     private String serverUrl;
 
     @Bean

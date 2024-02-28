@@ -41,10 +41,10 @@ public class NodeController {
     @PostMapping
     ResponseEntity<?> registerNode(
             @Parameter(description = "Node identifier") @RequestParam(name = "nodeId") String nodeId,
-            @Parameter(description = "Picking mode method") @RequestParam(name = "method") PickingMode method
+            @Parameter(description = "Picking mode method") @RequestParam(name = "method") PickingMode method,
+            @Parameter(description = "Save node") @RequestParam(name = "persist", required = false, defaultValue = "false") boolean persist
     ) {
-
-        nodeService.create(new Node(nodeId, method));
+        nodeService.create(new Node(nodeId, method, persist));
         return ResponseEntity.ok().build();
     }
 

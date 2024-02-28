@@ -9,7 +9,9 @@ public class SlotLimit {
 
     public final static int UNLIMITED_VALUE = -1;
 
-    private final int slots;
+    private int slots;
+
+    private SlotLimit() {}
 
     private SlotLimit(int slots) {
         this.slots = slots;

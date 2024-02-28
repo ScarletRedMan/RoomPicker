@@ -16,10 +16,11 @@ public class Room {
     private final String nodeId;
     private final SlotLimit slots;
     private final String payload;
+    private final boolean persist;
     private boolean locked = false;
 
-    public static Room create(String roomId, Node node, SlotLimit limit, String payload) {
-        return new Room(roomId, node.id(), limit, payload);
+    public static Room create(String roomId, Node node, SlotLimit limit, String payload, boolean persist) {
+        return new Room(roomId, node.id(), limit, payload, persist);
     }
 
     public void setLocked(boolean value) {

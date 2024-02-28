@@ -9,6 +9,7 @@ import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.service.NodeService;
+import ru.dragonestia.picker.storage.NodeAndRoomStorage;
 import ru.dragonestia.picker.util.DetailsExtractor;
 import ru.dragonestia.picker.util.NamingValidator;
 
@@ -24,16 +25,21 @@ public class NodeServiceImpl implements NodeService {
     private final NodeRepository nodeRepository;
     private final DetailsExtractor detailsExtractor;
     private final NamingValidator namingValidator;
+    private final NodeAndRoomStorage storage;
 
     @Override
     public void create(Node node) throws InvalidNodeIdentifierException, NodeAlreadyExistException {
         namingValidator.validateNodeId(node.id());
         nodeRepository.create(node);
+        storage.saveNode(node);
     }
 
     @Override
     public void remove(Node node) {
-        nodeRepository.delete(node);
+        for (var room: nodeRepository.delete(node)) {
+            storage.removeRoom(room);
+        }
+        storage.removeNode(node);
     }
 
     @Override
