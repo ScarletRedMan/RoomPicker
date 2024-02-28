@@ -29,7 +29,10 @@ public class DetailsExtractor {
         var response = node.toResponseObject();
 
         for (var detail: details) {
-            // TODO...
+            if (detail == NodeDetails.PERSIST) {
+                response.putDetail(NodeDetails.PERSIST, Boolean.toString(node.persist()));
+                continue;
+            }
         }
 
         return response;
@@ -42,6 +45,12 @@ public class DetailsExtractor {
             if (detail == RoomDetails.COUNT_USERS) {
                 var users = Integer.toString(userRepository.usersOf(room).size());
                 response.details().put(RoomDetails.COUNT_USERS, users);
+                continue;
+            }
+
+            if (detail == RoomDetails.PERSIST) {
+                response.details().put(RoomDetails.PERSIST, Boolean.toString(room.isPersist()));
+                continue;
             }
         }
 

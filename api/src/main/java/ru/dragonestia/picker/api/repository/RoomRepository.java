@@ -11,7 +11,7 @@ import java.util.Set;
 
 public interface RoomRepository {
 
-    Set<RoomDetails> ALL_DETAILS = Set.of(RoomDetails.COUNT_USERS);
+    Set<RoomDetails> ALL_DETAILS = Set.of(RoomDetails.COUNT_USERS, RoomDetails.PERSIST);
 
     void register(RRoom room, boolean persist) throws NodeNotFoundException, InvalidRoomIdentifierException, RoomAlreadyExistException;
 

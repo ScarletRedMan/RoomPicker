@@ -39,7 +39,7 @@ public class RNode {
         details.put(detail, value);
     }
 
-    public String getDetails(NodeDetails detail, String value) {
+    public String getDetails(NodeDetails detail) {
         return details.get(detail);
     }
 

@@ -11,7 +11,7 @@ import java.util.Set;
 
 public interface NodeRepository {
 
-    Set<NodeDetails> ALL_DETAILS = Set.of();
+    Set<NodeDetails> ALL_DETAILS = Set.of(NodeDetails.PERSIST);
 
     void register(RNode node, boolean persist) throws InvalidNodeIdentifierException, NodeAlreadyExistException;
 
