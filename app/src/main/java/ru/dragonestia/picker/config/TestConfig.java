@@ -42,9 +42,9 @@ public class TestConfig implements WebMvcConfigurer {
 
     @Bean
     void createNodes() {
-        createNodeWithContent(new Node("game-servers", PickingMode.ROUND_ROBIN));
-        createNodeWithContent(new Node("game-lobbies", PickingMode.LEAST_PICKED));
-        createNodeWithContent(new Node("hub", PickingMode.SEQUENTIAL_FILLING));
+        createNodeWithContent(new Node("game-servers", PickingMode.ROUND_ROBIN, false));
+        createNodeWithContent(new Node("game-lobbies", PickingMode.LEAST_PICKED, false));
+        createNodeWithContent(new Node("hub", PickingMode.SEQUENTIAL_FILLING, false));
     }
 
     @SneakyThrows
@@ -54,7 +54,7 @@ public class TestConfig implements WebMvcConfigurer {
 
         for (int i = 1; i <= 5; i++) {
             var slots = 5 * i;
-            var room = Room.create("test-" + i, node, SlotLimit.of(slots), json.writeValueAsString(generatePayload()));
+            var room = Room.create("test-" + i, node, SlotLimit.of(slots), json.writeValueAsString(generatePayload()), false);
             roomRepository.create(room);
 
             for (int j = 0, n = rand.nextInt(slots + 1); j < n; j++) {
@@ -64,7 +64,7 @@ public class TestConfig implements WebMvcConfigurer {
         }
 
         for (int i = 0; i < 5; i++) {
-            var room = Room.create(randomUUID().toString(), node, SlotLimit.unlimited(), json.writeValueAsString(generatePayload()));
+            var room = Room.create(randomUUID().toString(), node, SlotLimit.unlimited(), json.writeValueAsString(generatePayload()), false);
             room.setLocked((i & 1) == 0);
             roomRepository.create(room);
         }

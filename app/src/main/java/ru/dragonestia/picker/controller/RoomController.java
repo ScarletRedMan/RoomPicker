@@ -50,10 +50,11 @@ public class RoomController {
             @Parameter(description = "Room identifier") @RequestParam(name = "roomId") String roomId,
             @Parameter(description = "Maximum users count in room") @RequestParam(name = "slots") int slots,
             @Parameter(description = "Payload. Some data") @RequestParam(name = "payload") String payload,
-            @Parameter(description = "Lock for picking") @RequestParam(name = "locked", defaultValue = "false") boolean locked
+            @Parameter(description = "Lock for picking") @RequestParam(name = "locked", required = false, defaultValue = "false") boolean locked,
+            @Parameter(description = "Save room") @RequestParam(name = "persist", required = false, defaultValue = "false") boolean persist
     ) {
         var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
-        var room = Room.create(roomId, node, SlotLimit.of(slots), payload);
+        var room = Room.create(roomId, node, SlotLimit.of(slots), payload, persist);
         room.setLocked(locked);
         roomService.create(room);
 
@@ -105,6 +106,7 @@ public class RoomController {
         var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
         var room = roomService.find(node, roomId).orElseThrow(() -> new RoomNotFoundException(nodeId, roomId));
         room.setLocked(value);
+        roomService.updateState(room);
         return ResponseEntity.ok(true);
     }
 }

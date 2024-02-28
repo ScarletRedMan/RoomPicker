@@ -29,5 +29,5 @@ public interface RoomRepository {
 
     void onCreateNode(Node node);
 
-    void onRemoveNode(Node node);
+    List<Room> onRemoveNode(Node node);
 }

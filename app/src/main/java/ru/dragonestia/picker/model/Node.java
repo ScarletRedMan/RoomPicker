@@ -4,7 +4,7 @@ import lombok.NonNull;
 import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
 
-public record Node(@NonNull String id, @NonNull PickingMode mode) {
+public record Node(@NonNull String id, @NonNull PickingMode mode, boolean persist) {
 
     @Override
     public int hashCode() {

@@ -24,11 +24,7 @@ public interface RoomService {
 
     List<RRoom.Short> getAllRoomsWithDetailsResponse(Node node, Set<RoomDetails> details);
 
-    default int countAvailable(Node node) {
-        return countAvailable(node, 1);
-    }
-
-    int countAvailable(Node node, int requiredSlots);
-
     Room pickAvailable(Node node, List<User> users);
+
+    void updateState(Room room);
 }

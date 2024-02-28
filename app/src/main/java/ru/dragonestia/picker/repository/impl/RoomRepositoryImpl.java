@@ -122,10 +122,13 @@ public class RoomRepositoryImpl implements RoomRepository {
     }
 
     @Override
-    public void onRemoveNode(Node node) {
+    public List<Room> onRemoveNode(Node node) {
+        List<Room> deleted;
         synchronized (node2roomsMap) {
+            deleted = node2roomsMap.get(node).values().stream().map(container -> container.room).toList();
             node2roomsMap.remove(node);
         }
+        return deleted;
     }
 
     private record RoomContainer(Room room, AtomicInteger used) {

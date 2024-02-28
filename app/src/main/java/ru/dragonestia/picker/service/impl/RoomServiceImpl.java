@@ -12,6 +12,7 @@ import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.service.RoomService;
+import ru.dragonestia.picker.storage.NodeAndRoomStorage;
 import ru.dragonestia.picker.util.DetailsExtractor;
 import ru.dragonestia.picker.util.NamingValidator;
 
@@ -28,16 +29,19 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
     private final DetailsExtractor detailsExtractor;
     private final NamingValidator namingValidator;
+    private final NodeAndRoomStorage storage;
 
     @Override
     public void create(Room room) throws InvalidRoomIdentifierException, RoomAlreadyExistException {
         namingValidator.validateRoomId(room.getNodeId(), room.getId());
         roomRepository.create(room);
+        storage.saveRoom(room);
     }
 
     @Override
     public void remove(Room room) {
         roomRepository.remove(room);
+        storage.removeRoom(room);
     }
 
     @Override
@@ -60,13 +64,13 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public int countAvailable(Node node, int requiredSlots) {
-        throw new RuntimeException("Not implemented");
-    }
-
-    @Override
     public Room pickAvailable(Node node, List<User> users) {
         return roomRepository.pickFree(node, users)
                 .orElseThrow(() -> new RuntimeException("There are no rooms available"));
+    }
+
+    @Override
+    public void updateState(Room room) {
+        storage.saveRoom(room);
     }
 }
