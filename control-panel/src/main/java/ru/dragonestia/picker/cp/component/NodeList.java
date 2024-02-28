@@ -7,6 +7,7 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -15,8 +16,10 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.Setter;
 import ru.dragonestia.picker.api.repository.NodeRepository;
+import ru.dragonestia.picker.api.repository.details.NodeDetails;
 import ru.dragonestia.picker.api.repository.response.type.RNode;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -60,8 +63,18 @@ public class NodeList extends VerticalLayout implements RefreshableTable {
     private Grid<RNode> createGrid() {
         var grid = new Grid<>(RNode.class, false);
 
-        grid.addColumn(RNode::getId).setHeader("Identifier").setSortable(true);
+        grid.addComponentColumn(node -> {
+            if (Boolean.parseBoolean(node.getDetails(NodeDetails.PERSIST))) {
+                return new Span(node.getId());
+            }
+
+            var result = new Span(node.getId());
+            result.add(grayBadge("(temp)"));
+            return result;
+        }).setHeader("Identifier").setComparator(Comparator.comparing(RNode::getId)).setSortable(true);
+
         grid.addColumn(node -> node.getMode().getName()).setHeader("Mode").setSortable(true);
+
         grid.addComponentColumn(this::createManageButtons).setFrozenToEnd(true)
                 .setTextAlign(ColumnTextAlign.END).setHeader(createRefreshButton());
 
@@ -137,5 +150,11 @@ public class NodeList extends VerticalLayout implements RefreshableTable {
     public void refresh() {
         cachedNodes = nodeRepository.all(NodeRepository.ALL_DETAILS);
         applySearch(searchField.getValue());
+    }
+
+    private Span grayBadge(String text) {
+        var span = new Span(text);
+        span.getElement().getThemeList().add("badge contrast");
+        return span;
     }
 }
