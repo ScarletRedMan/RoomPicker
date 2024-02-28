@@ -4,6 +4,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
@@ -17,21 +18,23 @@ import org.springframework.lang.Nullable;
 import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
 
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public class RegisterNode extends Details {
 
-    private final Function<RNode, Response> onSubmit;
+    private final BiFunction<RNode, Boolean, Response> onSubmit;
     private final TextField identifierField;
     private final RadioButtonGroup<PickingMode> modeRadio;
+    private final Checkbox persistField;
 
-    public RegisterNode(Function<RNode, Response> onSubmit) {
+    public RegisterNode(BiFunction<RNode, Boolean, Response> onSubmit) {
         super(new H2("Register node"));
         this.onSubmit = onSubmit;
 
         var layout = new VerticalLayout();
         layout.add(identifierField = createNodeIdentifierField());
         layout.add(modeRadio = createModeRadio());
+        layout.add(persistField = createPersistField());
         layout.add(createSubmitButton());
 
         add(layout);
@@ -47,6 +50,10 @@ public class RegisterNode extends Details {
         field.setAutocomplete(Autocomplete.OFF);
         field.addValueChangeListener(event -> field.setValue(event.getValue().trim()));
         return field;
+    }
+
+    private Checkbox createPersistField() {
+        return new Checkbox("Persist", false);
     }
 
     private Button createSubmitButton() {
@@ -70,6 +77,7 @@ public class RegisterNode extends Details {
 
     public void clear() {
         identifierField.clear();
+        persistField.setValue(false);
     }
 
     private @Nullable String validateForm(String identifier) {
@@ -94,7 +102,7 @@ public class RegisterNode extends Details {
         }
 
         var node = new RNode(nodeIdentifier, modeRadio.getValue());
-        var response = onSubmit.apply(node);
+        var response = onSubmit.apply(node, persistField.getValue());
         clear();
         if (response.error()) {
             Notifications.error(response.reason());

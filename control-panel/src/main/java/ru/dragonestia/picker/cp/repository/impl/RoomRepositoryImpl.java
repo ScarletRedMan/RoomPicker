@@ -27,12 +27,13 @@ public class RoomRepositoryImpl implements RoomRepository {
     private final RestUtil rest;
 
     @Override
-    public void register(RRoom room) throws NodeNotFoundException, InvalidRoomIdentifierException, RoomAlreadyExistException {
+    public void register(RRoom room, boolean persist) throws NodeNotFoundException, InvalidRoomIdentifierException, RoomAlreadyExistException {
         rest.query("/nodes/" + room.getNodeId() + "/rooms", HttpMethod.POST, params -> {
             params.put("roomId", room.getId());
             params.put("slots", Integer.toString(room.getSlots()));
             params.put("payload", room.getPayload());
             params.put("locked", Boolean.toString(room.isLocked()));
+            params.put("persist", Boolean.toString(persist));
         });
     }
 

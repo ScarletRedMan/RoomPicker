@@ -14,17 +14,19 @@ import org.springframework.lang.Nullable;
 import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class RegisterRoom extends Details {
 
     private final RNode node;
-    private final Function<RRoom, Response> onSubmit;
+    private final BiFunction<RRoom, Boolean, Response> onSubmit;
     private final TextField identifierField;
     private final TextArea payloadField;
     private final Checkbox lockedField;
+    private final Checkbox persistField;
 
-    public RegisterRoom(RNode node, Function<RRoom, Response> onSubmit) {
+    public RegisterRoom(RNode node, BiFunction<RRoom, Boolean, Response> onSubmit) {
         super(new H2("Register room"));
         this.node = node;
         this.onSubmit = onSubmit;
@@ -34,6 +36,7 @@ public class RegisterRoom extends Details {
         layout.add(identifierField = createRoomIdentifierField());
         layout.add(payloadField = createPayloadField());
         layout.add(lockedField = createLockedField());
+        layout.add(persistField = createPersistField());
         layout.add(createSubmitButton());
 
         add(layout);
@@ -73,6 +76,10 @@ public class RegisterRoom extends Details {
         return field;
     }
 
+    private Checkbox createPersistField() {
+        return new Checkbox("Persist", false);
+    }
+
     private Button createSubmitButton() {
         var button = new Button("Register");
         button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -84,6 +91,7 @@ public class RegisterRoom extends Details {
         identifierField.clear();
         payloadField.clear();
         lockedField.setValue(false);
+        persistField.setValue(false);
     }
 
     private @Nullable String validateForm(String identifier) {
@@ -109,7 +117,7 @@ public class RegisterRoom extends Details {
 
         var room = new RRoom(nodeIdentifier, node, RRoom.INFINITE_SLOTS, payloadField.getValue());
         room.setLocked(lockedField.getValue());
-        var response = onSubmit.apply(room);
+        var response = onSubmit.apply(room, persistField.getValue());
         clear();
         if (response.error()) {
             Notifications.error(response.reason());

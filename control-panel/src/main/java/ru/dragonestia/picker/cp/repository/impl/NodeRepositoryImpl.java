@@ -25,10 +25,11 @@ public class NodeRepositoryImpl implements NodeRepository {
     private final RestUtil rest;
 
     @Override
-    public void register(RNode node) throws InvalidNodeIdentifierException, NodeAlreadyExistException {
+    public void register(RNode node, boolean persist) throws InvalidNodeIdentifierException, NodeAlreadyExistException {
         rest.query("nodes", HttpMethod.POST, params -> {
             params.put("nodeId", node.getId());
             params.put("method", node.getMode().name());
+            params.put("persist", Boolean.toString(persist));
         });
     }
 
