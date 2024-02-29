@@ -18,7 +18,7 @@ import ru.dragonestia.picker.model.type.SlotLimit;
 import java.util.List;
 
 @SpringBootTest
-public class RoomServiceTest {
+public class RoomServiceTests {
 
     @Autowired
     private NodeService nodeService;

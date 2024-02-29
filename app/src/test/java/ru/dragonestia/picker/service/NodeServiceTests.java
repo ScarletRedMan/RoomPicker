@@ -31,6 +31,8 @@ public class NodeServiceTests {
 
     @Test
     void test_allNodes() {
+        nodeService.all().forEach(node -> nodeService.remove(node));
+
         var nodes = List.of(
                 new Node("test1", PickingMode.SEQUENTIAL_FILLING, false),
                 new Node("test2", PickingMode.ROUND_ROBIN, false),
@@ -43,5 +45,9 @@ public class NodeServiceTests {
 
         Assertions.assertEquals(nodes.size(), list.size());
         Assertions.assertTrue(list.containsAll(nodes));
+
+        nodes.forEach(node -> nodeService.remove(node));
+
+        Assertions.assertEquals(0, nodeService.all().size());
     }
 }
