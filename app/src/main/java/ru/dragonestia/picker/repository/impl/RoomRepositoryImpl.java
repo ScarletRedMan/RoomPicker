@@ -2,6 +2,7 @@ package ru.dragonestia.picker.repository.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
@@ -77,6 +78,10 @@ public class RoomRepositoryImpl implements RoomRepository {
     @Override
     public List<Room> all(Node node) {
         synchronized (node2roomsMap) {
+            if (!node2roomsMap.containsKey(node)) {
+                throw new NodeNotFoundException("Node '%s' does not exists".formatted(node.id()));
+            }
+
             return node2roomsMap.get(node).values().stream().map(RoomContainer::room).toList();
         }
     }
