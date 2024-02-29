@@ -19,12 +19,6 @@ public interface RoomRepository {
 
     List<Room> all(Node node);
 
-    default int countAvailable(Node node) {
-        return countAvailable(node, 0);
-    }
-
-    int countAvailable(Node node, int requiredSlots);
-
     Optional<Room> pickFree(Node node, Collection<User> users);
 
     void onCreateNode(Node node);
