@@ -53,7 +53,7 @@ public class RoomRepositoryImpl implements RoomRepository {
 
         synchronized (node2roomsMap) {
             if (node.isEmpty()) {
-                throw new IllegalArgumentException("Node '" + nodeId + "' does not exist");
+                throw new NodeNotFoundException("Node '" + nodeId + "' does not exist");
             }
 
             node2roomsMap.get(node.get()).remove(room.getId());
@@ -67,7 +67,7 @@ public class RoomRepositoryImpl implements RoomRepository {
     public Optional<Room> find(Node node, String identifier) {
         synchronized (node2roomsMap) {
             if (!node2roomsMap.containsKey(node)) {
-                throw new IllegalArgumentException("Node '" + node.id() + "' does not exist");
+                throw new NodeNotFoundException("Node '" + node.id() + "' does not exist");
             }
 
             var result = node2roomsMap.get(node).getOrDefault(identifier, null);
@@ -90,7 +90,7 @@ public class RoomRepositoryImpl implements RoomRepository {
     public Optional<Room> pickFree(Node node, Collection<User> users) {
         synchronized (node2roomsMap) {
             if (!node2roomsMap.containsKey(node)) {
-                throw new IllegalArgumentException("Node '" + node.id() + "' does not exist");
+                throw new NodeNotFoundException("Node '" + node.id() + "' does not exist");
             }
 
             Room room = null;

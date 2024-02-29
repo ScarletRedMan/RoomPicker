@@ -102,4 +102,15 @@ public class RoomServiceTests {
 
         Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.all(node));
     }
+
+    @Test
+    void test_nodeDoesNotExists() {
+        var node = new Node("Bruh", PickingMode.ROUND_ROBIN, false);
+        var room = Room.create("test", node, SlotLimit.unlimited(), "", false);
+
+        Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.create(room));
+        Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.remove(room));
+        Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.find(node, "Bruh"));
+        Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.pickAvailable(node, List.of(new User("1"))));
+    }
 }
