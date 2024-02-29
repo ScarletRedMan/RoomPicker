@@ -87,13 +87,6 @@ public class RoomRepositoryImpl implements RoomRepository {
     }
 
     @Override
-    public int countAvailable(Node node, int requiredSlots) {
-        return (int) node2roomsMap.get(node).values().stream()
-                .filter(bucket -> bucket.isAvailable(requiredSlots))
-                .count();
-    }
-
-    @Override
     public Optional<Room> pickFree(Node node, Collection<User> users) {
         synchronized (node2roomsMap) {
             if (!node2roomsMap.containsKey(node)) {
