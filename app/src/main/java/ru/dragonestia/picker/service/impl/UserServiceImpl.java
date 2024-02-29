@@ -13,7 +13,6 @@ import ru.dragonestia.picker.service.UserService;
 import ru.dragonestia.picker.util.DetailsExtractor;
 
 import java.util.*;
-import java.util.function.Function;
 
 @RequiredArgsConstructor
 @Service
@@ -21,7 +20,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final DetailsExtractor detailsExtractor;
-    private final Map<UserDetails, Function<User, String>> detailsMap = new HashMap<>();
 
     @Override
     public List<Room> getUserRooms(User user) {
