@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.api.model.node.NodeDetails;
 import ru.dragonestia.picker.api.model.node.ResponseNode;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
+import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.model.user.UserDetails;
-import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.Room;
@@ -38,18 +38,18 @@ public class DetailsExtractor {
         return response;
     }
 
-    public RRoom.Short extract(Room room, Set<RoomDetails> details) {
+    public ShortResponseRoom extract(Room room, Set<RoomDetails> details) {
         var response = room.toShortResponseObject();
 
         for (var detail: details) {
             if (detail == RoomDetails.COUNT_USERS) {
                 var users = Integer.toString(userRepository.usersOf(room).size());
-                response.details().put(RoomDetails.COUNT_USERS, users);
+                response.putDetail(RoomDetails.COUNT_USERS, users);
                 continue;
             }
 
             if (detail == RoomDetails.PERSIST) {
-                response.details().put(RoomDetails.PERSIST, Boolean.toString(room.isPersist()));
+                response.putDetail(RoomDetails.PERSIST, Boolean.toString(room.isPersist()));
                 continue;
             }
         }

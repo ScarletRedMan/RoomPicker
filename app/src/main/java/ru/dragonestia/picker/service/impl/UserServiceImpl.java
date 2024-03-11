@@ -3,8 +3,8 @@ package ru.dragonestia.picker.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
+import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.model.user.UserDetails;
-import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
@@ -27,8 +27,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<RRoom.Short> getUserRoomsWithDetails(User user, Set<RoomDetails> details) {
-        var result = new LinkedList<RRoom.Short>();
+    public List<ShortResponseRoom> getUserRoomsWithDetails(User user, Set<RoomDetails> details) {
+        var result = new LinkedList<ShortResponseRoom>();
         for (var room: getUserRooms(user)) {
             result.add(detailsExtractor.extract(room, details));
         }
