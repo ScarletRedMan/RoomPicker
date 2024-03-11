@@ -1,4 +1,4 @@
-package ru.dragonestia.picker.api.utils;
+package ru.dragonestia.picker.api.util;
 
 public class ValidateIdentifier {
 
