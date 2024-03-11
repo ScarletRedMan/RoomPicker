@@ -1,9 +1,9 @@
 package ru.dragonestia.picker.util;
 
 import org.springframework.stereotype.Component;
-import ru.dragonestia.picker.api.repository.details.NodeDetails;
-import ru.dragonestia.picker.api.repository.details.RoomDetails;
-import ru.dragonestia.picker.api.repository.details.UserDetails;
+import ru.dragonestia.picker.api.model.node.NodeDetails;
+import ru.dragonestia.picker.api.model.room.RoomDetails;
+import ru.dragonestia.picker.api.model.user.UserDetails;
 
 import java.util.HashSet;
 import java.util.Set;

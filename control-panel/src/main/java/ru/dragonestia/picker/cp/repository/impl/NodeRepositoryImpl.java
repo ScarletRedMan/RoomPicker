@@ -7,7 +7,7 @@ import org.springframework.http.HttpMethod;
 import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
 import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
-import ru.dragonestia.picker.api.repository.details.NodeDetails;
+import ru.dragonestia.picker.api.model.node.NodeDetails;
 import ru.dragonestia.picker.api.repository.response.NodeDetailsResponse;
 import ru.dragonestia.picker.api.repository.response.NodeListResponse;
 import ru.dragonestia.picker.api.repository.response.type.RNode;

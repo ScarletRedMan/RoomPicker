@@ -15,8 +15,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.Setter;
+import ru.dragonestia.picker.api.model.node.NodeDetails;
 import ru.dragonestia.picker.api.repository.NodeRepository;
-import ru.dragonestia.picker.api.repository.details.NodeDetails;
 import ru.dragonestia.picker.api.repository.response.type.RNode;
 
 import java.util.Comparator;

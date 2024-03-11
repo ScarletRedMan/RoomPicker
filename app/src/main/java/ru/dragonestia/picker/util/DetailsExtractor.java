@@ -2,9 +2,9 @@ package ru.dragonestia.picker.util;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.dragonestia.picker.api.repository.details.NodeDetails;
-import ru.dragonestia.picker.api.repository.details.RoomDetails;
-import ru.dragonestia.picker.api.repository.details.UserDetails;
+import ru.dragonestia.picker.api.model.node.NodeDetails;
+import ru.dragonestia.picker.api.model.room.RoomDetails;
+import ru.dragonestia.picker.api.model.user.UserDetails;
 import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.response.type.RUser;
