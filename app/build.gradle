@@ -10,7 +10,7 @@ configurations {
 }
 
 dependencies {
-    implementation project(":api")
+    implementation project(":client-api")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-security'
