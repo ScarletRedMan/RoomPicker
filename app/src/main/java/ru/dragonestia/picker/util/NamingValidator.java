@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
 import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
 import ru.dragonestia.picker.api.exception.InvalidUsernamesException;
-import ru.dragonestia.picker.api.utils.ValidateIdentifier;
+import ru.dragonestia.picker.api.util.ValidateIdentifier;
 import ru.dragonestia.picker.model.User;
 
 import java.util.LinkedList;

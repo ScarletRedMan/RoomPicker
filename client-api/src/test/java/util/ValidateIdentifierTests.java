@@ -2,7 +2,7 @@ package util;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.dragonestia.picker.api.utils.ValidateIdentifier;
+import ru.dragonestia.picker.api.util.ValidateIdentifier;
 
 import java.util.UUID;
 
