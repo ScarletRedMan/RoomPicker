@@ -3,9 +3,9 @@ package ru.dragonestia.picker.util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.api.model.node.NodeDetails;
+import ru.dragonestia.picker.api.model.node.ResponseNode;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.model.user.UserDetails;
-import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.model.Node;
@@ -25,7 +25,7 @@ public class DetailsExtractor {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
 
-    public RNode extract(Node node, Set<NodeDetails> details) {
+    public ResponseNode extract(Node node, Set<NodeDetails> details) {
         var response = node.toResponseObject();
 
         for (var detail: details) {

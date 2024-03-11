@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
-import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
+import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.repository.response.NodeDetailsResponse;
 import ru.dragonestia.picker.api.repository.response.NodeListResponse;
 import ru.dragonestia.picker.model.Node;
@@ -41,7 +41,7 @@ public class NodeController {
     @PostMapping
     ResponseEntity<?> registerNode(
             @Parameter(description = "Node identifier") @RequestParam(name = "nodeId") String nodeId,
-            @Parameter(description = "Picking mode method") @RequestParam(name = "method") PickingMode method,
+            @Parameter(description = "Picking method method") @RequestParam(name = "method") PickingMethod method,
             @Parameter(description = "Save node") @RequestParam(name = "persist", required = false, defaultValue = "false") boolean persist
     ) {
         nodeService.create(new Node(nodeId, method, persist));

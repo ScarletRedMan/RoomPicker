@@ -3,7 +3,7 @@ package ru.dragonestia.picker.service;
 import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
 import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.api.model.node.NodeDetails;
-import ru.dragonestia.picker.api.repository.response.type.RNode;
+import ru.dragonestia.picker.api.model.node.ResponseNode;
 import ru.dragonestia.picker.model.Node;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public interface NodeService {
 
     List<Node> all();
 
-    List<RNode> getAllNodesWithDetailsResponse(Set<NodeDetails> details);
+    List<ResponseNode> getAllNodesWithDetailsResponse(Set<NodeDetails> details);
 
     Optional<Node> find(String nodeId);
 }

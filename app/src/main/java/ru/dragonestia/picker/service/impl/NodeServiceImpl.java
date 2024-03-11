@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
 import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.api.model.node.NodeDetails;
-import ru.dragonestia.picker.api.repository.response.type.RNode;
+import ru.dragonestia.picker.api.model.node.ResponseNode;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.service.NodeService;
@@ -48,8 +48,8 @@ public class NodeServiceImpl implements NodeService {
     }
 
     @Override
-    public List<RNode> getAllNodesWithDetailsResponse(Set<NodeDetails> details) {
-        var response = new LinkedList<RNode>();
+    public List<ResponseNode> getAllNodesWithDetailsResponse(Set<NodeDetails> details) {
+        var response = new LinkedList<ResponseNode>();
         for (var node: all()) {
             response.add(detailsExtractor.extract(node, details));
         }
