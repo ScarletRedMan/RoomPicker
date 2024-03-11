@@ -27,7 +27,7 @@ vaadin {
 }
 
 dependencies {
-    implementation project(":api")
+    implementation project(":client-api")
 
     implementation 'com.vaadin:vaadin-spring-boot-starter'
     compileOnly 'org.projectlombok:lombok'
