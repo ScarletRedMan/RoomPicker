@@ -7,14 +7,14 @@ import org.springframework.http.HttpMethod;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomAreFullException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
-import ru.dragonestia.picker.api.repository.details.RoomDetails;
+import ru.dragonestia.picker.api.model.room.RoomDetails;
+import ru.dragonestia.picker.api.model.user.UserDetails;
 import ru.dragonestia.picker.api.repository.response.LinkedRoomsWithUserResponse;
 import ru.dragonestia.picker.api.repository.response.SearchUserResponse;
 import ru.dragonestia.picker.api.repository.response.UserDetailsResponse;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.api.repository.UserRepository;
-import ru.dragonestia.picker.api.repository.details.UserDetails;
 import ru.dragonestia.picker.api.repository.response.RoomUserListResponse;
 
 import java.util.*;

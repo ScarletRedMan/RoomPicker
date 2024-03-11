@@ -8,7 +8,7 @@ import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
-import ru.dragonestia.picker.api.repository.details.RoomDetails;
+import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.RoomRepository;

@@ -16,8 +16,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.repository.RoomRepository;
-import ru.dragonestia.picker.api.repository.details.RoomDetails;
 import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 
