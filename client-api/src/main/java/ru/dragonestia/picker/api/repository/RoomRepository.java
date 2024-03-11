@@ -1,7 +1,7 @@
 package ru.dragonestia.picker.api.repository;
 
 import ru.dragonestia.picker.api.exception.*;
-import ru.dragonestia.picker.api.repository.details.RoomDetails;
+import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 

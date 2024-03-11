@@ -1,8 +1,8 @@
 package ru.dragonestia.picker.api.repository.response.type;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import ru.dragonestia.picker.api.model.node.NodeDetails;
 import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
-import ru.dragonestia.picker.api.repository.details.NodeDetails;
 
 import java.util.HashMap;
 import java.util.Map;
