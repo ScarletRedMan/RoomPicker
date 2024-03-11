@@ -1,8 +1,8 @@
 package ru.dragonestia.picker.api.util;
 
-public class ValidateIdentifier {
+public class IdentifierValidator {
 
-    private ValidateIdentifier() {}
+    private IdentifierValidator() {}
 
     public static boolean forNode(String nodeId) {
         return nodeId.matches("^(?!-)[a-z\\d-]{0,31}[a-z\\d](?!-)$");
