@@ -2,8 +2,8 @@ package ru.dragonestia.picker.service;
 
 import ru.dragonestia.picker.api.exception.RoomAreFullException;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
+import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.model.user.UserDetails;
-import ru.dragonestia.picker.api.repository.response.type.RRoom;
 import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
@@ -16,7 +16,7 @@ public interface UserService {
 
     List<Room> getUserRooms(User user);
 
-    List<RRoom.Short> getUserRoomsWithDetails(User user, Set<RoomDetails> details);
+    List<ShortResponseRoom> getUserRoomsWithDetails(User user, Set<RoomDetails> details);
 
     int linkUsersWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException;
 

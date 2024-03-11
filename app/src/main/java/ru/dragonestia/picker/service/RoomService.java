@@ -3,7 +3,7 @@ package ru.dragonestia.picker.service;
 import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
-import ru.dragonestia.picker.api.repository.response.type.RRoom;
+import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.User;
@@ -22,7 +22,7 @@ public interface RoomService {
 
     List<Room> all(Node node);
 
-    List<RRoom.Short> getAllRoomsWithDetailsResponse(Node node, Set<RoomDetails> details);
+    List<ShortResponseRoom> getAllRoomsWithDetailsResponse(Node node, Set<RoomDetails> details);
 
     Room pickAvailable(Node node, List<User> users);
 

@@ -3,7 +3,8 @@ package ru.dragonestia.picker.model;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import ru.dragonestia.picker.api.repository.response.type.RRoom;
+import ru.dragonestia.picker.api.model.room.ResponseRoom;
+import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.model.type.SlotLimit;
 
 import java.util.HashMap;
@@ -48,13 +49,11 @@ public class Room {
         return false;
     }
 
-    public RRoom toResponseObject() {
-        var result = new RRoom(id, nodeId, slots.getSlots(), payload);
-        result.setLocked(locked);
-        return result;
+    public ResponseRoom toResponseObject() {
+        return new ResponseRoom(id, nodeId, slots.getSlots(), locked, payload);
     }
 
-    public RRoom.Short toShortResponseObject() {
-        return new RRoom.Short(id, nodeId, slots.getSlots(), locked, new HashMap<>());
+    public ShortResponseRoom toShortResponseObject() {
+        return new ShortResponseRoom(id, nodeId, slots.getSlots(), locked);
     }
 }

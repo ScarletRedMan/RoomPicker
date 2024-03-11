@@ -71,6 +71,6 @@ public class ResponseNode implements INode {
 
     @Override
     public String toString() {
-        return "[NodeDefinition id='%s' pickingMethod=%s]".formatted(id, method);
+        return "[ResponseNode id='%s' pickingMethod=%s]".formatted(id, method);
     }
 }
