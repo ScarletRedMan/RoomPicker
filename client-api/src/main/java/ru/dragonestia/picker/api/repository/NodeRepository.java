@@ -1,27 +1,24 @@
 package ru.dragonestia.picker.api.repository;
 
-import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
-import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
-import ru.dragonestia.picker.api.model.node.NodeDetails;
-import ru.dragonestia.picker.api.repository.response.type.RNode;
+import org.jetbrains.annotations.NotNull;
+import ru.dragonestia.picker.api.model.node.INode;
+import ru.dragonestia.picker.api.model.node.NodeDefinition;
+import ru.dragonestia.picker.api.repository.request.node.FindNodeById;
+import ru.dragonestia.picker.api.repository.request.node.GetAllNodes;
+import ru.dragonestia.picker.api.repository.request.node.RemoveNodesByIds;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface NodeRepository {
 
-    Set<NodeDetails> ALL_DETAILS = Set.of(NodeDetails.PERSIST);
+    @NotNull List<INode> allNodes(@NotNull GetAllNodes request);
 
-    void register(RNode node, boolean persist) throws InvalidNodeIdentifierException, NodeAlreadyExistException;
+    @NotNull Optional<INode> findNodeById(@NotNull FindNodeById request);
 
-    default List<RNode> all() {
-        return all(Set.of());
-    }
+    void removeNodesById(@NotNull RemoveNodesByIds removeNodesByIds);
 
-    List<RNode> all(Set<NodeDetails> details);
+    void removeNode(@NotNull INode node);
 
-    Optional<RNode> find(String nodeId);
-
-    void remove(String nodeId);
+    void saveNode(@NotNull NodeDefinition definition);
 }

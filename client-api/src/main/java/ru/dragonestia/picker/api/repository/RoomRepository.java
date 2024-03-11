@@ -1,8 +1,8 @@
 package ru.dragonestia.picker.api.repository;
 
 import ru.dragonestia.picker.api.exception.*;
+import ru.dragonestia.picker.api.model.node.ResponseNode;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
-import ru.dragonestia.picker.api.repository.response.type.RNode;
 import ru.dragonestia.picker.api.repository.response.type.RRoom;
 
 import java.util.List;
@@ -17,15 +17,15 @@ public interface RoomRepository {
 
     void remove(RRoom room) throws NodeNotFoundException;
 
-    void remove(RNode node, RRoom.Short room) throws NodeNotFoundException;
+    void remove(ResponseNode node, RRoom.Short room) throws NodeNotFoundException;
 
-    default List<RRoom.Short> all(RNode node) throws NodeNotFoundException {
+    default List<RRoom.Short> all(ResponseNode node) throws NodeNotFoundException {
         return all(node, Set.of());
     }
 
-    List<RRoom.Short> all(RNode node, Set<RoomDetails> details) throws NodeNotFoundException;
+    List<RRoom.Short> all(ResponseNode node, Set<RoomDetails> details) throws NodeNotFoundException;
 
-    Optional<RRoom> find(RNode node, String roomId) throws NodeNotFoundException;
+    Optional<RRoom> find(ResponseNode node, String roomId) throws NodeNotFoundException;
 
     void lock(RRoom room, boolean value) throws NodeNotFoundException, RoomNotFoundException;
 }
