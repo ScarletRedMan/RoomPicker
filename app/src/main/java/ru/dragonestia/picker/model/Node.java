@@ -1,10 +1,10 @@
 package ru.dragonestia.picker.model;
 
 import lombok.NonNull;
-import ru.dragonestia.picker.api.repository.response.type.RNode;
-import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
+import ru.dragonestia.picker.api.model.node.PickingMethod;
+import ru.dragonestia.picker.api.model.node.ResponseNode;
 
-public record Node(@NonNull String id, @NonNull PickingMode mode, boolean persist) {
+public record Node(@NonNull String id, @NonNull PickingMethod method, boolean persist) {
 
     @Override
     public int hashCode() {
@@ -21,7 +21,7 @@ public record Node(@NonNull String id, @NonNull PickingMode mode, boolean persis
         return false;
     }
 
-    public RNode toResponseObject() {
-        return new RNode(id, mode);
+    public ResponseNode toResponseObject() {
+        return new ResponseNode(id, method);
     }
 }

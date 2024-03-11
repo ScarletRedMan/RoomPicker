@@ -1,6 +1,6 @@
 package ru.dragonestia.picker.repository.impl.picker;
 
-import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
+import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.repository.UserRepository;
@@ -55,7 +55,7 @@ public class LeastPickedPicker implements RoomPicker {
     }
 
     @Override
-    public PickingMode getPickingMode() {
-        return PickingMode.LEAST_PICKED;
+    public PickingMethod getPickingMode() {
+        return PickingMethod.LEAST_PICKED;
     }
 }

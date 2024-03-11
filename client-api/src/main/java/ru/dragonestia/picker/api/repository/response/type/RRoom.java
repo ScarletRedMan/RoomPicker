@@ -1,6 +1,7 @@
 package ru.dragonestia.picker.api.repository.response.type;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import ru.dragonestia.picker.api.model.node.ResponseNode;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
 
 import java.beans.Transient;
@@ -40,8 +41,8 @@ public class RRoom {
         this.details = new HashMap<>();
     }
 
-    public RRoom(String id, RNode node, int limit, String payload) {
-        this(id, node.getId(), limit, payload);
+    public RRoom(String id, ResponseNode node, int limit, String payload) {
+        this(id, node.getIdentifier(), limit, payload);
     }
 
     public String getId() {

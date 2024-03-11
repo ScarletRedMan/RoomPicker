@@ -31,7 +31,7 @@ public class NodeRepositoryImpl implements NodeRepository {
             }
 
             nodeMap.put(node.id(), node);
-            var picker = pickerRepository.create(node.id(), node.mode());
+            var picker = pickerRepository.create(node.id(), node.method());
             nodeId2PickerModeCache.put(node.id(), picker);
         }
 

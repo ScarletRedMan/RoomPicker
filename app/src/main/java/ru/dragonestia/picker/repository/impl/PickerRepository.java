@@ -2,7 +2,7 @@ package ru.dragonestia.picker.repository.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
+import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.repository.UserRepository;
@@ -20,7 +20,7 @@ public class PickerRepository {
     private final UserRepository userRepository;
     private final Map<String, RoomPicker> pickers = new ConcurrentHashMap<>();
 
-    public RoomPicker create(String nodeId, PickingMode mode) {
+    public RoomPicker create(String nodeId, PickingMethod mode) {
         var picker = of(mode);
         pickers.put(nodeId, picker);
         return picker;
@@ -38,7 +38,7 @@ public class PickerRepository {
         return pickers.get(nodeId).pick(users);
     }
 
-    private RoomPicker of(PickingMode mode) {
+    private RoomPicker of(PickingMethod mode) {
         switch (mode) {
             case SEQUENTIAL_FILLING -> {
                 return new SequentialFillingPicker(userRepository);
