@@ -1,7 +1,7 @@
 package ru.dragonestia.picker.api.repository.response.type;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import ru.dragonestia.picker.api.repository.details.RoomDetails;
+import ru.dragonestia.picker.api.model.room.RoomDetails;
 
 import java.beans.Transient;
 import java.util.HashMap;
