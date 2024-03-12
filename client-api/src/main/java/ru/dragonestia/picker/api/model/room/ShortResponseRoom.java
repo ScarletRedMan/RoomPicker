@@ -3,6 +3,7 @@ package ru.dragonestia.picker.api.model.room;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.dragonestia.picker.api.repository.type.RoomPath;
 
 import java.beans.Transient;
 import java.util.HashMap;
@@ -44,6 +45,12 @@ public class ShortResponseRoom implements IRoom {
     @Override
     public @NotNull String getNodeIdentifier() {
         return nodeId;
+    }
+
+    @Transient
+    @Override
+    public @NotNull RoomPath getPath() {
+        return IRoom.super.getPath();
     }
 
     @Override
