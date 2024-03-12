@@ -6,9 +6,13 @@ import ru.dragonestia.picker.api.model.node.NodeDefinition;
 import ru.dragonestia.picker.api.repository.request.node.FindNodeById;
 import ru.dragonestia.picker.api.repository.request.node.GetAllNodes;
 import ru.dragonestia.picker.api.repository.request.node.RemoveNodesByIds;
+import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
+import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
+import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface NodeRepository {
 
@@ -21,4 +25,6 @@ public interface NodeRepository {
     void removeNode(@NotNull INode node);
 
     void saveNode(@NotNull NodeDefinition definition);
+
+    @NotNull PickedRoomResponse pickRoom(@NotNull NodeIdentifier identifier, @NotNull Set<UserIdentifier> users);
 }

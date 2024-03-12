@@ -9,11 +9,13 @@ import ru.dragonestia.picker.api.exception.NotPersistedNodeException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
+import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.repository.RoomRepository;
+import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.storage.NodeAndRoomStorage;
 import ru.dragonestia.picker.util.DetailsExtractor;
@@ -23,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -31,6 +34,7 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
     private final NodeRepository nodeRepository;
+    private final UserRepository userRepository;
     private final DetailsExtractor detailsExtractor;
     private final NamingValidator namingValidator;
     private final NodeAndRoomStorage storage;
@@ -74,9 +78,20 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public Room pickAvailable(Node node, List<User> users) {
-        return roomRepository.pickFree(node, users)
+    public PickedRoomResponse pickAvailable(Node node, List<User> users) {
+        var room = roomRepository.pickFree(node, users)
                 .orElseThrow(() -> new RuntimeException("There are no rooms available"));
+        var roomUsers = userRepository.usersOf(room);
+
+        return new PickedRoomResponse(
+                room.getNodeId(),
+                room.getId(),
+                room.getPayload(),
+                room.getSlots().getSlots(),
+                roomUsers.size(),
+                room.isLocked(),
+                roomUsers.stream().map(User::id).collect(Collectors.toSet())
+        );
     }
 
     @Override
