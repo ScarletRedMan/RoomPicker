@@ -6,8 +6,8 @@ import ru.dragonestia.picker.api.model.node.NodeDetails;
 import ru.dragonestia.picker.api.model.node.ResponseNode;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
+import ru.dragonestia.picker.api.model.user.ResponseUser;
 import ru.dragonestia.picker.api.model.user.UserDetails;
-import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
@@ -57,7 +57,7 @@ public class DetailsExtractor {
         return response;
     }
 
-    public RUser extract(User user, Set<UserDetails> details) {
+    public ResponseUser extract(User user, Set<UserDetails> details) {
         var response = user.toResponseObject();
 
         for (var detail: details) {

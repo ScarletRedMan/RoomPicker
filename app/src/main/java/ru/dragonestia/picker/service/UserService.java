@@ -3,8 +3,8 @@ package ru.dragonestia.picker.service;
 import ru.dragonestia.picker.api.exception.RoomAreFullException;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
+import ru.dragonestia.picker.api.model.user.ResponseUser;
 import ru.dragonestia.picker.api.model.user.UserDetails;
-import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 
@@ -24,9 +24,9 @@ public interface UserService {
 
     List<User> getRoomUsers(Room room);
 
-    List<RUser> getRoomUsersWithDetailsResponse(Room room, Set<UserDetails> details);
+    List<ResponseUser> getRoomUsersWithDetailsResponse(Room room, Set<UserDetails> details);
 
-    List<RUser> searchUsers(String input, Set<UserDetails> details);
+    List<ResponseUser> searchUsers(String input, Set<UserDetails> details);
 
-    RUser getUserDetails(String userId, Set<UserDetails> details);
+    ResponseUser getUserDetails(String userId, Set<UserDetails> details);
 }

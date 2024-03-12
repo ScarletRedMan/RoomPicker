@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
+import ru.dragonestia.picker.api.model.user.ResponseUser;
 import ru.dragonestia.picker.api.model.user.UserDetails;
-import ru.dragonestia.picker.api.repository.response.type.RUser;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.repository.UserRepository;
@@ -52,8 +52,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<RUser> getRoomUsersWithDetailsResponse(Room room, Set<UserDetails> details) {
-        var users = new LinkedList<RUser>();
+    public List<ResponseUser> getRoomUsersWithDetailsResponse(Room room, Set<UserDetails> details) {
+        var users = new LinkedList<ResponseUser>();
         for (var user: getRoomUsers(room)) {
             users.add(detailsExtractor.extract(user, details));
         }
@@ -61,12 +61,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<RUser> searchUsers(String input, Set<UserDetails> details) {
+    public List<ResponseUser> searchUsers(String input, Set<UserDetails> details) {
         return userRepository.search(input).stream().map(user -> detailsExtractor.extract(user, details)).toList();
     }
 
     @Override
-    public RUser getUserDetails(String userId, Set<UserDetails> details) {
+    public ResponseUser getUserDetails(String userId, Set<UserDetails> details) {
         return detailsExtractor.extract(new User(userId), details);
     }
 }
