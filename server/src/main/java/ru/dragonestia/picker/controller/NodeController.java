@@ -10,6 +10,7 @@ import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.repository.response.NodeDetailsResponse;
 import ru.dragonestia.picker.api.repository.response.NodeListResponse;
+import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.service.RoomService;
@@ -73,7 +74,7 @@ public class NodeController {
 
     @Operation(summary = "Pick node for users")
     @PostMapping("/{nodeId}/pick")
-    ResponseEntity<?> pickRoom(
+    ResponseEntity<PickedRoomResponse> pickRoom(
             @Parameter(description = "Node identifier") @PathVariable("nodeId") String nodeId,
             @Parameter(description = "Users to add", example = "user1,user3,user3") @RequestParam(name = "userIds") String userIds
     ) {
@@ -81,8 +82,8 @@ public class NodeController {
 
         var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
         var users = namingValidator.validateUserIds(Arrays.stream(userIds.split(",")).toList());
-        var room = roomService.pickAvailable(node, users);
+        var response = roomService.pickAvailable(node, users);
 
-        return ResponseEntity.ok(room); // TODO: make other json schema
+        return ResponseEntity.ok(response);
     }
 }
