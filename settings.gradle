@@ -1,6 +1,6 @@
 rootProject.name = 'RoomPicker'
 
-include 'app'
+include 'server'
 include 'control-panel'
 include 'client-api'
 include 'client-impl'
