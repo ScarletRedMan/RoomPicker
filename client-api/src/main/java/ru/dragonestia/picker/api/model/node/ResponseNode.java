@@ -1,6 +1,7 @@
 package ru.dragonestia.picker.api.model.node;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +21,7 @@ public class ResponseNode implements INode {
     @Schema(description = "Additional data requested (Key-Value)")
     private Map<NodeDetails, String> details;
 
+    @Internal
     public ResponseNode() {}
 
     public ResponseNode(@NotNull String id, @NotNull PickingMethod pickingMethod) {

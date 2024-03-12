@@ -1,6 +1,7 @@
 package ru.dragonestia.picker.api.model.room;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.dragonestia.picker.api.repository.type.RoomPath;
@@ -27,6 +28,7 @@ public class ShortResponseRoom implements IRoom {
     @Schema(description = "Additional data requested (Key-Value)")
     private Map<RoomDetails, String> details;
 
+    @Internal
     public ShortResponseRoom() {}
 
     public ShortResponseRoom(String id, String nodeId, int slots, boolean locked) {
