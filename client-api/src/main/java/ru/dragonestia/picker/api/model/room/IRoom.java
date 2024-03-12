@@ -2,6 +2,9 @@ package ru.dragonestia.picker.api.model.room;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
+import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
+import ru.dragonestia.picker.api.repository.type.RoomPath;
 
 public interface IRoom {
 
@@ -10,6 +13,10 @@ public interface IRoom {
     @NotNull String getIdentifier();
 
     @NotNull String getNodeIdentifier();
+
+    default @NotNull RoomPath getPath() {
+        return new RoomPath(NodeIdentifier.of(getNodeIdentifier()), RoomIdentifier.of(getIdentifier()));
+    }
 
     int getMaxSlots();
 
