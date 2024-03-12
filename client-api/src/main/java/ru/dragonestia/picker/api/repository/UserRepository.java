@@ -1,26 +1,23 @@
 package ru.dragonestia.picker.api.repository;
 
-import ru.dragonestia.picker.api.model.room.ResponseRoom;
-import ru.dragonestia.picker.api.model.room.RoomDetails;
+import org.jetbrains.annotations.NotNull;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.model.user.ResponseUser;
-import ru.dragonestia.picker.api.model.user.UserDetails;
+import ru.dragonestia.picker.api.repository.request.user.*;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 public interface UserRepository {
 
-    void linkWithRoom(ResponseRoom room, Collection<ResponseUser> users, boolean force);
+    void linkUsersWithRoom(@NotNull LinkUsersWithRoom request);
 
-    void unlinkFromRoom(ResponseRoom room, Collection<ResponseUser> users);
+    void unlinkUsersFromRoom(@NotNull UnlinkUsersFromRoom request);
 
-    List<ResponseUser> all(ResponseRoom room, Set<UserDetails> details);
+    @NotNull List<ResponseUser> getAllUsersFormRoom(@NotNull GetAllUsersFromRoom request);
 
-    List<ResponseUser> search(String input, Set<UserDetails> details);
+    @NotNull List<ResponseUser> searchUsers(@NotNull SearchUsers request);
 
-    ResponseUser find(String userId, Set<UserDetails> details);
+    @NotNull ResponseUser findUserById(@NotNull FindUserById request);
 
-    List<ShortResponseRoom> getLinkedRoomsWithUsers(ResponseUser user, Set<RoomDetails> roomDetails);
+    @NotNull List<ShortResponseRoom> findRoomsLinkedWithUser(@NotNull FindRoomsLinkedWithUser request);
 }
