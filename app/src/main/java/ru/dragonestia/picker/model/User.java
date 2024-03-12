@@ -1,7 +1,7 @@
 package ru.dragonestia.picker.model;
 
 import lombok.NonNull;
-import ru.dragonestia.picker.api.repository.response.type.RUser;
+import ru.dragonestia.picker.api.model.user.ResponseUser;
 
 public record User(@NonNull String id) {
 
@@ -20,7 +20,7 @@ public record User(@NonNull String id) {
         return false;
     }
 
-    public RUser toResponseObject() {
-        return new RUser(id);
+    public ResponseUser toResponseObject() {
+        return new ResponseUser(id);
     }
 }

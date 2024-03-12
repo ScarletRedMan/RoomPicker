@@ -5,11 +5,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.dragonestia.picker.api.model.user.ResponseUser;
 import ru.dragonestia.picker.api.repository.response.LinkedRoomsWithUserResponse;
 import ru.dragonestia.picker.api.repository.response.SearchUserResponse;
 import ru.dragonestia.picker.api.repository.response.UserDetailsResponse;
-import ru.dragonestia.picker.api.repository.response.type.RUser;
-import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.service.UserService;
 import ru.dragonestia.picker.util.DetailsParser;
@@ -47,7 +46,7 @@ public class UserController {
             @Parameter(description = "Required addition user data", example = "COUNT_ROOMS") @RequestParam(value = "requiredDetails", required = false) String detailsSeq
     ) {
         if (!namingValidator.validateUserId(userId)) {
-            return new UserDetailsResponse(new RUser(userId));
+            return new UserDetailsResponse(new ResponseUser(userId));
         }
 
         return new UserDetailsResponse(userService.getUserDetails(userId, detailsParser.parseUserDetails(detailsSeq)));
