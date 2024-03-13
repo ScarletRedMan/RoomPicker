@@ -93,7 +93,6 @@ public class RestTemplate {
 
     private void checkResponseForErrors(Response response) throws IOException {
         var code = response.code();
-        System.out.println(code);
         var statusCode = code / 100;
 
         if (statusCode == 4) {
