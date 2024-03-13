@@ -9,10 +9,10 @@ import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.repository.impl.cache.NodeId2PickerModeCache;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -23,7 +23,7 @@ public class NodeRepositoryImpl implements NodeRepository {
     private final RoomRepository roomRepository;
     private final PickerRepository pickerRepository;
     private final NodeId2PickerModeCache nodeId2PickerModeCache;
-    private final Map<String, Node> nodeMap = new ConcurrentHashMap<>();
+    private final Map<String, Node> nodeMap = new HashMap<>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
