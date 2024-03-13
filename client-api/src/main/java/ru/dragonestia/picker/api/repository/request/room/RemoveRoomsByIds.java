@@ -2,26 +2,34 @@ package ru.dragonestia.picker.api.repository.request.room;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
+import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomPath;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class RemoveRoomsByIds {
 
-    private final Set<RoomPath> paths;
+    private final String nodeId;
+    private final Set<String> roomsIds;
 
-    private RemoveRoomsByIds(Set<RoomPath> paths) {
-        this.paths = paths;
+    private RemoveRoomsByIds(String nodeId, Set<String> roomIds) {
+        this.nodeId = nodeId;
+        this.roomsIds = roomIds;
     }
 
-    public @NotNull Set<RoomPath> getPaths() {
-        return paths;
+    public @NotNull String getNodeId() {
+        return nodeId;
     }
 
-    public static @NotNull RemoveRoomsByIds just(@NotNull RoomPath path) {
-        return RemoveRoomsByIds.builder().appendPath(path).build();
+    public @NotNull Set<String> getRoomsIds() {
+        return roomsIds;
+    }
+
+    public static @NotNull RemoveRoomsByIds just(@NotNull NodeIdentifier nodeId, @NotNull RoomIdentifier roomId) {
+        return RemoveRoomsByIds.builder().appendRoomId(path).build();
     }
 
     public static @NotNull Builder builder() {
@@ -30,24 +38,35 @@ public class RemoveRoomsByIds {
 
     public static class Builder {
 
-        private Set<RoomPath> paths = new HashSet<>();
+        private String nodeId = null;
+        private Set<RoomIdentifier> roomsIds;
 
         private Builder() {}
 
         @Contract("_ -> this")
-        public @NotNull Builder setPaths(@NotNull Set<RoomPath> paths) {
-            this.paths = paths;
+        public @NotNull Builder setNodeId(@NotNull NodeIdentifier identifier) {
+            nodeId = identifier.getValue();
             return this;
         }
 
         @Contract("_ -> this")
-        public @NotNull Builder appendPath(@NotNull RoomPath path) {
-            paths.add(path);
+        public @NotNull Builder setRoomsIds(@NotNull Set<RoomIdentifier> roomIds) {
+            this.roomsIds = roomIds;
+            return this;
+        }
+
+        @Contract("_ -> this")
+        public @NotNull Builder appendRoomId(@NotNull RoomIdentifier roomId) {
+            roomsIds.add(roomId);
             return this;
         }
 
         public @NotNull RemoveRoomsByIds build() {
-            return new RemoveRoomsByIds(Collections.unmodifiableSet(paths));
+            if (nodeId == null) {
+                throw new NullPointerException("Node id is null");
+            }
+
+            return new RemoveRoomsByIds(nodeId, roomsIds.stream().map(o -> o.getValue()).collect(Collectors.toSet()));
         }
     }
 }

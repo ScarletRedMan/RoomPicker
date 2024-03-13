@@ -53,6 +53,8 @@ public class NodeRepositoryImpl implements NodeRepository {
 
     @Override
     public void removeNodesById(@NotNull RemoveNodesByIds data) {
+        if (data.getNodeIds().isEmpty()) return;
+
         rest.query("/nodes", HttpMethod.DELETE, params -> {
             params.put("toDelete", String.join(",", data.getNodeIds()));
         });
