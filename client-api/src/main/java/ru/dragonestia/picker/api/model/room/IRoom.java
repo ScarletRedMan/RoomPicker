@@ -12,7 +12,15 @@ public interface IRoom {
 
     @NotNull String getIdentifier();
 
+    default @NotNull RoomIdentifier getIdentifierObject() {
+        return RoomIdentifier.of(getIdentifier());
+    }
+
     @NotNull String getNodeIdentifier();
+
+    default @NotNull NodeIdentifier getNodeIdentifierObject() {
+        return NodeIdentifier.of(getNodeIdentifier());
+    }
 
     default @NotNull RoomPath getPath() {
         return new RoomPath(NodeIdentifier.of(getNodeIdentifier()), RoomIdentifier.of(getIdentifier()));
