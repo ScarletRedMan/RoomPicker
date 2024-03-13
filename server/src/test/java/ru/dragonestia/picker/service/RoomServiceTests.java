@@ -9,7 +9,7 @@ import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.NotPersistedNodeException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
-import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
+import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
@@ -30,7 +30,7 @@ public class RoomServiceTests {
 
     @BeforeEach
     void init() {
-        node = new Node("test-rooms", PickingMode.SEQUENTIAL_FILLING, false);
+        node = new Node("test-rooms", PickingMethod.SEQUENTIAL_FILLING, false);
 
         try {
             nodeService.create(node);
@@ -93,7 +93,7 @@ public class RoomServiceTests {
         );
 
 
-        Assertions.assertEquals("test-room4", roomService.pickAvailable(node, users).getId());
+        Assertions.assertEquals("test-room4", roomService.pickAvailable(node, users).roomId());
     }
 
     @Test
@@ -105,7 +105,7 @@ public class RoomServiceTests {
 
     @Test
     void test_nodeDoesNotExists() {
-        var node = new Node("Bruh", PickingMode.ROUND_ROBIN, false);
+        var node = new Node("Bruh", PickingMethod.ROUND_ROBIN, false);
         var room = Room.create("test", node, SlotLimit.unlimited(), "", false);
 
         Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.create(room));
