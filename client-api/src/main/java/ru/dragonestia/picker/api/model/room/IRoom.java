@@ -38,6 +38,7 @@ public interface IRoom {
 
     boolean isLocked();
 
+    @Transient
     @Nullable Boolean isPersist();
 
     @Nullable String getPayload();

@@ -40,7 +40,6 @@ public class ResponseNode implements INode {
         return method;
     }
 
-    @Transient
     @Override
     public @Nullable Boolean isPersist() {
         var val = getDetail(NodeDetails.PERSIST);
