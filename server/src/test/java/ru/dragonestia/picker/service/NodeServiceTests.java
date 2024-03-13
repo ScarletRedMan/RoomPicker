@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
-import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
+import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.model.Node;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public class NodeServiceTests {
 
     @Test
     void test_nodeCreateAndRemove() {
-        var node = new Node("test", PickingMode.SEQUENTIAL_FILLING, false);
+        var node = new Node("test", PickingMethod.SEQUENTIAL_FILLING, false);
 
         Assertions.assertDoesNotThrow(() -> nodeService.create(node));
         Assertions.assertTrue(nodeService.find(node.id()).isPresent());
@@ -34,9 +34,9 @@ public class NodeServiceTests {
         nodeService.all().forEach(node -> nodeService.remove(node));
 
         var nodes = List.of(
-                new Node("test1", PickingMode.SEQUENTIAL_FILLING, false),
-                new Node("test2", PickingMode.ROUND_ROBIN, false),
-                new Node("test3", PickingMode.ROUND_ROBIN, false)
+                new Node("test1", PickingMethod.SEQUENTIAL_FILLING, false),
+                new Node("test2", PickingMethod.ROUND_ROBIN, false),
+                new Node("test3", PickingMethod.ROUND_ROBIN, false)
         );
 
         nodes.forEach(node -> nodeService.create(node));

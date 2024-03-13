@@ -3,7 +3,7 @@ package ru.dragonestia.picker.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
+import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
@@ -51,7 +51,7 @@ public class FillingNodesConfig {
 
     @Bean
     void createSequentialFillingNode() {
-        var node = new Node("seq", PickingMode.SEQUENTIAL_FILLING, false);
+        var node = new Node("seq", PickingMethod.SEQUENTIAL_FILLING, false);
         nodeRepository.create(node);
 
         fillNode(node);
@@ -61,7 +61,7 @@ public class FillingNodesConfig {
 
     @Bean
     void createRoundRobinNode() {
-        var node = new Node("round", PickingMode.ROUND_ROBIN, false);
+        var node = new Node("round", PickingMethod.ROUND_ROBIN, false);
         nodeRepository.create(node);
 
         fillNode(node);
@@ -71,7 +71,7 @@ public class FillingNodesConfig {
 
     @Bean
     void createLeastPickerNode() {
-        var node = new Node("least", PickingMode.LEAST_PICKED, false);
+        var node = new Node("least", PickingMethod.LEAST_PICKED, false);
         nodeRepository.create(node);
 
         fillNode(node);
