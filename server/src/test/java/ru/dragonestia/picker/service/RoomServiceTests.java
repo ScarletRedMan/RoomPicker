@@ -10,6 +10,10 @@ import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.NotPersistedNodeException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
+import ru.dragonestia.picker.api.model.room.IRoom;
+import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
+import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
+import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
@@ -30,7 +34,7 @@ public class RoomServiceTests {
 
     @BeforeEach
     void init() {
-        node = new Node("test-rooms", PickingMethod.SEQUENTIAL_FILLING, false);
+        node = new Node(NodeIdentifier.of("test-rooms"), PickingMethod.SEQUENTIAL_FILLING, false);
 
         try {
             nodeService.create(node);
@@ -39,24 +43,24 @@ public class RoomServiceTests {
 
     @Test
     void test_createAndRemove() {
-        var room = Room.create("test-room", node, SlotLimit.unlimited(), "", false);
+        var room = new Room(RoomIdentifier.of("test-room"), node, IRoom.UNLIMITED_SLOTS, "", false);
         roomService.create(room);
 
-        Assertions.assertTrue(roomService.find(node, room.getId()).isPresent());
+        Assertions.assertTrue(roomService.find(node, room.getIdentifier()).isPresent());
         Assertions.assertThrows(RoomAlreadyExistException.class, () -> roomService.create(room));
 
         roomService.remove(room);
 
-        Assertions.assertFalse(roomService.find(node, room.getId()).isPresent());
+        Assertions.assertFalse(roomService.find(node, room.getIdentifier()).isPresent());
     }
 
     @Test
     void test_allRooms() {
         var rooms = List.of(
-                Room.create("test-room1", node, SlotLimit.of(1), "", false),
-                Room.create("test-room2", node, SlotLimit.of(2), "", false),
-                Room.create("test-room3", node, SlotLimit.of(3), "", false),
-                Room.create("test-room4", node, SlotLimit.unlimited(), "", false)
+                new Room(RoomIdentifier.of("test-room1"), node, 1, "", false),
+                new Room(RoomIdentifier.of("test-room2"), node, 2, "", false),
+                new Room(RoomIdentifier.of("test-room3"), node, 3, "", false),
+                new Room(RoomIdentifier.of("test-room4"), node, IRoom.UNLIMITED_SLOTS, "", false)
         );
 
         rooms.forEach(room -> roomService.create(room));
@@ -69,27 +73,29 @@ public class RoomServiceTests {
 
     @Test
     void test_exceptNotPersistedNode() {
-        Assertions.assertThrows(NotPersistedNodeException.class, () -> roomService.create(Room.create("1", node, SlotLimit.unlimited(), "", true)));
+        Assertions.assertThrows(NotPersistedNodeException.class, () -> {
+            roomService.create(new Room(RoomIdentifier.of("1"), node, IRoom.UNLIMITED_SLOTS, "", true));
+        });
     }
 
     @Test
     void test_pickRoom() {
         var rooms = List.of(
-                Room.create("test-room1", node, SlotLimit.of(1), "", false),
-                Room.create("test-room2", node, SlotLimit.of(2), "", false),
-                Room.create("test-room3", node, SlotLimit.of(3), "", false),
-                Room.create("test-room4", node, SlotLimit.unlimited(), "", false)
+                new Room(RoomIdentifier.of("test-room1"), node, 1, "", false),
+                new Room(RoomIdentifier.of("test-room2"), node, 2, "", false),
+                new Room(RoomIdentifier.of("test-room3"), node, 3, "", false),
+                new Room(RoomIdentifier.of("test-room4"), node, IRoom.UNLIMITED_SLOTS, "", false)
         );
 
         rooms.forEach(room -> roomService.create(room));
 
         var users = List.of(
-                new User("1"),
-                new User("2"),
-                new User("3"),
-                new User("4"),
-                new User("5"),
-                new User("6")
+                new User(UserIdentifier.of("1")),
+                new User(UserIdentifier.of("2")),
+                new User(UserIdentifier.of("3")),
+                new User(UserIdentifier.of("4")),
+                new User(UserIdentifier.of("5")),
+                new User(UserIdentifier.of("6"))
         );
 
 
@@ -105,12 +111,12 @@ public class RoomServiceTests {
 
     @Test
     void test_nodeDoesNotExists() {
-        var node = new Node("Bruh", PickingMethod.ROUND_ROBIN, false);
-        var room = Room.create("test", node, SlotLimit.unlimited(), "", false);
+        var node = new Node(NodeIdentifier.of("bruh"), PickingMethod.ROUND_ROBIN, false);
+        var room = new Room(RoomIdentifier.of("test"), node, IRoom.UNLIMITED_SLOTS, "", false);
 
         Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.create(room));
         Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.remove(room));
         Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.find(node, "Bruh"));
-        Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.pickAvailable(node, List.of(new User("1"))));
+        Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.pickAvailable(node, List.of(new User(UserIdentifier.of("1")))));
     }
 }

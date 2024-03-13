@@ -34,8 +34,8 @@ public class IdentifierValidatorTests {
         Assertions.assertFalse(IdentifierValidator.forRoom("-"));
         Assertions.assertFalse(IdentifierValidator.forRoom("-a"));
         Assertions.assertFalse(IdentifierValidator.forRoom("a-"));
-        Assertions.assertTrue(IdentifierValidator.forRoom("a".repeat(32)));
-        Assertions.assertFalse(IdentifierValidator.forRoom("a".repeat(33)));
+        Assertions.assertTrue(IdentifierValidator.forRoom("a".repeat(36)));
+        Assertions.assertFalse(IdentifierValidator.forRoom("a".repeat(37)));
     }
 
     @Test

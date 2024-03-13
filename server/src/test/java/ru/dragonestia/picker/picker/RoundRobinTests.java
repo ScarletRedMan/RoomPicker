@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import ru.dragonestia.picker.api.model.node.INode;
 import ru.dragonestia.picker.config.FillingNodesConfig;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.repository.RoomRepository;
@@ -42,11 +43,11 @@ public class RoundRobinTests {
         Assertions.assertTrue(roomOpt.isPresent());
 
         var room = roomOpt.get();
-        var slots = room.getSlots();
+        var slots = room.getMaxSlots();
         var users = userRepository.usersOf(room);
-        Assertions.assertTrue(slots.isUnlimited() || slots.getSlots() >= users.size()); // check slots limitation
+        Assertions.assertTrue(slots == -1 || slots >= users.size()); // check slots limitation
 
-        Assertions.assertEquals(expectedRoomId, room.getId());
+        Assertions.assertEquals(expectedRoomId, room.getIdentifier());
     }
 
     public static class PickingArgumentProvider implements ArgumentsProvider {

@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
+import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
+import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
+import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
-import ru.dragonestia.picker.model.type.SlotLimit;
 import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.UserRepository;
@@ -51,7 +53,7 @@ public class FillingNodesConfig {
 
     @Bean
     void createSequentialFillingNode() {
-        var node = new Node("seq", PickingMethod.SEQUENTIAL_FILLING, false);
+        var node = new Node(NodeIdentifier.of("seq"), PickingMethod.SEQUENTIAL_FILLING, false);
         nodeRepository.create(node);
 
         fillNode(node);
@@ -61,7 +63,7 @@ public class FillingNodesConfig {
 
     @Bean
     void createRoundRobinNode() {
-        var node = new Node("round", PickingMethod.ROUND_ROBIN, false);
+        var node = new Node(NodeIdentifier.of("round"), PickingMethod.ROUND_ROBIN, false);
         nodeRepository.create(node);
 
         fillNode(node);
@@ -71,7 +73,7 @@ public class FillingNodesConfig {
 
     @Bean
     void createLeastPickerNode() {
-        var node = new Node("least", PickingMethod.LEAST_PICKED, false);
+        var node = new Node(NodeIdentifier.of("least"), PickingMethod.LEAST_PICKED, false);
         nodeRepository.create(node);
 
         fillNode(node);
@@ -83,12 +85,12 @@ public class FillingNodesConfig {
         for (int i = 0, n = 5; i < n; i++) {
             for (int j = 0; j < 3; j++) {
                 var roomId = "room-" + i + "-" + j;
-                var room = Room.create(roomId, node, SlotLimit.of(n), "", false);
+                var room = new Room(RoomIdentifier.of(roomId), node, n, "", false);
                 roomRepository.create(room);
 
                 var users = n - i;
                 for (int k = users - 1; k >= 0; k--) {
-                    var user = new User("user-" + k);
+                    var user = new User(UserIdentifier.of("user-" + k));
                     userRepository.linkWithRoom(room, List.of(user), false);
                 }
 

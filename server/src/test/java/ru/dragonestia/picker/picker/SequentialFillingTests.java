@@ -44,11 +44,11 @@ public class SequentialFillingTests {
         Assertions.assertTrue(roomOpt.isPresent());
 
         var room = roomOpt.get();
-        var slots = room.getSlots();
+        var slots = room.getMaxSlots();
         var users = userRepository.usersOf(room);
-        Assertions.assertTrue(slots.isUnlimited() || slots.getSlots() >= users.size()); // check slots limitation
+        Assertions.assertTrue(slots == -1 || slots >= users.size()); // check slots limitation
 
-        Assertions.assertEquals(expectedRoomId, room.getId());
+        Assertions.assertEquals(expectedRoomId, room.getIdentifier());
     }
 
     public static class PickingArgumentProvider implements ArgumentsProvider {
