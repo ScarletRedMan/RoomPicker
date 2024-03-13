@@ -2,6 +2,7 @@ package ru.dragonestia.picker.api.model.room;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.dragonestia.picker.api.repository.type.RoomPath;
@@ -64,9 +65,21 @@ public class ResponseRoom implements IRoom {
         return slots;
     }
 
+    @Contract("_ -> this")
+    public @NotNull ResponseRoom setSlots(int slots) {
+        this.slots = slots;
+        return this;
+    }
+
     @Override
     public boolean isLocked() {
         return locked;
+    }
+
+    @Contract("_ -> this")
+    public @NotNull ResponseRoom setLocked(boolean locked) {
+        this.locked = locked;
+        return this;
     }
 
     @Override
@@ -78,6 +91,12 @@ public class ResponseRoom implements IRoom {
     @Override
     public @Nullable String getPayload() {
         return payload;
+    }
+
+    @Contract("_ -> this")
+    public @NotNull ResponseRoom setPayload(@NotNull String payload) {
+        this.payload = payload;
+        return this;
     }
 
     @Transient

@@ -11,22 +11,23 @@ import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import org.springframework.lang.Nullable;
-import ru.dragonestia.picker.api.repository.response.type.RNode;
-import ru.dragonestia.picker.api.repository.response.type.RRoom;
+import ru.dragonestia.picker.api.model.node.INode;
+import ru.dragonestia.picker.api.model.room.IRoom;
+import ru.dragonestia.picker.api.model.room.RoomDefinition;
+import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class RegisterRoom extends Details {
 
-    private final RNode node;
-    private final BiFunction<RRoom, Boolean, Response> onSubmit;
+    private final INode node;
+    private final Function<RoomDefinition, Response> onSubmit;
     private final TextField identifierField;
     private final TextArea payloadField;
     private final Checkbox lockedField;
     private final Checkbox persistField;
 
-    public RegisterRoom(RNode node, BiFunction<RRoom, Boolean, Response> onSubmit) {
+    public RegisterRoom(INode node, Function<RoomDefinition, Response> onSubmit) {
         super(new H2("Register room"));
         this.node = node;
         this.onSubmit = onSubmit;
@@ -45,7 +46,7 @@ public class RegisterRoom extends Details {
     private TextField createNodeIdentifierField() {
         var field = new TextField("Node identifier");
         field.setMinWidth(20, Unit.REM);
-        field.setValue(node.getId());
+        field.setValue(node.getIdentifier());
         field.setReadOnly(true);
         return field;
     }
@@ -103,10 +104,10 @@ public class RegisterRoom extends Details {
     }
 
     private void onClick() {
-        var nodeIdentifier = identifierField.getValue();
+        var roomId = identifierField.getValue();
 
         String error = null;
-        if (identifierField.isInvalid() || (error = validateForm(nodeIdentifier)) != null) {
+        if (identifierField.isInvalid() || (error = validateForm(roomId)) != null) {
             if (identifierField.isInvalid()) {
                 error = "Invalid room id format";
             }
@@ -115,9 +116,13 @@ public class RegisterRoom extends Details {
             return;
         }
 
-        var room = new RRoom(nodeIdentifier, node, RRoom.INFINITE_SLOTS, payloadField.getValue());
+        var room = new RoomDefinition(node.getIdentifierObject(), RoomIdentifier.of(roomId))
+                .setMaxSlots(IRoom.UNLIMITED_SLOTS)
+                .setPayload(payloadField.getValue())
+                .setPersist(persistField.getValue());
+
         room.setLocked(lockedField.getValue());
-        var response = onSubmit.apply(room, persistField.getValue());
+        var response = onSubmit.apply(room);
         clear();
         if (response.error()) {
             Notifications.error(response.reason());

@@ -10,20 +10,20 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
-import org.springframework.beans.factory.annotation.Qualifier;
-import ru.dragonestia.picker.api.repository.RoomPickerRepository;
+import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.repository.response.RoomPickerInfoResponse;
-
-import java.net.URI;
+import ru.dragonestia.picker.cp.annotation.ServerURL;
 
 public class MainLayout extends AppLayout {
 
-    private final RoomPickerInfoResponse info;
+    private final RoomPickerClient client;
+    private final RoomPickerInfoResponse serverInfo;
     private final String serverUrl;
 
-public MainLayout(RoomPickerRepository roomPickerRepository, URI serverUrl) {
-        info = roomPickerRepository.getInfo();
-        this.serverUrl = serverUrl.toString();
+    public MainLayout(RoomPickerClient client, @ServerURL String serverUrl) {
+        this.client = client;
+        this.serverInfo = client.getServerInfo();
+        this.serverUrl = serverUrl;
 
         var toggle = new DrawerToggle();
         var scroller = new Scroller(createSideNav());
@@ -37,7 +37,7 @@ public MainLayout(RoomPickerRepository roomPickerRepository, URI serverUrl) {
         layout.setAlignItems(FlexComponent.Alignment.END);
         layout.setPadding(true);
         layout.add(new Html("<h2><u>RoomPicker!</u></h2>"));
-        layout.add(new Html("<sub>" + info.version() + "</sub>"));
+        layout.add(new Html("<sub>" + serverInfo.version() + "</sub>"));
         return layout;
     }
 

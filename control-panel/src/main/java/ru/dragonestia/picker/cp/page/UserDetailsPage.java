@@ -13,54 +13,55 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.RequiredArgsConstructor;
+import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
-import ru.dragonestia.picker.api.repository.RoomRepository;
-import ru.dragonestia.picker.api.repository.UserRepository;
-import ru.dragonestia.picker.api.repository.response.type.RRoom;
-import ru.dragonestia.picker.api.repository.response.type.RUser;
+import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
+import ru.dragonestia.picker.api.model.user.IUser;
+import ru.dragonestia.picker.api.repository.request.user.FindRoomsLinkedWithUser;
 import ru.dragonestia.picker.cp.component.RefreshableTable;
 import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @PageTitle("User details")
 @Route(value = "/users/:userId", layout = MainLayout.class)
 public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserver, RefreshableTable {
 
-    private final UserRepository userRepository;
+    private final RoomPickerClient client;
     private final RouteParamsExtractor paramsExtractor;
-    private RUser user;
-    private Grid<RRoom.Short> gridRooms;
-    private List<RRoom.Short> cachedRooms = new LinkedList<>();
+    private IUser user;
+    private Grid<ShortResponseRoom> gridRooms;
+    private List<ShortResponseRoom> cachedRooms = new LinkedList<>();
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        user = paramsExtractor.extractUserId(event);
+        user = paramsExtractor.extractUser(event);
 
         init();
     }
 
     private void init() {
-        add(new H2("User '%s'".formatted(user.getId())));
+        add(new H2("User '%s'".formatted(user.getIdentifier())));
         add(new H3("Linked with rooms"));
         add(gridRooms = createGrid());
 
         refresh();
     }
 
-    private Grid<RRoom.Short> createGrid() {
-        var grid = new Grid<RRoom.Short>();
+    private Grid<ShortResponseRoom> createGrid() {
+        var grid = new Grid<ShortResponseRoom>();
 
-        grid.addColumn(RRoom.Short::id).setHeader("Room identifier").setSortable(true);
+        grid.addColumn(ShortResponseRoom::getIdentifier).setHeader("Room identifier").setSortable(true);
 
-        grid.addColumn(RRoom.Short::nodeId).setHeader("Node identifier").setSortable(true);
+        grid.addColumn(ShortResponseRoom::getNodeIdentifier).setHeader("Node identifier").setSortable(true);
 
-        grid.addColumn(room -> room.details().get(RoomDetails.COUNT_USERS)).setHeader("Users")
+        grid.addColumn(room -> room.getDetail(RoomDetails.COUNT_USERS)).setHeader("Users")
                 .setComparator((room1, room2) -> {
-                    var r1 = Integer.parseInt(room1.details().get(RoomDetails.COUNT_USERS));
-                    var r2 = Integer.parseInt(room2.details().get(RoomDetails.COUNT_USERS));
+                    var r1 = Integer.parseInt(Objects.requireNonNull(room1.getDetail(RoomDetails.COUNT_USERS)));
+                    var r2 = Integer.parseInt(Objects.requireNonNull(room2.getDetail(RoomDetails.COUNT_USERS)));
 
                     return Integer.compare(r1, r2);
                 }).setSortable(true);
@@ -69,7 +70,7 @@ public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserv
             var button = new Button("Details");
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             button.addClickListener(event -> {
-                getUI().ifPresent(ui -> ui.navigate("/nodes/%s/rooms/%s".formatted(room.nodeId(), room.id())));
+                getUI().ifPresent(ui -> ui.navigate("/nodes/%s/rooms/%s".formatted(room.getNodeIdentifier(), room.getIdentifier())));
             });
             return button;
         }).setTextAlign(ColumnTextAlign.END).setFrozenToEnd(true).setHeader(createRefreshButton());
@@ -84,7 +85,8 @@ public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserv
 
     @Override
     public void refresh() {
-        cachedRooms = userRepository.getLinkedRoomsWithUsers(user, RoomRepository.ALL_DETAILS);
+        cachedRooms = client.getUserRepository()
+                .findRoomsLinkedWithUser(FindRoomsLinkedWithUser.withAllDetails(user.getIdentifierObject()));
         gridRooms.setItems(cachedRooms);
     }
 }

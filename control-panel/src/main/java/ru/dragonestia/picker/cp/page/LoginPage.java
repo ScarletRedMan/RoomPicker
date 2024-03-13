@@ -9,18 +9,18 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.dragonestia.picker.api.repository.UserRepository;
+import ru.dragonestia.picker.api.impl.RoomPickerClient;
 
 @Route("/login")
 public class LoginPage extends VerticalLayout {
 
-    private final UserRepository userRepository;
+    private final RoomPickerClient client;
     private final TextField fieldLogin;
     private final PasswordField fieldPassword;
 
     @Autowired
-    public LoginPage(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public LoginPage(RoomPickerClient client) {
+        this.client = client;
 
         setAlignItems(Alignment.CENTER);
 

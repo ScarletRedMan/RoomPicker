@@ -14,22 +14,20 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import lombok.Setter;
+import ru.dragonestia.picker.api.model.node.INode;
 import ru.dragonestia.picker.api.model.node.NodeDetails;
 import ru.dragonestia.picker.api.repository.NodeRepository;
-import ru.dragonestia.picker.api.repository.response.type.RNode;
+import ru.dragonestia.picker.api.repository.request.node.GetAllNodes;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class NodeList extends VerticalLayout implements RefreshableTable {
 
     private final NodeRepository nodeRepository;
-    private final Grid<RNode> nodesGrid;
+    private final Grid<INode> nodesGrid;
     private final TextField searchField;
-    private List<RNode> cachedNodes;
-    @Setter private Consumer<String> removeMethod;
+    private List<INode> cachedNodes;
 
     public NodeList(NodeRepository nodeRepository) {
         super();
@@ -56,24 +54,24 @@ public class NodeList extends VerticalLayout implements RefreshableTable {
         var temp = input.trim();
 
         nodesGrid.setItems(cachedNodes.stream()
-                .filter(node -> node.getId().startsWith(temp))
+                .filter(node -> node.getIdentifier().startsWith(temp))
                 .toList());
     }
 
-    private Grid<RNode> createGrid() {
-        var grid = new Grid<>(RNode.class, false);
+    private Grid<INode> createGrid() {
+        var grid = new Grid<>(INode.class, false);
 
         grid.addComponentColumn(node -> {
-            if (Boolean.parseBoolean(node.getDetails(NodeDetails.PERSIST))) {
-                return new Span(node.getId());
+            if (Boolean.parseBoolean(node.getDetail(NodeDetails.PERSIST))) {
+                return new Span(node.getIdentifier());
             }
 
-            var result = new Span(node.getId());
+            var result = new Span(node.getIdentifier());
             result.add(grayBadge("(temp)"));
             return result;
-        }).setHeader("Identifier").setComparator(Comparator.comparing(RNode::getId)).setSortable(true);
+        }).setHeader("Identifier").setComparator(Comparator.comparing(INode::getIdentifier)).setSortable(true);
 
-        grid.addColumn(node -> node.getMode().getName()).setHeader("Mode").setSortable(true);
+        grid.addColumn(node -> node.getPickingMethod().name()).setHeader("Mode").setSortable(true);
 
         grid.addComponentColumn(this::createManageButtons).setFrozenToEnd(true)
                 .setTextAlign(ColumnTextAlign.END).setHeader(createRefreshButton());
@@ -82,7 +80,7 @@ public class NodeList extends VerticalLayout implements RefreshableTable {
         return grid;
     }
 
-    private HorizontalLayout createManageButtons(RNode node) {
+    private HorizontalLayout createManageButtons(INode node) {
         var layout = new HorizontalLayout(JustifyContentMode.END);
 
         {
@@ -102,13 +100,13 @@ public class NodeList extends VerticalLayout implements RefreshableTable {
         return layout;
     }
 
-    private void clickDetailsButton(RNode node) {
-        getUI().ifPresent(ui -> ui.navigate("/nodes/" + node.getId()));
+    private void clickDetailsButton(INode node) {
+        getUI().ifPresent(ui -> ui.navigate("/nodes/" + node.getIdentifier()));
     }
 
-    private void clickRemoveButton(RNode node) {
+    private void clickRemoveButton(INode node) {
         var dialog = new Dialog("Confirm node deletion");
-        dialog.add(new Html("<p>Confirm that you want to delete node. Enter <b><u>" + node.getId() + "</u></b> to field below and confirm.</p>"));
+        dialog.add(new Html("<p>Confirm that you want to delete node. Enter <b><u>" + node.getIdentifier() + "</u></b> to field below and confirm.</p>"));
 
         var inputField = new TextField();
         inputField.setWidth("100%");
@@ -118,13 +116,13 @@ public class NodeList extends VerticalLayout implements RefreshableTable {
             var button = new Button("Confirm");
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
             button.addClickListener(event -> {
-                if (!node.getId().equals(inputField.getValue())) {
+                if (!node.getIdentifier().equals(inputField.getValue())) {
                     Notifications.error("Invalid input");
                     return;
                 }
 
                 removeNode(node);
-                Notifications.success("Node <b>" + node.getId() + "</b> was successfully removed!");
+                Notifications.success("Node <b>" + node.getIdentifier() + "</b> was successfully removed!");
                 dialog.close();
             });
 
@@ -140,15 +138,14 @@ public class NodeList extends VerticalLayout implements RefreshableTable {
         dialog.open();
     }
 
-    private void removeNode(RNode node) {
-        if (removeMethod != null) {
-            removeMethod.accept(node.getId());
-        }
+    private void removeNode(INode node) {
+        nodeRepository.removeNode(node);
+        refresh();
     }
 
     @Override
     public void refresh() {
-        cachedNodes = nodeRepository.all(NodeRepository.ALL_DETAILS);
+        cachedNodes = nodeRepository.allNodes(GetAllNodes.WITH_ALL_DETAILS);
         applySearch(searchField.getValue());
     }
 
