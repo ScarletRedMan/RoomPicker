@@ -6,18 +6,22 @@ import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomPath;
 
+import java.beans.Transient;
+
 public interface IRoom {
 
     int UNLIMITED_SLOTS = -1;
 
     @NotNull String getIdentifier();
 
+    @Transient
     default @NotNull RoomIdentifier getIdentifierObject() {
         return RoomIdentifier.of(getIdentifier());
     }
 
     @NotNull String getNodeIdentifier();
 
+    @Transient
     default @NotNull NodeIdentifier getNodeIdentifierObject() {
         return NodeIdentifier.of(getNodeIdentifier());
     }
