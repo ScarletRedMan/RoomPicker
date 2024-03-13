@@ -1,4 +1,4 @@
-package ru.dragonestia.picker.api.repository.request.user;
+package ru.dragonestia.picker.api.repository.query.user;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

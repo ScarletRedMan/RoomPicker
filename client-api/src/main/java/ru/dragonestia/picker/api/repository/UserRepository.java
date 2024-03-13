@@ -3,7 +3,7 @@ package ru.dragonestia.picker.api.repository;
 import org.jetbrains.annotations.NotNull;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.model.user.ResponseUser;
-import ru.dragonestia.picker.api.repository.request.user.*;
+import ru.dragonestia.picker.api.repository.query.user.*;
 
 import java.util.List;
 

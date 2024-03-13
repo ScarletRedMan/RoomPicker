@@ -13,8 +13,8 @@ import ru.dragonestia.picker.api.model.room.IRoom;
 import ru.dragonestia.picker.api.model.user.IUser;
 import ru.dragonestia.picker.api.model.user.UserDetails;
 import ru.dragonestia.picker.api.repository.UserRepository;
-import ru.dragonestia.picker.api.repository.request.user.GetAllUsersFromRoom;
-import ru.dragonestia.picker.api.repository.request.user.UnlinkUsersFromRoom;
+import ru.dragonestia.picker.api.repository.query.user.GetAllUsersFromRoom;
+import ru.dragonestia.picker.api.repository.query.user.UnlinkUsersFromRoom;
 
 import java.util.ArrayList;
 import java.util.List;

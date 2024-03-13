@@ -1,12 +1,10 @@
-package ru.dragonestia.picker.api.repository.request.room;
+package ru.dragonestia.picker.api.repository.query.room;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
-import ru.dragonestia.picker.api.repository.type.RoomPath;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 

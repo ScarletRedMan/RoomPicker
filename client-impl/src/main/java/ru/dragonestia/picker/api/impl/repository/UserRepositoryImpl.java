@@ -9,7 +9,7 @@ import ru.dragonestia.picker.api.impl.util.type.HttpMethod;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.model.user.ResponseUser;
 import ru.dragonestia.picker.api.repository.UserRepository;
-import ru.dragonestia.picker.api.repository.request.user.*;
+import ru.dragonestia.picker.api.repository.query.user.*;
 import ru.dragonestia.picker.api.repository.response.LinkedRoomsWithUserResponse;
 import ru.dragonestia.picker.api.repository.response.RoomUserListResponse;
 import ru.dragonestia.picker.api.repository.response.SearchUserResponse;

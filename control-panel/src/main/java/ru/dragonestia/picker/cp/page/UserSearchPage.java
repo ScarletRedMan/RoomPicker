@@ -18,7 +18,7 @@ import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.model.user.IUser;
 import ru.dragonestia.picker.api.model.user.UserDetails;
 import ru.dragonestia.picker.api.repository.UserRepository;
-import ru.dragonestia.picker.api.repository.request.user.SearchUsers;
+import ru.dragonestia.picker.api.repository.query.user.SearchUsers;
 import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.cp.component.RefreshableTable;
 

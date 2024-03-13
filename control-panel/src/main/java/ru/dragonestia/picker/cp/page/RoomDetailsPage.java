@@ -19,7 +19,7 @@ import ru.dragonestia.picker.api.model.node.INode;
 import ru.dragonestia.picker.api.model.room.IRoom;
 import ru.dragonestia.picker.api.model.room.ResponseRoom;
 import ru.dragonestia.picker.api.model.user.IUser;
-import ru.dragonestia.picker.api.repository.request.user.LinkUsersWithRoom;
+import ru.dragonestia.picker.api.repository.query.user.LinkUsersWithRoom;
 import ru.dragonestia.picker.cp.component.AddUsers;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.Notifications;

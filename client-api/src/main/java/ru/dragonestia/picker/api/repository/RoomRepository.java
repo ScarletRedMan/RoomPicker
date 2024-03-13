@@ -5,9 +5,9 @@ import ru.dragonestia.picker.api.model.room.IRoom;
 import ru.dragonestia.picker.api.model.room.ResponseRoom;
 import ru.dragonestia.picker.api.model.room.RoomDefinition;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
-import ru.dragonestia.picker.api.repository.request.room.FindRoomById;
-import ru.dragonestia.picker.api.repository.request.room.GetAllRooms;
-import ru.dragonestia.picker.api.repository.request.room.RemoveRoomsByIds;
+import ru.dragonestia.picker.api.repository.query.room.FindRoomById;
+import ru.dragonestia.picker.api.repository.query.room.GetAllRooms;
+import ru.dragonestia.picker.api.repository.query.room.RemoveRoomsByIds;
 import ru.dragonestia.picker.api.repository.type.RoomPath;
 
 import java.util.List;
