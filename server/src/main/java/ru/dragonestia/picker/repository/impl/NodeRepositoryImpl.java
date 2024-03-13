@@ -26,13 +26,13 @@ public class NodeRepositoryImpl implements NodeRepository {
     @Override
     public void create(Node node) throws NodeAlreadyExistException {
         synchronized (nodeMap) {
-            if (nodeMap.containsKey(node.id())) {
-                throw new NodeAlreadyExistException(node.id());
+            if (nodeMap.containsKey(node.getIdentifier())) {
+                throw new NodeAlreadyExistException(node.getIdentifier());
             }
 
-            nodeMap.put(node.id(), node);
-            var picker = pickerRepository.create(node.id(), node.method());
-            nodeId2PickerModeCache.put(node.id(), picker);
+            nodeMap.put(node.getIdentifier(), node);
+            var picker = pickerRepository.create(node.getIdentifier(), node.getPickingMethod());
+            nodeId2PickerModeCache.put(node.getIdentifier(), picker);
         }
 
         roomRepository.onCreateNode(node);
@@ -41,9 +41,9 @@ public class NodeRepositoryImpl implements NodeRepository {
     @Override
     public List<Room> delete(Node node) {
         synchronized (nodeMap) {
-            nodeMap.remove(node.id());
-            pickerRepository.remove(node.id());
-            nodeId2PickerModeCache.remove(node.id());
+            nodeMap.remove(node.getIdentifier());
+            pickerRepository.remove(node.getIdentifier());
+            nodeId2PickerModeCache.remove(node.getIdentifier());
         }
 
         return roomRepository.onRemoveNode(node);

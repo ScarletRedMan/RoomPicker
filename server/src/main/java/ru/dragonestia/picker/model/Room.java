@@ -21,7 +21,7 @@ public class Room {
     private boolean locked = false;
 
     public static Room create(String roomId, Node node, SlotLimit limit, String payload, boolean persist) {
-        return new Room(roomId, node.id(), limit, payload, persist);
+        return new Room(roomId, node.getIdentifier(), limit, payload, persist);
     }
 
     public void setLocked(boolean value) {

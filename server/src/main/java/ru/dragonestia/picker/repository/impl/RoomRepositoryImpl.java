@@ -28,7 +28,7 @@ public class RoomRepositoryImpl implements RoomRepository {
 
         synchronized (node2roomsMap) {
             var node = node2roomsMap.keySet().stream()
-                    .filter(n -> room.getNodeId().equals(n.id()))
+                    .filter(n -> room.getNodeId().equals(n.getIdentifier()))
                     .findFirst();
 
             if (node.isEmpty()) {
@@ -48,7 +48,7 @@ public class RoomRepositoryImpl implements RoomRepository {
     public void remove(Room room) {
         var nodeId = room.getNodeId();
         var node = node2roomsMap.keySet().stream()
-                .filter(n -> room.getNodeId().equals(n.id()))
+                .filter(n -> room.getNodeId().equals(n.getIdentifier()))
                 .findFirst();
 
         synchronized (node2roomsMap) {
@@ -67,7 +67,7 @@ public class RoomRepositoryImpl implements RoomRepository {
     public Optional<Room> find(Node node, String identifier) {
         synchronized (node2roomsMap) {
             if (!node2roomsMap.containsKey(node)) {
-                throw new NodeNotFoundException("Node '" + node.id() + "' does not exist");
+                throw new NodeNotFoundException("Node '" + node.getIdentifier() + "' does not exist");
             }
 
             var result = node2roomsMap.get(node).getOrDefault(identifier, null);
@@ -79,7 +79,7 @@ public class RoomRepositoryImpl implements RoomRepository {
     public List<Room> all(Node node) {
         synchronized (node2roomsMap) {
             if (!node2roomsMap.containsKey(node)) {
-                throw new NodeNotFoundException("Node '%s' does not exists".formatted(node.id()));
+                throw new NodeNotFoundException("Node '%s' does not exists".formatted(node.getIdentifier()));
             }
 
             return node2roomsMap.get(node).values().stream().map(RoomContainer::room).toList();
@@ -90,12 +90,12 @@ public class RoomRepositoryImpl implements RoomRepository {
     public Optional<Room> pickFree(Node node, Collection<User> users) {
         synchronized (node2roomsMap) {
             if (!node2roomsMap.containsKey(node)) {
-                throw new NodeNotFoundException("Node '" + node.id() + "' does not exist");
+                throw new NodeNotFoundException("Node '" + node.getIdentifier() + "' does not exist");
             }
 
             Room room = null;
             try {
-                room = pickerRepository.pick(node.id(), users);
+                room = pickerRepository.pick(node.getIdentifier(), users);
             } catch (RuntimeException ignore) {} // TODO: may be problem. Check it later
 
             Optional<RoomContainer> container = room == null?

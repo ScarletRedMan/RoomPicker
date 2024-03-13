@@ -29,7 +29,7 @@ public class NodeServiceImpl implements NodeService {
 
     @Override
     public void create(Node node) throws InvalidNodeIdentifierException, NodeAlreadyExistException {
-        namingValidator.validateNodeId(node.id());
+        namingValidator.validateNodeId(node.getIdentifier());
         nodeRepository.create(node);
         storage.saveNode(node);
     }
