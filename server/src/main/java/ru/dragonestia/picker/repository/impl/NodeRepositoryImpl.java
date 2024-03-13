@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,10 +24,12 @@ public class NodeRepositoryImpl implements NodeRepository {
     private final PickerRepository pickerRepository;
     private final NodeId2PickerModeCache nodeId2PickerModeCache;
     private final Map<String, Node> nodeMap = new ConcurrentHashMap<>();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
     public void create(Node node) throws NodeAlreadyExistException {
-        synchronized (nodeMap) {
+        lock.writeLock().lock();
+        try {
             if (nodeMap.containsKey(node.getIdentifier())) {
                 throw new NodeAlreadyExistException(node.getIdentifier());
             }
@@ -33,33 +37,44 @@ public class NodeRepositoryImpl implements NodeRepository {
             nodeMap.put(node.getIdentifier(), node);
             var picker = pickerRepository.create(node.getIdentifier(), node.getPickingMethod());
             nodeId2PickerModeCache.put(node.getIdentifier(), picker);
-        }
 
-        roomRepository.onCreateNode(node);
+            roomRepository.onCreateNode(node);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
     public List<Room> delete(Node node) {
-        synchronized (nodeMap) {
+        lock.writeLock().lock();
+        try {
             nodeMap.remove(node.getIdentifier());
             pickerRepository.remove(node.getIdentifier());
             nodeId2PickerModeCache.remove(node.getIdentifier());
-        }
 
-        return roomRepository.onRemoveNode(node);
+            return roomRepository.onRemoveNode(node);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
     public Optional<Node> find(String nodeId) {
-        synchronized (nodeMap) {
+        lock.readLock().lock();
+        try {
             return nodeMap.containsKey(nodeId)? Optional.of(nodeMap.get(nodeId)) : Optional.empty();
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public List<Node> all() {
-        synchronized (nodeMap) {
+        lock.readLock().lock();
+        try {
             return nodeMap.values().stream().toList();
+        } finally {
+            lock.readLock().unlock();
         }
     }
 }
