@@ -9,6 +9,7 @@ import ru.dragonestia.picker.api.model.user.ResponseUser;
 import ru.dragonestia.picker.api.repository.response.LinkedRoomsWithUserResponse;
 import ru.dragonestia.picker.api.repository.response.SearchUserResponse;
 import ru.dragonestia.picker.api.repository.response.UserDetailsResponse;
+import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.service.UserService;
 import ru.dragonestia.picker.util.DetailsParser;
@@ -62,6 +63,6 @@ public class UserController {
             return new LinkedRoomsWithUserResponse(List.of());
         }
 
-        return new LinkedRoomsWithUserResponse(userService.getUserRoomsWithDetails(new User(userId), detailsParser.parseRoomDetails(detailsSeq)));
+        return new LinkedRoomsWithUserResponse(userService.getUserRoomsWithDetails(new User(UserIdentifier.of(userId)), detailsParser.parseRoomDetails(detailsSeq)));
     }
 }

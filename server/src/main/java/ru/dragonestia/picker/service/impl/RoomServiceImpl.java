@@ -90,7 +90,7 @@ public class RoomServiceImpl implements RoomService {
                 room.getMaxSlots(),
                 roomUsers.size(),
                 room.isLocked(),
-                roomUsers.stream().map(User::id).collect(Collectors.toSet())
+                roomUsers.stream().map(User::getIdentifier).collect(Collectors.toSet())
         );
     }
 

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
 import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
 import ru.dragonestia.picker.api.exception.InvalidUsernamesException;
+import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.api.util.IdentifierValidator;
 import ru.dragonestia.picker.model.User;
 
@@ -35,7 +36,7 @@ public class NamingValidator {
 
         for (var username: input) {
             if (validateUserId(username)) {
-                users.add(new User(username));
+                users.add(new User(UserIdentifier.of(username)));
                 continue;
             }
 

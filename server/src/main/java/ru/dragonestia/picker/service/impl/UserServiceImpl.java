@@ -6,6 +6,7 @@ import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.model.user.ResponseUser;
 import ru.dragonestia.picker.api.model.user.UserDetails;
+import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.repository.UserRepository;
@@ -67,6 +68,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseUser getUserDetails(String userId, Set<UserDetails> details) {
-        return detailsExtractor.extract(new User(userId), details);
+        return detailsExtractor.extract(new User(UserIdentifier.of(userId)), details);
     }
 }
