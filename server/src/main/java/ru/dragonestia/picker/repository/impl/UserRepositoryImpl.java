@@ -21,7 +21,7 @@ public class UserRepositoryImpl implements UserRepository {
     private final NodeId2PickerModeCache nodeId2PickerModeCache;
     private final Map<User, Set<Room>> usersMap = new HashMap<>();
     private final Map<NodeRoomPath, Set<User>> roomUsers = new HashMap<>();
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     @Override
     public Map<User, Boolean> linkWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException {

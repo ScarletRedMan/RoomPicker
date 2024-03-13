@@ -22,7 +22,7 @@ public class RoomRepositoryImpl implements RoomRepository {
     private final UserRepository userRepository;
     private final PickerRepository pickerRepository;
     private final Map<Node, Rooms> node2roomsMap = new HashMap<>();
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     @Override
     public void create(Room room) throws RoomAlreadyExistException {
