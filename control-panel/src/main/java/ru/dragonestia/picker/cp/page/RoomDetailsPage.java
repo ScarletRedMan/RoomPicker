@@ -122,6 +122,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
                 }).toList();
 
         client.getUserRepository().linkUsersWithRoom(LinkUsersWithRoom.builder()
+                .setNodeId(room.getNodeIdentifierObject())
                 .setRoomId(room.getIdentifierObject())
                 .setUsers(users.stream().map(IUser::getIdentifierObject).collect(Collectors.toSet()))
                 .setIgnoreSlotLimitation(ignoreLimitation)
