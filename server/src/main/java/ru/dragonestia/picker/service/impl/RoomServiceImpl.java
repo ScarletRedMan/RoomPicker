@@ -41,11 +41,11 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void create(Room room) throws InvalidRoomIdentifierException, RoomAlreadyExistException, NotPersistedNodeException {
-        namingValidator.validateRoomId(room.getNodeId(), room.getId());
+        namingValidator.validateRoomId(room.getNodeIdentifier(), room.getIdentifier());
 
-        var node = nodeRepository.find(room.getNodeId()).orElseThrow(() -> new NodeNotFoundException(room.getNodeId()));
+        var node = nodeRepository.find(room.getNodeIdentifier()).orElseThrow(() -> new NodeNotFoundException(room.getNodeIdentifier()));
         if (!node.isPersist() && room.isPersist()) {
-            throw new NotPersistedNodeException(node.getIdentifier(), room.getId());
+            throw new NotPersistedNodeException(node.getIdentifier(), room.getIdentifier());
         }
 
         roomRepository.create(room);
@@ -84,10 +84,10 @@ public class RoomServiceImpl implements RoomService {
         var roomUsers = userRepository.usersOf(room);
 
         return new PickedRoomResponse(
-                room.getNodeId(),
-                room.getId(),
+                room.getNodeIdentifier(),
+                room.getIdentifier(),
                 room.getPayload(),
-                room.getSlots().getSlots(),
+                room.getMaxSlots(),
                 roomUsers.size(),
                 room.isLocked(),
                 roomUsers.stream().map(User::id).collect(Collectors.toSet())

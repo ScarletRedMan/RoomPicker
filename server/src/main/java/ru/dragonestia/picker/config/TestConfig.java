@@ -11,6 +11,9 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
+import ru.dragonestia.picker.api.model.room.IRoom;
+import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
+import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 import ru.dragonestia.picker.interceptor.DebugInterceptor;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
@@ -42,9 +45,9 @@ public class TestConfig implements WebMvcConfigurer {
 
     @Bean
     void createNodes() {
-        createNodeWithContent(new Node("game-servers", PickingMethod.ROUND_ROBIN, false));
-        createNodeWithContent(new Node("game-lobbies", PickingMethod.LEAST_PICKED, false));
-        createNodeWithContent(new Node("hub", PickingMethod.SEQUENTIAL_FILLING, false));
+        createNodeWithContent(new Node(NodeIdentifier.of("game-servers"), PickingMethod.ROUND_ROBIN, false));
+        createNodeWithContent(new Node(NodeIdentifier.of("game-lobbies"), PickingMethod.LEAST_PICKED, false));
+        createNodeWithContent(new Node(NodeIdentifier.of("hub"), PickingMethod.SEQUENTIAL_FILLING, false));
     }
 
     @SneakyThrows
@@ -54,7 +57,7 @@ public class TestConfig implements WebMvcConfigurer {
 
         for (int i = 1; i <= 5; i++) {
             var slots = 5 * i;
-            var room = Room.create("test-" + i, node, SlotLimit.of(slots), json.writeValueAsString(generatePayload()), false);
+            var room = new Room(RoomIdentifier.of("test-" + i), node, slots, json.writeValueAsString(generatePayload()), false);
             roomRepository.create(room);
 
             for (int j = 0, n = rand.nextInt(slots + 1); j < n; j++) {
@@ -64,7 +67,7 @@ public class TestConfig implements WebMvcConfigurer {
         }
 
         for (int i = 0; i < 5; i++) {
-            var room = Room.create(randomUUID().toString(), node, SlotLimit.unlimited(), json.writeValueAsString(generatePayload()), false);
+            var room = new Room(RoomIdentifier.of(randomUUID().toString()), node, IRoom.UNLIMITED_SLOTS, json.writeValueAsString(generatePayload()), false);
             room.setLocked((i & 1) == 0);
             roomRepository.create(room);
         }

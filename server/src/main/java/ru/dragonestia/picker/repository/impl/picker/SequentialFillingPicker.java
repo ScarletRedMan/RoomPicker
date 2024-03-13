@@ -21,14 +21,14 @@ public class SequentialFillingPicker implements RoomPicker {
     @Override
     public void add(Room room) {
         synchronized (wrappers) {
-            wrappers.put(room.getId(), new RoomWrapper(room, () -> userRepository.usersOf(room).size()));
+            wrappers.put(room.getIdentifier(), new RoomWrapper(room, () -> userRepository.usersOf(room).size()));
         }
     }
 
     @Override
     public void remove(Room room) {
         synchronized (wrappers) {
-            wrappers.remove(room.getId());
+            wrappers.remove(room.getIdentifier());
         }
     }
 

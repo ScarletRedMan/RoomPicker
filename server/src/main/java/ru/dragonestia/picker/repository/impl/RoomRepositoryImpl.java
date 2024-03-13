@@ -24,11 +24,11 @@ public class RoomRepositoryImpl implements RoomRepository {
 
     @Override
     public void create(Room room) throws RoomAlreadyExistException {
-        var nodeId = room.getNodeId();
+        var nodeId = room.getNodeIdentifier();
 
         synchronized (node2roomsMap) {
             var node = node2roomsMap.keySet().stream()
-                    .filter(n -> room.getNodeId().equals(n.getIdentifier()))
+                    .filter(n -> room.getNodeIdentifier().equals(n.getIdentifier()))
                     .findFirst();
 
             if (node.isEmpty()) {
@@ -36,19 +36,19 @@ public class RoomRepositoryImpl implements RoomRepository {
             }
 
             var rooms = node2roomsMap.get(node.get());
-            if (rooms.containsKey(room.getId())) {
-                throw new RoomAlreadyExistException(room.getNodeId(), room.getId());
+            if (rooms.containsKey(room.getIdentifier())) {
+                throw new RoomAlreadyExistException(room.getNodeIdentifier(), room.getIdentifier());
             }
-            rooms.put(room.getId(), new RoomContainer(room, new AtomicInteger(0)));
-            pickerRepository.find(room.getNodeId()).add(room);
+            rooms.put(room.getIdentifier(), new RoomContainer(room, new AtomicInteger(0)));
+            pickerRepository.find(room.getNodeIdentifier()).add(room);
         }
     }
 
     @Override
     public void remove(Room room) {
-        var nodeId = room.getNodeId();
+        var nodeId = room.getNodeIdentifier();
         var node = node2roomsMap.keySet().stream()
-                .filter(n -> room.getNodeId().equals(n.getIdentifier()))
+                .filter(n -> room.getNodeIdentifier().equals(n.getIdentifier()))
                 .findFirst();
 
         synchronized (node2roomsMap) {
@@ -56,8 +56,8 @@ public class RoomRepositoryImpl implements RoomRepository {
                 throw new NodeNotFoundException("Node '" + nodeId + "' does not exist");
             }
 
-            node2roomsMap.get(node.get()).remove(room.getId());
-            pickerRepository.find(room.getNodeId()).remove(room);
+            node2roomsMap.get(node.get()).remove(room.getIdentifier());
+            pickerRepository.find(room.getNodeIdentifier()).remove(room);
         }
 
         userRepository.onRemoveRoom(room);
@@ -100,7 +100,7 @@ public class RoomRepositoryImpl implements RoomRepository {
 
             Optional<RoomContainer> container = room == null?
                     Optional.empty() :
-                    Optional.of(node2roomsMap.get(node).get(room.getId()));
+                    Optional.of(node2roomsMap.get(node).get(room.getIdentifier()));
 
             if (container.isPresent()) {
                 var cont = container.get();

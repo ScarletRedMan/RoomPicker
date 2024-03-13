@@ -27,7 +27,7 @@ public class LeastPickedPicker implements RoomPicker {
     @Override
     public void remove(Room room) {
         synchronized (map) {
-            map.removeById(room.getId());
+            map.removeById(room.getIdentifier());
         }
     }
 
@@ -50,7 +50,7 @@ public class LeastPickedPicker implements RoomPicker {
 
     public void updateUsersAmount(Room room, int users) {
         synchronized (map) {
-            map.updateItem(room.getId(), prevValue -> users);
+            map.updateItem(room.getIdentifier(), prevValue -> users);
         }
     }
 

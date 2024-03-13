@@ -26,10 +26,10 @@ public class UserRepositoryImpl implements UserRepository {
         var result = new HashMap<User, Boolean>();
 
         synchronized (usersMap) {
-            var path = new NodeRoomPath(room.getNodeId(), room.getId());
+            var path = new NodeRoomPath(room.getNodeIdentifier(), room.getIdentifier());
             var usersSet = roomUsers.getOrDefault(path, new HashSet<>());
 
-            if (force || room.getSlots().isUnlimited()) {
+            if (force || room.hasUnlimitedSlots()) {
                 users.forEach(user -> result.put(user, true));
             } else {
                 for (var user : users) {
@@ -37,8 +37,8 @@ public class UserRepositoryImpl implements UserRepository {
                     result.put(user, !set.contains(room));
                 }
 
-                if (room.getSlots().getSlots() < usersSet.size() + users.size()) {
-                    throw new RoomAreFullException(room.getNodeId(), room.getId());
+                if (room.getMaxSlots() < usersSet.size() + users.size()) {
+                    throw new RoomAreFullException(room.getNodeIdentifier(), room.getIdentifier());
                 }
             }
 
@@ -51,7 +51,7 @@ public class UserRepositoryImpl implements UserRepository {
             usersSet.addAll(users);
             roomUsers.put(path, usersSet);
 
-            var picker = nodeId2PickerModeCache.get(room.getNodeId());
+            var picker = nodeId2PickerModeCache.get(room.getNodeIdentifier());
             if (picker instanceof LeastPickedPicker leastPickedPicker) {
                 leastPickedPicker.updateUsersAmount(room, roomUsers.get(path).size());
             }
@@ -75,7 +75,7 @@ public class UserRepositoryImpl implements UserRepository {
                 }
             });
 
-            var path = new NodeRoomPath(room.getNodeId(), room.getId());
+            var path = new NodeRoomPath(room.getNodeIdentifier(), room.getIdentifier());
             var set = roomUsers.getOrDefault(path, new HashSet<>());
             set.removeAll(users);
             if (set.isEmpty()) {
@@ -84,7 +84,7 @@ public class UserRepositoryImpl implements UserRepository {
                 roomUsers.put(path, set);
             }
 
-            var picker = nodeId2PickerModeCache.get(room.getNodeId());
+            var picker = nodeId2PickerModeCache.get(room.getNodeIdentifier());
             if (picker instanceof LeastPickedPicker leastPickedPicker) {
                 leastPickedPicker.updateUsersAmount(room, set.size());
             }
@@ -114,7 +114,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> usersOf(Room room) {
         synchronized (usersMap) {
-            return roomUsers.getOrDefault(new NodeRoomPath(room.getNodeId(), room.getId()), new HashSet<>())
+            return roomUsers.getOrDefault(new NodeRoomPath(room.getNodeIdentifier(), room.getIdentifier()), new HashSet<>())
                     .stream()
                     .toList();
         }

@@ -1,42 +1,86 @@
 package ru.dragonestia.picker.model;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import ru.dragonestia.picker.api.model.room.IRoom;
 import ru.dragonestia.picker.api.model.room.ResponseRoom;
+import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
-import ru.dragonestia.picker.model.type.SlotLimit;
+import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 
-import java.util.HashMap;
+public class Room implements IRoom {
 
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class Room {
-
-    private final String id;
-    private final String nodeId;
-    private final SlotLimit slots;
+    private final String identifier;
+    private final String nodeIdentifier;
+    private final int slots;
     private final String payload;
     private final boolean persist;
     private boolean locked = false;
 
-    public static Room create(String roomId, Node node, SlotLimit limit, String payload, boolean persist) {
-        return new Room(roomId, node.getIdentifier(), limit, payload, persist);
+    public Room(@NotNull RoomIdentifier identifier, @NotNull Node node, int slots, @NotNull String payload, boolean persist) {
+        this.identifier = identifier.getValue();
+        this.nodeIdentifier = node.getIdentifier();
+        this.slots = slots;
+        this.payload = payload;
+        this.persist = persist;
+    }
+
+    @Override
+    public @NotNull String getIdentifier() {
+        return identifier;
+    }
+
+    @Override
+    public @NotNull String getNodeIdentifier() {
+        return nodeIdentifier;
+    }
+
+    @Override
+    public int getMaxSlots() {
+        return slots;
+    }
+
+    @Override
+    public boolean isLocked() {
+        return locked;
     }
 
     public void setLocked(boolean value) {
         locked = value;
     }
 
+    @Override
+    public @NotNull Boolean isPersist() {
+        return persist;
+    }
+
+    @Override
+    public @NotNull String getPayload() {
+        return payload;
+    }
+
+    @Override
+    public @Nullable String getDetail(@NotNull RoomDetails detail) {
+        throw new UnsupportedOperationException();
+    }
+
     public boolean isAvailable(int usedSlots, int requiredSlots) {
         if (locked) return false;
-        if (slots.isUnlimited()) return true;
-        return slots.getSlots() >= usedSlots + requiredSlots;
+        if (hasUnlimitedSlots()) return true;
+        return slots >= usedSlots + requiredSlots;
+    }
+
+    public @NotNull ResponseRoom toResponseObject() {
+        return new ResponseRoom(identifier, nodeIdentifier, slots, locked, payload);
+    }
+
+    public @NotNull ShortResponseRoom toShortResponseObject() {
+        return new ShortResponseRoom(identifier, nodeIdentifier, slots, locked);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return identifier.hashCode();
     }
 
     @Override
@@ -44,16 +88,8 @@ public class Room {
         if (object == this) return true;
         if (object == null) return false;
         if (object instanceof Room other) {
-            return id.equals(other.id);
+            return identifier.equals(other.identifier);
         }
         return false;
-    }
-
-    public ResponseRoom toResponseObject() {
-        return new ResponseRoom(id, nodeId, slots.getSlots(), locked, payload);
-    }
-
-    public ShortResponseRoom toShortResponseObject() {
-        return new ShortResponseRoom(id, nodeId, slots.getSlots(), locked);
     }
 }

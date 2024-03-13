@@ -42,7 +42,7 @@ public class UserRoomController {
         var room = getNodeAndRoom(nodeId, roomId).room();
         var users = userService.getRoomUsersWithDetailsResponse(room, detailsParser.parseUserDetails(detailsSeq));
 
-        return ResponseEntity.ok(new RoomUserListResponse(room.getSlots().getSlots(), users.size(), users));
+        return ResponseEntity.ok(new RoomUserListResponse(room.getMaxSlots(), users.size(), users));
     }
 
     @Operation(summary = "Link users with room")
@@ -56,7 +56,7 @@ public class UserRoomController {
         var room = getNodeAndRoom(nodeId, roomId).room();
         var users = namingValidator.validateUserIds(Arrays.stream(userIds.split(",")).toList());
         var usedSlots = userService.linkUsersWithRoom(room, users, force);
-        return ResponseEntity.ok(new LinkUsersWithRoomResponse(usedSlots, room.getSlots().getSlots()));
+        return ResponseEntity.ok(new LinkUsersWithRoomResponse(usedSlots, room.getMaxSlots()));
     }
 
     @Operation(summary = "Unlink users from room")
