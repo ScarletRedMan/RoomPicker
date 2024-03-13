@@ -14,13 +14,17 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.dragonestia.picker.api.impl.RoomPickerClient;
+import ru.dragonestia.picker.api.model.user.IUser;
 import ru.dragonestia.picker.api.model.user.UserDetails;
 import ru.dragonestia.picker.api.repository.UserRepository;
-import ru.dragonestia.picker.api.repository.response.type.RUser;
+import ru.dragonestia.picker.api.repository.request.user.SearchUsers;
+import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.cp.component.RefreshableTable;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @PageTitle("Search users")
 @Route(value = "/users", layout = MainLayout.class)
@@ -28,13 +32,13 @@ public class UserSearchPage extends VerticalLayout implements RefreshableTable {
 
     private final UserRepository userRepository;
     private final TextField fieldUsername;
-    private final Grid<RUser> userGrid;
+    private final Grid<IUser> userGrid;
     private final Span foundUsers;
-    private List<RUser> cachedUsers = new LinkedList<>();
+    private List<IUser> cachedUsers = new LinkedList<>();
 
     @Autowired
-    public UserSearchPage(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserSearchPage(RoomPickerClient client) {
+        this.userRepository = client.getUserRepository();
 
         foundUsers = new Span();
         add(fieldUsername = createUsernameInputField());
@@ -60,15 +64,15 @@ public class UserSearchPage extends VerticalLayout implements RefreshableTable {
         return field;
     }
 
-    private Grid<RUser> createUserGrid() {
-        var grid = new Grid<RUser>();
+    private Grid<IUser> createUserGrid() {
+        var grid = new Grid<IUser>();
 
-        grid.addColumn(RUser::getId).setHeader("Identifier").setSortable(true)
+        grid.addColumn(IUser::getIdentifier).setHeader("Identifier").setSortable(true)
                 .setFooter(foundUsers);
 
         grid.addColumn(user -> user.getDetail(UserDetails.COUNT_ROOMS)).setComparator((user1, user2) -> {
-            var r1 = Integer.parseInt(user1.getDetail(UserDetails.COUNT_ROOMS));
-            var r2 = Integer.parseInt(user2.getDetail(UserDetails.COUNT_ROOMS));
+            var r1 = Integer.parseInt(Objects.requireNonNull(user1.getDetail(UserDetails.COUNT_ROOMS)));
+            var r2 = Integer.parseInt(Objects.requireNonNull(user2.getDetail(UserDetails.COUNT_ROOMS)));
 
             return Integer.compare(r1, r2);
         }).setTextAlign(ColumnTextAlign.CENTER).setHeader("Linked with rooms");
@@ -77,7 +81,7 @@ public class UserSearchPage extends VerticalLayout implements RefreshableTable {
             var button = new Button("Details");
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             button.addClickListener(event -> {
-                getUI().ifPresent(ui -> ui.navigate("/users/" + user.getId()));
+                getUI().ifPresent(ui -> ui.navigate("/users/" + user.getIdentifier()));
             });
             return button;
         }).setTextAlign(ColumnTextAlign.END).setFrozenToEnd(true).setHeader(createRefreshButton());
@@ -87,7 +91,8 @@ public class UserSearchPage extends VerticalLayout implements RefreshableTable {
     }
 
     private void search(String input) {
-        userGrid.setItems(cachedUsers = userRepository.search(input, UserRepository.ALL_DETAILS));
+        userGrid.setItems(cachedUsers = userRepository.searchUsers(SearchUsers.withAllDetails(UserIdentifier.of(input)))
+                .stream().map(user -> (IUser) user).toList());
     }
 
     @Override

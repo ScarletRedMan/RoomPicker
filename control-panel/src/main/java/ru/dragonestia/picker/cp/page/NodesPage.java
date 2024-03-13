@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.picker.api.exception.ApiException;
+import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.repository.NodeRepository;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.NodeList;
@@ -23,24 +24,20 @@ public class NodesPage extends VerticalLayout {
     private final RegisterNode registerNode;
     private final NodeList nodeList;
 
-    public NodesPage(@Autowired NodeRepository nodeRepository) {
+    public NodesPage(@Autowired RoomPickerClient client) {
         super();
-        this.nodeRepository = nodeRepository;
+        this.nodeRepository = client.getNodeRepository();
 
         add(NavPath.rootNodes());
         add(registerNode = createRegisterNodeElement());
         add(new Hr());
         add(nodeList = createNodeListElement());
-        nodeList.setRemoveMethod(nodeIdentifier -> {
-            nodeRepository.remove(nodeIdentifier);
-            nodeList.refresh();
-        });
     }
 
     protected RegisterNode createRegisterNodeElement() {
-        return new RegisterNode((node, persist) -> {
+        return new RegisterNode(nodeDefinition -> {
             try {
-                nodeRepository.register(node, persist);
+                nodeRepository.saveNode(nodeDefinition);
                 return new RegisterNode.Response(false, "");
             } catch (ApiException ex) {
                 return new RegisterNode.Response(true, ex.getMessage());

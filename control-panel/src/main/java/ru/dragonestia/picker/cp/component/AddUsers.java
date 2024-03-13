@@ -12,8 +12,10 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import lombok.Getter;
-import ru.dragonestia.picker.api.repository.response.type.RRoom;
-import ru.dragonestia.picker.api.repository.response.type.RUser;
+import ru.dragonestia.picker.api.model.room.IRoom;
+import ru.dragonestia.picker.api.model.user.IUser;
+import ru.dragonestia.picker.api.model.user.UserDefinition;
+import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,16 +24,14 @@ import java.util.function.BiConsumer;
 
 public class AddUsers extends Details {
 
-    private final RRoom room;
-    private final BiConsumer<Collection<RUser>, Boolean> onCommit;
+    private final BiConsumer<Collection<IUser>, Boolean> onCommit;
     private final Checkbox ignoreSlots;
     private final VerticalLayout usersLayout;
     private final AtomicInteger freeUserIdNumber = new AtomicInteger(1);
 
-    public AddUsers(RRoom room, BiConsumer<Collection<RUser>, Boolean> onCommit) {
+    public AddUsers(IRoom room, BiConsumer<Collection<IUser>, Boolean> onCommit) {
         super(new H2("Add users"));
 
-        this.room = room;
         this.onCommit = onCommit;
         usersLayout = new VerticalLayout();
 
@@ -49,14 +49,14 @@ public class AddUsers extends Details {
         usersLayout.add(new UserEntry(false, freeUserIdNumber.getAndIncrement()));
     }
 
-    public List<RUser> readAllUsers() {
+    public List<IUser> readAllUsers() {
         return usersLayout.getChildren()
                 .filter(component -> component instanceof UserEntry)
                 .map(component -> (UserEntry) component)
                 .map(user -> user.getUserIdentifierField().getValue())
                 .map(String::trim)
                 .filter(user -> !user.isEmpty())
-                .map(RUser::new)
+                .map(id -> (IUser) new UserDefinition(UserIdentifier.of(id)))
                 .toList();
     }
 

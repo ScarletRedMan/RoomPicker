@@ -14,28 +14,26 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import ru.dragonestia.picker.api.model.node.INode;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
+import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.repository.RoomRepository;
-import ru.dragonestia.picker.api.repository.response.type.RNode;
-import ru.dragonestia.picker.api.repository.response.type.RRoom;
+import ru.dragonestia.picker.api.repository.request.room.GetAllRooms;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 @Log4j2
 public class RoomList extends VerticalLayout implements RefreshableTable {
 
-    private final RNode node;
+    private final INode node;
     private final RoomRepository roomRepository;
-    private final Grid<RRoom.Short> roomsGrid;
+    private final Grid<ShortResponseRoom> roomsGrid;
     private final TextField searchField;
-    private List<RRoom.Short> cachedRooms;
+    private List<ShortResponseRoom> cachedRooms;
     private final Span totalUsers = new Span();
-    @Setter private Consumer<RRoom.Short> removeMethod;
 
-    public RoomList(RNode node, RoomRepository roomRepository) {
+    public RoomList(INode node, RoomRepository roomRepository) {
         this.node = node;
         this.roomRepository = roomRepository;
 
@@ -60,27 +58,27 @@ public class RoomList extends VerticalLayout implements RefreshableTable {
         var temp = input.trim();
 
         roomsGrid.setItems(cachedRooms.stream()
-                .filter(room -> room.id().startsWith(temp))
+                .filter(room -> room.getIdentifier().startsWith(temp))
                 .toList());
     }
 
-    private Grid<RRoom.Short> createGrid() {
-        var grid = new Grid<>(RRoom.Short.class, false);
+    private Grid<ShortResponseRoom> createGrid() {
+        var grid = new Grid<>(ShortResponseRoom.class, false);
 
-        grid.addColumn(RRoom.Short::id).setHeader("Identifier").setSortable(true);
+        grid.addColumn(ShortResponseRoom::getIdentifier).setHeader("Identifier").setSortable(true);
 
         grid.addComponentColumn(room -> {
             var result = new Span();
-            if (room.slots() == -1) {
+            if (room.getMaxSlots() == -1) {
                 result.setText("Unlimited");
                 result.getElement().getThemeList().add("badge contrast");
             } else {
-                result.setText(Integer.toString(room.slots()));
+                result.setText(Integer.toString(room.getMaxSlots()));
             }
             return result;
         }).setHeader("Slots").setComparator((room1, room2) -> {
-            var r1 = room1.slots() == -1? Integer.MAX_VALUE : room1.slots();
-            var r2 = room2.slots() == -1? Integer.MAX_VALUE : room2.slots();
+            var r1 = room1.hasUnlimitedSlots()? Integer.MAX_VALUE : room1.getMaxSlots();
+            var r2 = room2.hasUnlimitedSlots()? Integer.MAX_VALUE : room2.getMaxSlots();
 
             return Integer.compare(r1, r2);
         }).setSortable(true).setTextAlign(ColumnTextAlign.CENTER);
@@ -89,24 +87,24 @@ public class RoomList extends VerticalLayout implements RefreshableTable {
                 .setComparator((room1, room2) -> Integer.compare(getUsers(room1), getUsers(room2))).setSortable(true)
                 .setTextAlign(ColumnTextAlign.CENTER).setFooter(totalUsers);
 
-        grid.addColumn(room -> Math.max(UserList.getUsingPercentage(room.slots(), getUsers(room)), 0) + "%")
+        grid.addColumn(room -> Math.max(UserList.getUsingPercentage(room.getMaxSlots(), getUsers(room)), 0) + "%")
                 .setComparator((room1, room2) -> {
-                    var p1 = UserList.getUsingPercentage(room1.slots(), getUsers(room1));
-                    var p2 = UserList.getUsingPercentage(room2.slots(), getUsers(room2));
+                    var p1 = UserList.getUsingPercentage(room1.getMaxSlots(), getUsers(room1));
+                    var p2 = UserList.getUsingPercentage(room2.getMaxSlots(), getUsers(room2));
 
                     return Integer.compare(p1, p2);
                 }).setHeader("Occupancy").setTextAlign(ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(room -> {
             var result = new Span();
-            if (room.locked()) {
+            if (room.isLocked()) {
                 result.setText("Yes");
                 result.getElement().getThemeList().add("badge error");
             } else {
                 result.setText("No");
             }
             return result;
-        }).setComparator((room1, room2) -> Boolean.compare(room1.locked(), room2.locked())).setSortable(true)
+        }).setComparator((room1, room2) -> Boolean.compare(room1.isLocked(), room2.isLocked())).setSortable(true)
                 .setHeader("Locked").setTextAlign(ColumnTextAlign.CENTER);
 
         grid.addComponentColumn(this::createManageButtons).setFrozenToEnd(true)
@@ -116,7 +114,7 @@ public class RoomList extends VerticalLayout implements RefreshableTable {
         return grid;
     }
 
-    private HorizontalLayout createManageButtons(RRoom.Short room) {
+    private HorizontalLayout createManageButtons(ShortResponseRoom room) {
         var layout = new HorizontalLayout(JustifyContentMode.END);
 
         {
@@ -136,15 +134,15 @@ public class RoomList extends VerticalLayout implements RefreshableTable {
         return layout;
     }
 
-    private void clickDetailsButton(RRoom.Short room) {
+    private void clickDetailsButton(ShortResponseRoom room) {
         getUI().ifPresent(ui -> {
-            ui.navigate("/nodes/%s/rooms/%s".formatted(node.getId(), room.id()));
+            ui.navigate("/nodes/%s/rooms/%s".formatted(node.getIdentifier(), room.getIdentifier()));
         });
     }
 
-    private void clickRemoveButton(RRoom.Short room) {
+    private void clickRemoveButton(ShortResponseRoom room) {
         var dialog = new Dialog("Confirm room deletion");
-        dialog.add(new Html("<p>Confirm that you want to delete room. Enter <b><u>" + room.id() + "</u></b> to field below and confirm.</p>"));
+        dialog.add(new Html("<p>Confirm that you want to delete room. Enter <b><u>" + room.getIdentifier() + "</u></b> to field below and confirm.</p>"));
 
         var inputField = new TextField();
         inputField.setWidth("100%");
@@ -154,13 +152,13 @@ public class RoomList extends VerticalLayout implements RefreshableTable {
             var button = new Button("Confirm");
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
             button.addClickListener(event -> {
-                if (!room.id().equals(inputField.getValue())) {
+                if (!room.getIdentifier().equals(inputField.getValue())) {
                     Notifications.error("Invalid input");
                     return;
                 }
 
-                removeRemove(room);
-                Notifications.success("Room <b>" + room.id() + "</b> was successfully removed!");
+                removeRoom(room);
+                Notifications.success("Room <b>" + room.getIdentifier() + "</b> was successfully removed!");
                 dialog.close();
             });
 
@@ -176,15 +174,17 @@ public class RoomList extends VerticalLayout implements RefreshableTable {
         dialog.open();
     }
 
-    private void removeRemove(RRoom.Short room) {
-        if (removeMethod != null) {
-            removeMethod.accept(room);
-        }
+    public void removeRoom(ShortResponseRoom room) {
+        roomRepository.removeRoom(room);
+        refresh();
     }
 
-    private int getUsers(RRoom.Short room) {
+    private int getUsers(ShortResponseRoom room) {
+        var users = room.getDetail(RoomDetails.COUNT_USERS);
+        if (users == null) return 0;
         try {
-            return Integer.parseInt(room.details().getOrDefault(RoomDetails.COUNT_USERS, "0"));
+
+            return Integer.parseInt(users);
         } catch (NumberFormatException ex) {
             return 0;
         }
@@ -192,7 +192,7 @@ public class RoomList extends VerticalLayout implements RefreshableTable {
 
     @Override
     public void refresh() {
-        cachedRooms = roomRepository.all(node, RoomRepository.ALL_DETAILS);
+        cachedRooms = roomRepository.allRooms(GetAllRooms.withAllDetails(node.getIdentifierObject()));
         applySearch(searchField.getValue());
 
         int users = 0;

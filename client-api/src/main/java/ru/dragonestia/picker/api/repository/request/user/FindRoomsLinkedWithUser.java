@@ -5,8 +5,10 @@ import org.jetbrains.annotations.NotNull;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class FindRoomsLinkedWithUser {
 
@@ -24,6 +26,21 @@ public class FindRoomsLinkedWithUser {
 
     public @NotNull Set<RoomDetails> getDetails() {
         return details;
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull FindRoomsLinkedWithUser just(@NotNull UserIdentifier identifier) {
+        return FindRoomsLinkedWithUser.builder()
+                .setUserId(identifier)
+                .build();
+    }
+
+    @Contract("_ -> new")
+    public static @NotNull FindRoomsLinkedWithUser withAllDetails(@NotNull UserIdentifier identifier) {
+        return FindRoomsLinkedWithUser.builder()
+                .setUserId(identifier)
+                .setDetails(Arrays.stream(RoomDetails.values()).collect(Collectors.toSet()))
+                .build();
     }
 
     public static @NotNull Builder builder() {

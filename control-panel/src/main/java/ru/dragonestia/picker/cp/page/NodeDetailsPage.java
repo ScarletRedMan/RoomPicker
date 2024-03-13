@@ -10,9 +10,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import ru.dragonestia.picker.api.repository.response.type.RNode;
-import ru.dragonestia.picker.api.repository.NodeRepository;
-import ru.dragonestia.picker.api.repository.RoomRepository;
+import ru.dragonestia.picker.api.impl.RoomPickerClient;
+import ru.dragonestia.picker.api.model.node.INode;
 import ru.dragonestia.picker.cp.component.RoomList;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.RegisterRoom;
@@ -24,28 +23,27 @@ import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 @Route(value = "/nodes/:nodeId", layout = MainLayout.class)
 public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
-    private final NodeRepository nodeRepository;
-    private final RoomRepository roomRepository;
+    private final RoomPickerClient client;
     private final RouteParamsExtractor paramsExtractor;
 
-    private RNode node;
+    private INode node;
     private RegisterRoom registerRoom;
     private RoomList roomList;
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        node = paramsExtractor.extractNodeId(event);
+        node = paramsExtractor.extractNode(event);
 
         initComponents(node);
     }
 
-    private void initComponents(RNode node) {
-        add(NavPath.toNode(node.getId()));
+    private void initComponents(INode node) {
+        add(NavPath.toNode(node.getIdentifier()));
         printNodeDetails(node);
         add(new Hr());
-        add(registerRoom = new RegisterRoom(node, (room, persist) -> {
+        add(registerRoom = new RegisterRoom(node, roomDefinition -> {
             try {
-                roomRepository.register(room, persist);
+                client.getRoomRepository().saveRoom(roomDefinition);
                 return new RegisterRoom.Response(false,  null);
             } catch (Error error) {
                 return new RegisterRoom.Response(true,  error.getMessage());
@@ -54,19 +52,15 @@ public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserv
             }
         }));
         add(new Hr());
-        add(roomList = new RoomList(node, roomRepository));
-        roomList.setRemoveMethod(room -> {
-            roomRepository.remove(node, room);
-            roomList.refresh();
-        });
+        add(roomList = new RoomList(node, client.getRoomRepository()));
     }
 
-    private void printNodeDetails(RNode node) {
+    private void printNodeDetails(INode node) {
         add(new H2("Node details"));
 
         var layout = new VerticalLayout();
-        layout.add(new Html("<span>Identifier: <b>" + node.getId() + "</b></span>"));
-        layout.add(new Html("<span>Mode: <b>" + node.getMode().getName() + "</b></span>"));
+        layout.add(new Html("<span>Identifier: <b>" + node.getIdentifier() + "</b></span>"));
+        layout.add(new Html("<span>Mode: <b>" + node.getPickingMethod().name() + "</b></span>"));
 
         add(layout);
     }

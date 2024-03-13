@@ -6,9 +6,11 @@ import ru.dragonestia.picker.api.model.user.UserDetails;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GetAllUsersFromRoom {
 
@@ -32,6 +34,21 @@ public class GetAllUsersFromRoom {
 
     public @NotNull Set<UserDetails> getDetails() {
         return details;
+    }
+
+    public static @NotNull GetAllUsersFromRoom just(@NotNull NodeIdentifier nodeId, @NotNull RoomIdentifier roomId) {
+        return GetAllUsersFromRoom.builder()
+                .setNodeId(nodeId)
+                .setRoomId(roomId)
+                .build();
+    }
+
+    public static @NotNull GetAllUsersFromRoom withAllDetails(@NotNull NodeIdentifier nodeId, @NotNull RoomIdentifier roomId) {
+        return GetAllUsersFromRoom.builder()
+                .setNodeId(nodeId)
+                .setRoomId(roomId)
+                .setDetails(Arrays.stream(UserDetails.values()).collect(Collectors.toSet()))
+                .build();
     }
 
     public static @NotNull Builder builder() {

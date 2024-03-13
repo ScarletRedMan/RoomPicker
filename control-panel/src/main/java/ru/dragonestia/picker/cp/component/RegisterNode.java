@@ -15,19 +15,20 @@ import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import org.springframework.lang.Nullable;
-import ru.dragonestia.picker.api.repository.response.type.RNode;
-import ru.dragonestia.picker.api.repository.response.type.type.PickingMode;
+import ru.dragonestia.picker.api.model.node.NodeDefinition;
+import ru.dragonestia.picker.api.model.node.PickingMethod;
+import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class RegisterNode extends Details {
 
-    private final BiFunction<RNode, Boolean, Response> onSubmit;
+    private final Function<NodeDefinition, Response> onSubmit;
     private final TextField identifierField;
-    private final RadioButtonGroup<PickingMode> modeRadio;
+    private final RadioButtonGroup<PickingMethod> modeRadio;
     private final Checkbox persistField;
 
-    public RegisterNode(BiFunction<RNode, Boolean, Response> onSubmit) {
+    public RegisterNode(Function<NodeDefinition, Response> onSubmit) {
         super(new H2("Register node"));
         this.onSubmit = onSubmit;
 
@@ -63,15 +64,15 @@ public class RegisterNode extends Details {
         return button;
     }
 
-    private RadioButtonGroup<PickingMode> createModeRadio() {
-        var radio = new RadioButtonGroup<PickingMode>("Mode");
+    private RadioButtonGroup<PickingMethod> createModeRadio() {
+        var radio = new RadioButtonGroup<PickingMethod>("Mode");
         radio.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
-        radio.setRenderer(new ComponentRenderer<Component, PickingMode>(mode -> new Span(mode.getName())));
-        radio.setItems(PickingMode.SEQUENTIAL_FILLING,
-                PickingMode.ROUND_ROBIN,
-                PickingMode.LEAST_PICKED);
+        radio.setRenderer(new ComponentRenderer<Component, PickingMethod>(mode -> new Span(mode.name())));
+        radio.setItems(PickingMethod.SEQUENTIAL_FILLING,
+                PickingMethod.ROUND_ROBIN,
+                PickingMethod.LEAST_PICKED);
 
-        radio.setValue(PickingMode.SEQUENTIAL_FILLING);
+        radio.setValue(PickingMethod.SEQUENTIAL_FILLING);
         return radio;
     }
 
@@ -101,8 +102,10 @@ public class RegisterNode extends Details {
             return;
         }
 
-        var node = new RNode(nodeIdentifier, modeRadio.getValue());
-        var response = onSubmit.apply(node, persistField.getValue());
+        var node = new NodeDefinition(NodeIdentifier.of(nodeIdentifier))
+                .setPickingMethod(modeRadio.getValue())
+                .setPersist(persistField.getValue());
+        var response = onSubmit.apply(node);
         clear();
         if (response.error()) {
             Notifications.error(response.reason());

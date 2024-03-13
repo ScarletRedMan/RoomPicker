@@ -5,33 +5,36 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
-import ru.dragonestia.picker.api.repository.UserRepository;
-import ru.dragonestia.picker.api.repository.response.type.RNode;
-import ru.dragonestia.picker.api.repository.response.type.RRoom;
-import ru.dragonestia.picker.api.repository.NodeRepository;
-import ru.dragonestia.picker.api.repository.RoomRepository;
-import ru.dragonestia.picker.api.repository.response.type.RUser;
+import ru.dragonestia.picker.api.impl.RoomPickerClient;
+import ru.dragonestia.picker.api.model.node.INode;
+import ru.dragonestia.picker.api.model.room.IRoom;
+import ru.dragonestia.picker.api.model.user.IUser;
+import ru.dragonestia.picker.api.repository.request.node.FindNodeById;
+import ru.dragonestia.picker.api.repository.request.room.FindRoomById;
+import ru.dragonestia.picker.api.repository.request.user.FindUserById;
+import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
+import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
+import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 
 @Component
 @RequiredArgsConstructor
 public class RouteParamsExtractor {
 
-    private final NodeRepository nodeRepository;
-    private final RoomRepository roomRepository;
-    private final UserRepository userRepository;
+    private final RoomPickerClient client;
 
-    public RNode extractNodeId(BeforeEnterEvent e) throws NodeNotFoundException {
-        var nodeId = e.getRouteParameters().get("nodeId").orElseThrow(() -> new NodeNotFoundException("null"));
-        return nodeRepository.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
+    public INode extractNode(BeforeEnterEvent e) throws NodeNotFoundException {
+        var nodeId = NodeIdentifier.of(e.getRouteParameters().get("nodeId").orElseThrow(() -> new NodeNotFoundException("null")));
+        return client.getNodeRepository().findNodeById(FindNodeById.justFind(nodeId)).orElseThrow(() -> new NodeNotFoundException(nodeId.getValue()));
     }
 
-    public RRoom extractRoomId(BeforeEnterEvent e, RNode node) throws RoomNotFoundException {
-        var roomId = e.getRouteParameters().get("roomId").orElseThrow(() -> new NodeNotFoundException("null"));
-        return roomRepository.find(node, roomId).orElseThrow(() -> new NodeNotFoundException(roomId));
+    public IRoom extractRoom(BeforeEnterEvent e, INode node) throws RoomNotFoundException {
+        var nodeId = node.getIdentifierObject();
+        var roomId = RoomIdentifier.of(e.getRouteParameters().get("roomId").orElseThrow(() -> new NodeNotFoundException("null")));
+        return client.getRoomRepository().find(FindRoomById.just(nodeId, roomId)).orElseThrow(() -> new NodeNotFoundException(roomId.getValue()));
     }
 
-    public RUser extractUserId(BeforeEnterEvent e) {
-        var userId = e.getRouteParameters().get("userId").orElseThrow(RuntimeException::new);
-        return userRepository.find(userId, UserRepository.ALL_DETAILS);
+    public IUser extractUser(BeforeEnterEvent e) {
+        var userId = UserIdentifier.of(e.getRouteParameters().get("userId").orElseThrow(RuntimeException::new));
+        return client.getUserRepository().findUserById(FindUserById.withAllDetails(userId));
     }
 }
