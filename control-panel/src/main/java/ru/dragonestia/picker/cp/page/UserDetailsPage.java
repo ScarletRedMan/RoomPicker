@@ -17,7 +17,7 @@ import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.model.user.IUser;
-import ru.dragonestia.picker.api.repository.request.user.FindRoomsLinkedWithUser;
+import ru.dragonestia.picker.api.repository.query.user.FindRoomsLinkedWithUser;
 import ru.dragonestia.picker.cp.component.RefreshableTable;
 import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 

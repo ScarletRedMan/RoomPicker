@@ -1,25 +1,27 @@
-package ru.dragonestia.picker.api.repository.request.user;
+package ru.dragonestia.picker.api.repository.query.user;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import ru.dragonestia.picker.api.model.user.UserDetails;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class UnlinkUsersFromRoom {
+public class GetAllUsersFromRoom {
 
     private final String nodeId;
     private final String roomId;
-    private final Set<String> users;
+    private final Set<UserDetails> details;
 
-    private UnlinkUsersFromRoom(String nodeId, String roomId, Set<String> users) {
+    private GetAllUsersFromRoom(String nodeId, String roomId, Set<UserDetails> details) {
         this.nodeId = nodeId;
         this.roomId = roomId;
-        this.users = users;
+        this.details = details;
     }
 
     public @NotNull String getNodeId() {
@@ -30,8 +32,23 @@ public class UnlinkUsersFromRoom {
         return roomId;
     }
 
-    public @NotNull Set<String> getUsers() {
-        return users;
+    public @NotNull Set<UserDetails> getDetails() {
+        return details;
+    }
+
+    public static @NotNull GetAllUsersFromRoom just(@NotNull NodeIdentifier nodeId, @NotNull RoomIdentifier roomId) {
+        return GetAllUsersFromRoom.builder()
+                .setNodeId(nodeId)
+                .setRoomId(roomId)
+                .build();
+    }
+
+    public static @NotNull GetAllUsersFromRoom withAllDetails(@NotNull NodeIdentifier nodeId, @NotNull RoomIdentifier roomId) {
+        return GetAllUsersFromRoom.builder()
+                .setNodeId(nodeId)
+                .setRoomId(roomId)
+                .setDetails(Arrays.stream(UserDetails.values()).collect(Collectors.toSet()))
+                .build();
     }
 
     public static @NotNull Builder builder() {
@@ -42,7 +59,7 @@ public class UnlinkUsersFromRoom {
 
         private String nodeId = null;
         private String roomId = null;
-        private Set<UserIdentifier> users = new HashSet<>();
+        private Set<UserDetails> details = new HashSet<>();
 
         private Builder() {}
 
@@ -59,18 +76,18 @@ public class UnlinkUsersFromRoom {
         }
 
         @Contract("_ -> this")
-        public @NotNull Builder setUsers(@NotNull Set<UserIdentifier> users) {
-            this.users = users;
+        public @NotNull Builder setDetails(@NotNull Set<UserDetails> details) {
+            this.details = details;
             return this;
         }
 
         @Contract("_ -> this")
-        public @NotNull Builder appendUser(@NotNull UserIdentifier user) {
-            users.add(user);
+        public @NotNull Builder appendDetail(@NotNull UserDetails detail) {
+            details.add(detail);
             return this;
         }
 
-        public @NotNull UnlinkUsersFromRoom build() {
+        public @NotNull GetAllUsersFromRoom build() {
             if (nodeId == null) {
                 throw new NullPointerException("Node id is null");
             }
@@ -78,9 +95,7 @@ public class UnlinkUsersFromRoom {
                 throw new NullPointerException("Room id is null");
             }
 
-            return new UnlinkUsersFromRoom(nodeId,
-                    roomId,
-                    users.stream().map(o -> o.getValue()).collect(Collectors.toSet()));
+            return new GetAllUsersFromRoom(nodeId, roomId, Collections.unmodifiableSet(details));
         }
     }
 }

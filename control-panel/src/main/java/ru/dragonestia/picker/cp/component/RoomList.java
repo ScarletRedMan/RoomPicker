@@ -19,7 +19,7 @@ import ru.dragonestia.picker.api.model.node.INode;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.repository.RoomRepository;
-import ru.dragonestia.picker.api.repository.request.room.GetAllRooms;
+import ru.dragonestia.picker.api.repository.query.room.GetAllRooms;
 
 import java.util.List;
 

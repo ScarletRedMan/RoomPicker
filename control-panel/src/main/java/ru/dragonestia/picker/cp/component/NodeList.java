@@ -17,7 +17,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import ru.dragonestia.picker.api.model.node.INode;
 import ru.dragonestia.picker.api.model.node.NodeDetails;
 import ru.dragonestia.picker.api.repository.NodeRepository;
-import ru.dragonestia.picker.api.repository.request.node.GetAllNodes;
+import ru.dragonestia.picker.api.repository.query.node.GetAllNodes;
 
 import java.util.Comparator;
 import java.util.List;

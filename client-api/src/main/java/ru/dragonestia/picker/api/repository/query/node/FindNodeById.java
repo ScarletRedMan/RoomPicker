@@ -1,4 +1,4 @@
-package ru.dragonestia.picker.api.repository.request.node;
+package ru.dragonestia.picker.api.repository.query.node;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
