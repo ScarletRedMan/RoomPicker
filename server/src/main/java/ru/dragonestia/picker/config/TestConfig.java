@@ -14,6 +14,7 @@ import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.model.room.IRoom;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
+import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.interceptor.DebugInterceptor;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
@@ -61,7 +62,7 @@ public class TestConfig implements WebMvcConfigurer {
             roomRepository.create(room);
 
             for (int j = 0, n = rand.nextInt(slots + 1); j < n; j++) {
-                var user = new User("test-user-" + rand.nextInt(20));
+                var user = new User(UserIdentifier.of("test-user-" + rand.nextInt(20)));
                 userRepository.linkWithRoom(room, List.of(user), false);
             }
         }

@@ -124,8 +124,8 @@ public class UserRepositoryImpl implements UserRepository {
     public List<User> search(String input) {
         synchronized (usersMap) {
             return usersMap.keySet().stream()
-                    .filter(user -> user.id().startsWith(input))
-                    .sorted(Comparator.comparing(User::id))
+                    .filter(user -> user.getIdentifier().startsWith(input))
+                    .sorted(Comparator.comparing(User::getIdentifier))
                     .toList();
         }
     }
