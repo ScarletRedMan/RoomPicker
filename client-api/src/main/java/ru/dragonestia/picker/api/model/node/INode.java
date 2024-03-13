@@ -17,6 +17,7 @@ public interface INode {
 
     @NotNull PickingMethod getPickingMethod();
 
+    @Transient
     @Nullable Boolean isPersist();
 
     @Nullable String getDetail(@NotNull NodeDetails detail);
