@@ -32,7 +32,7 @@ public class NodeDefinition implements INode {
     }
 
     @Override
-    public @Nullable Boolean isPersist() {
+    public @NotNull Boolean isPersist() {
         return persist;
     }
 
