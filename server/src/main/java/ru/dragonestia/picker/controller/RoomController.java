@@ -11,8 +11,8 @@ import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
 import ru.dragonestia.picker.api.repository.response.RoomInfoResponse;
 import ru.dragonestia.picker.api.repository.response.RoomListResponse;
+import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 import ru.dragonestia.picker.model.Room;
-import ru.dragonestia.picker.model.type.SlotLimit;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.util.DetailsParser;
@@ -54,7 +54,7 @@ public class RoomController {
             @Parameter(description = "Save room") @RequestParam(name = "persist", required = false, defaultValue = "false") boolean persist
     ) {
         var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
-        var room = Room.create(roomId, node, SlotLimit.of(slots), payload, persist);
+        var room = new Room(RoomIdentifier.of(roomId), node, slots, payload, persist);
         room.setLocked(locked);
         roomService.create(room);
 

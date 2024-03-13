@@ -6,6 +6,7 @@ import ru.dragonestia.picker.api.model.node.INode;
 import ru.dragonestia.picker.api.model.node.NodeDetails;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.model.node.ResponseNode;
+import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 
 public class Node implements INode {
 
@@ -13,8 +14,8 @@ public class Node implements INode {
     private final PickingMethod pickingMethod;
     private final boolean persist;
 
-    public Node(@NotNull String identifier, @NotNull PickingMethod pickingMethod, boolean persist) {
-        this.identifier = identifier;
+    public Node(@NotNull NodeIdentifier identifier, @NotNull PickingMethod pickingMethod, boolean persist) {
+        this.identifier = identifier.getValue();
         this.pickingMethod = pickingMethod;
         this.persist = persist;
     }

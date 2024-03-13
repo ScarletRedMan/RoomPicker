@@ -11,6 +11,7 @@ import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.repository.response.NodeDetailsResponse;
 import ru.dragonestia.picker.api.repository.response.NodeListResponse;
 import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
+import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.service.RoomService;
@@ -45,7 +46,7 @@ public class NodeController {
             @Parameter(description = "Picking method method") @RequestParam(name = "method") PickingMethod method,
             @Parameter(description = "Save node") @RequestParam(name = "persist", required = false, defaultValue = "false") boolean persist
     ) {
-        nodeService.create(new Node(nodeId, method, persist));
+        nodeService.create(new Node(NodeIdentifier.of(nodeId), method, persist));
         return ResponseEntity.ok().build();
     }
 

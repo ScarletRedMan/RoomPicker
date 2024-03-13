@@ -29,7 +29,7 @@ public class RoundRobinPicker implements RoomPicker {
     @Override
     public void remove(Room room) {
         synchronized (list) {
-            list.removeById(room.getId());
+            list.removeById(room.getIdentifier());
         }
     }
 

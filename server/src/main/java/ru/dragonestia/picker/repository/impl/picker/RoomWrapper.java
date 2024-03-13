@@ -20,7 +20,7 @@ public class RoomWrapper implements ItemWrapper<Room>, QueuedLinkedList.Item, Dy
 
     @Override
     public String getId() {
-        return room.getId();
+        return room.getIdentifier();
     }
 
     @Override
@@ -30,7 +30,7 @@ public class RoomWrapper implements ItemWrapper<Room>, QueuedLinkedList.Item, Dy
 
     @Override
     public int maxUnits() {
-        return room.getSlots().getSlots();
+        return room.getMaxSlots();
     }
 
     @Override
