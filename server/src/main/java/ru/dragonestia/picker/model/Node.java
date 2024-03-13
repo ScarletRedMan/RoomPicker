@@ -1,14 +1,51 @@
 package ru.dragonestia.picker.model;
 
-import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import ru.dragonestia.picker.api.model.node.INode;
+import ru.dragonestia.picker.api.model.node.NodeDetails;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.model.node.ResponseNode;
 
-public record Node(@NonNull String id, @NonNull PickingMethod method, boolean persist) {
+public class Node implements INode {
+
+    private final String identifier;
+    private final PickingMethod pickingMethod;
+    private final boolean persist;
+
+    public Node(@NotNull String identifier, @NotNull PickingMethod pickingMethod, boolean persist) {
+        this.identifier = identifier;
+        this.pickingMethod = pickingMethod;
+        this.persist = persist;
+    }
+
+    @Override
+    public @NotNull String getIdentifier() {
+        return identifier;
+    }
+
+    @Override
+    public @NotNull PickingMethod getPickingMethod() {
+        return pickingMethod;
+    }
+
+    @Override
+    public @NotNull Boolean isPersist() {
+        return persist;
+    }
+
+    @Override
+    public @Nullable String getDetail(@NotNull NodeDetails detail) {
+        throw new UnsupportedOperationException();
+    }
+
+    public @NotNull ResponseNode toResponseObject() {
+        return new ResponseNode(identifier, pickingMethod);
+    }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return identifier.hashCode();
     }
 
     @Override
@@ -16,12 +53,8 @@ public record Node(@NonNull String id, @NonNull PickingMethod method, boolean pe
         if (object == this) return true;
         if (object == null) return false;
         if (object instanceof Node other) {
-            return id.equals(other.id);
+            return identifier.equals(other.identifier);
         }
         return false;
-    }
-
-    public ResponseNode toResponseObject() {
-        return new ResponseNode(id, method);
     }
 }

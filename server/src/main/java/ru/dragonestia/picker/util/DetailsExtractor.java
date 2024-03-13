@@ -30,7 +30,7 @@ public class DetailsExtractor {
 
         for (var detail: details) {
             if (detail == NodeDetails.PERSIST) {
-                response.putDetail(NodeDetails.PERSIST, Boolean.toString(node.persist()));
+                response.putDetail(NodeDetails.PERSIST, Boolean.toString(node.isPersist()));
                 continue;
             }
         }

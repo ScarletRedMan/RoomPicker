@@ -65,8 +65,8 @@ public class FileStorageImpl implements NodeAndRoomStorage {
 
     @Override
     public void saveNode(Node node) {
-        if (!node.persist()) return;
-        var nodeFile = new File(path + "/nodes/" + node.id() + ".json");
+        if (!node.isPersist()) return;
+        var nodeFile = new File(path + "/nodes/" + node.getIdentifier() + ".json");
         var writer = objectMapper.writer();
 
         try {
@@ -78,10 +78,10 @@ public class FileStorageImpl implements NodeAndRoomStorage {
 
     @Override
     public void removeNode(Node node) {
-        if (!node.persist()) return;
-        new File(path + "/nodes/" + node.id() + ".json").delete();
+        if (!node.isPersist()) return;
+        new File(path + "/nodes/" + node.getIdentifier() + ".json").delete();
 
-        log.info("Removed node '%s' from disk storage".formatted(node.id()));
+        log.info("Removed node '%s' from disk storage".formatted(node.getIdentifier()));
     }
 
     @SneakyThrows

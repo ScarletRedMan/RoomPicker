@@ -11,6 +11,7 @@ configurations {
 
 dependencies {
     implementation project(":client-api")
+    implementation 'org.jetbrains:annotations:24.1.0'
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-security'

@@ -44,8 +44,8 @@ public class RoomServiceImpl implements RoomService {
         namingValidator.validateRoomId(room.getNodeId(), room.getId());
 
         var node = nodeRepository.find(room.getNodeId()).orElseThrow(() -> new NodeNotFoundException(room.getNodeId()));
-        if (!node.persist() && room.isPersist()) {
-            throw new NotPersistedNodeException(node.id(), room.getId());
+        if (!node.isPersist() && room.isPersist()) {
+            throw new NotPersistedNodeException(node.getIdentifier(), room.getId());
         }
 
         roomRepository.create(room);
