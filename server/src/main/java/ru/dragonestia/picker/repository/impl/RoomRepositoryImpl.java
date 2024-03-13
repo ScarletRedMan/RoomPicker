@@ -11,8 +11,9 @@ import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.UserRepository;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,13 +21,15 @@ public class RoomRepositoryImpl implements RoomRepository {
 
     private final UserRepository userRepository;
     private final PickerRepository pickerRepository;
-    private final Map<Node, Rooms> node2roomsMap = new ConcurrentHashMap<>();
+    private final Map<Node, Rooms> node2roomsMap = new HashMap<>();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
     public void create(Room room) throws RoomAlreadyExistException {
         var nodeId = room.getNodeIdentifier();
 
-        synchronized (node2roomsMap) {
+        lock.writeLock().lock();
+        try {
             var node = node2roomsMap.keySet().stream()
                     .filter(n -> room.getNodeIdentifier().equals(n.getIdentifier()))
                     .findFirst();
@@ -41,6 +44,8 @@ public class RoomRepositoryImpl implements RoomRepository {
             }
             rooms.put(room.getIdentifier(), new RoomContainer(room, new AtomicInteger(0)));
             pickerRepository.find(room.getNodeIdentifier()).add(room);
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -51,44 +56,54 @@ public class RoomRepositoryImpl implements RoomRepository {
                 .filter(n -> room.getNodeIdentifier().equals(n.getIdentifier()))
                 .findFirst();
 
-        synchronized (node2roomsMap) {
+        lock.writeLock().lock();
+        try {
             if (node.isEmpty()) {
                 throw new NodeNotFoundException("Node '" + nodeId + "' does not exist");
             }
 
             node2roomsMap.get(node.get()).remove(room.getIdentifier());
             pickerRepository.find(room.getNodeIdentifier()).remove(room);
-        }
 
-        userRepository.onRemoveRoom(room);
+            userRepository.onRemoveRoom(room);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
     public Optional<Room> find(Node node, String identifier) {
-        synchronized (node2roomsMap) {
+        lock.readLock().lock();
+        try {
             if (!node2roomsMap.containsKey(node)) {
                 throw new NodeNotFoundException("Node '" + node.getIdentifier() + "' does not exist");
             }
 
             var result = node2roomsMap.get(node).getOrDefault(identifier, null);
             return result == null? Optional.empty() : Optional.of(result.room());
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public List<Room> all(Node node) {
-        synchronized (node2roomsMap) {
+        lock.readLock().lock();
+        try {
             if (!node2roomsMap.containsKey(node)) {
                 throw new NodeNotFoundException("Node '%s' does not exists".formatted(node.getIdentifier()));
             }
 
             return node2roomsMap.get(node).values().stream().map(RoomContainer::room).toList();
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public Optional<Room> pickFree(Node node, Collection<User> users) {
-        synchronized (node2roomsMap) {
+        lock.writeLock().lock();
+        try {
             if (!node2roomsMap.containsKey(node)) {
                 throw new NodeNotFoundException("Node '" + node.getIdentifier() + "' does not exist");
             }
@@ -109,24 +124,32 @@ public class RoomRepositoryImpl implements RoomRepository {
             }
 
             return container.map(RoomContainer::room);
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     @Override
     public void onCreateNode(Node node) {
-        synchronized (node2roomsMap) {
+        lock.writeLock().lock();
+        try {
             node2roomsMap.put(node, new Rooms());
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     @Override
     public List<Room> onRemoveNode(Node node) {
-        List<Room> deleted;
-        synchronized (node2roomsMap) {
-            deleted = node2roomsMap.get(node).values().stream().map(container -> container.room).toList();
+        lock.writeLock().lock();
+        try {
+            var deleted = node2roomsMap.get(node).values().stream().map(container -> container.room).toList();
             node2roomsMap.remove(node);
+
+            return deleted;
+        } finally {
+            lock.writeLock().unlock();
         }
-        return deleted;
     }
 
     private record RoomContainer(Room room, AtomicInteger used) {
