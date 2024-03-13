@@ -43,7 +43,7 @@ public class UserSearchPage extends VerticalLayout implements RefreshableTable {
         foundUsers = new Span();
         add(fieldUsername = createUsernameInputField());
         add(userGrid = createUserGrid());
-        refresh();
+        justRefresh();
     }
 
     private TextField createUsernameInputField() {
@@ -91,6 +91,11 @@ public class UserSearchPage extends VerticalLayout implements RefreshableTable {
     }
 
     private void search(String input) {
+        System.out.println("Input: " + input);
+        if (input.isEmpty()) {
+            userGrid.setItems();
+        }
+
         userGrid.setItems(cachedUsers = userRepository.searchUsers(SearchUsers.withAllDetails(UserIdentifier.of(input)))
                 .stream().map(user -> (IUser) user).toList());
     }
@@ -98,6 +103,11 @@ public class UserSearchPage extends VerticalLayout implements RefreshableTable {
     @Override
     public void refresh() {
         search(fieldUsername.getValue().trim());
+        foundUsers.setText("Found %s users".formatted(cachedUsers.size()));
+    }
+
+    public void justRefresh() {
+        userGrid.setItems();
         foundUsers.setText("Found %s users".formatted(cachedUsers.size()));
     }
 }
