@@ -9,9 +9,11 @@ import ru.dragonestia.picker.api.impl.repository.NodeRepositoryImpl;
 import ru.dragonestia.picker.api.impl.repository.RoomRepositoryImpl;
 import ru.dragonestia.picker.api.impl.repository.UserRepositoryImpl;
 import ru.dragonestia.picker.api.impl.util.RestTemplate;
+import ru.dragonestia.picker.api.impl.util.type.HttpMethod;
 import ru.dragonestia.picker.api.repository.NodeRepository;
 import ru.dragonestia.picker.api.repository.RoomRepository;
 import ru.dragonestia.picker.api.repository.UserRepository;
+import ru.dragonestia.picker.api.repository.response.RoomPickerInfoResponse;
 
 public class RoomPickerClient {
 
@@ -55,5 +57,9 @@ public class RoomPickerClient {
 
     public @NotNull UserRepository getUserRepository() {
         return userRepository;
+    }
+
+    public @NotNull RoomPickerInfoResponse getServerInfo() {
+        return restTemplate.query("/info", HttpMethod.GET, RoomPickerInfoResponse.class, params -> {});
     }
 }
