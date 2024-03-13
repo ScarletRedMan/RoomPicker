@@ -11,7 +11,7 @@ public class IdentifierValidator {
     }
 
     public static boolean forRoom(@NotNull String roomId) {
-        return roomId.matches("^(?!-)[a-z\\d-]{0,31}[a-z\\d](?!-)$");
+        return roomId.matches("^(?!-)[a-z\\d-]{0,35}[a-z\\d](?!-)$");
     }
 
     public static boolean forUser(@NotNull String username) {
