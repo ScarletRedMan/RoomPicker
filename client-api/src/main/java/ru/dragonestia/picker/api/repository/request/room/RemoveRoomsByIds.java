@@ -29,7 +29,7 @@ public class RemoveRoomsByIds {
     }
 
     public static @NotNull RemoveRoomsByIds just(@NotNull NodeIdentifier nodeId, @NotNull RoomIdentifier roomId) {
-        return RemoveRoomsByIds.builder().appendRoomId(path).build();
+        return RemoveRoomsByIds.builder().setNodeId(nodeId).appendRoomId(roomId).build();
     }
 
     public static @NotNull Builder builder() {
