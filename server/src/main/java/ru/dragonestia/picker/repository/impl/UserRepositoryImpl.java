@@ -10,22 +10,25 @@ import ru.dragonestia.picker.repository.impl.cache.NodeId2PickerModeCache;
 import ru.dragonestia.picker.repository.impl.picker.LeastPickedPicker;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
 
     private final NodeId2PickerModeCache nodeId2PickerModeCache;
-    private final Map<User, Set<Room>> usersMap = new ConcurrentHashMap<>();
-    private final Map<NodeRoomPath, Set<User>> roomUsers = new ConcurrentHashMap<>();
+    private final Map<User, Set<Room>> usersMap = new HashMap<>();
+    private final Map<NodeRoomPath, Set<User>> roomUsers = new HashMap<>();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
     public Map<User, Boolean> linkWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException {
         var result = new HashMap<User, Boolean>();
 
-        synchronized (usersMap) {
+        lock.writeLock().lock();
+        try {
             var path = new NodeRoomPath(room.getNodeIdentifier(), room.getIdentifier());
             var usersSet = roomUsers.getOrDefault(path, new HashSet<>());
 
@@ -55,6 +58,8 @@ public class UserRepositoryImpl implements UserRepository {
             if (picker instanceof LeastPickedPicker leastPickedPicker) {
                 leastPickedPicker.updateUsersAmount(room, roomUsers.get(path).size());
             }
+        } finally {
+            lock.writeLock().unlock();
         }
 
         return result;
@@ -63,7 +68,9 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public int unlinkWithRoom(Room room, Collection<User> users) {
         var counter = new AtomicInteger();
-        synchronized (usersMap) {
+
+        lock.writeLock().lock();
+        try {
             usersMap.forEach((user, set) -> {
                 if (!set.contains(room)) return;
 
@@ -88,45 +95,59 @@ public class UserRepositoryImpl implements UserRepository {
             if (picker instanceof LeastPickedPicker leastPickedPicker) {
                 leastPickedPicker.updateUsersAmount(room, set.size());
             }
+        } finally {
+            lock.writeLock().unlock();
         }
         return counter.get();
     }
 
     @Override
     public List<Room> findAllLinkedUserRooms(User user) {
-        synchronized (usersMap) {
+        lock.writeLock().lock();
+        try {
             return usersMap.getOrDefault(user, new HashSet<>()).stream().toList();
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     @Override
     public void onRemoveRoom(Room room) {
-        synchronized (usersMap) {
+        lock.writeLock().lock();
+        try {
             usersMap.forEach((user, set) -> {
                 set.remove(room);
                 if (set.isEmpty()) {
                     usersMap.remove(user);
                 }
             });
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     @Override
     public List<User> usersOf(Room room) {
-        synchronized (usersMap) {
+        lock.readLock().lock();
+        try {
             return roomUsers.getOrDefault(new NodeRoomPath(room.getNodeIdentifier(), room.getIdentifier()), new HashSet<>())
                     .stream()
                     .toList();
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public List<User> search(String input) {
-        synchronized (usersMap) {
+        lock.readLock().lock();
+        try {
             return usersMap.keySet().stream()
                     .filter(user -> user.getIdentifier().startsWith(input))
                     .sorted(Comparator.comparing(User::getIdentifier))
                     .toList();
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
