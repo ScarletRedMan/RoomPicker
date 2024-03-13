@@ -59,7 +59,7 @@ public class RoomDefinition implements IRoom {
     }
 
     @Override
-    public @Nullable Boolean isPersist() {
+    public @NotNull Boolean isPersist() {
         return persist;
     }
 

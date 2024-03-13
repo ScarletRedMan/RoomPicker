@@ -1,6 +1,7 @@
 package ru.dragonestia.picker.api.repository;
 
 import org.jetbrains.annotations.NotNull;
+import ru.dragonestia.picker.api.model.room.IRoom;
 import ru.dragonestia.picker.api.model.room.ResponseRoom;
 import ru.dragonestia.picker.api.model.room.RoomDefinition;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
@@ -17,6 +18,8 @@ public interface RoomRepository {
     void saveRoom(@NotNull RoomDefinition definition);
 
     void removeRooms(@NotNull RemoveRoomsByIds request);
+
+    void removeRoom(@NotNull IRoom room);
 
     @NotNull List<ShortResponseRoom> allRooms(@NotNull GetAllRooms request);
 
