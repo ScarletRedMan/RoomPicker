@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.info.License;
 import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -24,6 +26,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         }
 )
 @SpringBootApplication
+@EnableAspectJAutoProxy
+@EnableScheduling
 public class LoadBalancerApplication {
 
     public static void main(String[] args) {
