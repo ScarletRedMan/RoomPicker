@@ -66,7 +66,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public int unlinkWithRoom(Room room, Collection<User> users) {
+    public void unlinkWithRoom(Room room, Collection<User> users) {
         var counter = new AtomicInteger();
 
         lock.writeLock().lock();
@@ -98,7 +98,7 @@ public class UserRepositoryImpl implements UserRepository {
         } finally {
             lock.writeLock().unlock();
         }
-        return counter.get();
+        counter.get();
     }
 
     @Override

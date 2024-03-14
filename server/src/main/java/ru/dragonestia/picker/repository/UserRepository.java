@@ -12,7 +12,7 @@ public interface UserRepository {
 
     Map<User, Boolean> linkWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException;
 
-    int unlinkWithRoom(Room room, Collection<User> users);
+    void unlinkWithRoom(Room room, Collection<User> users);
 
     List<Room> findAllLinkedUserRooms(User user);
 
