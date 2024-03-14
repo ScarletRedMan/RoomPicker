@@ -57,7 +57,7 @@ public class UserController {
     @GetMapping("/{userId}/rooms")
     LinkedRoomsWithUserResponse roomsOf(
             @Parameter(description = "User identifier") @PathVariable(value = "userId") String userId,
-            @Parameter(description = "Required addition room data", example = "COUNT_USERS") @RequestParam(value = "requiredDetails", required = false) String detailsSeq
+            @Parameter(description = "Required addition room data", example = "COUNT_USERS") @RequestParam(value = "requiredDetails", defaultValue = "", required = false) String detailsSeq
     ) {
         if (!namingValidator.validateUserId(userId)) {
             return new LinkedRoomsWithUserResponse(List.of());
