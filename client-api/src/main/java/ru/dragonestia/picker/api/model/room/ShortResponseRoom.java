@@ -9,6 +9,7 @@ import ru.dragonestia.picker.api.repository.type.RoomPath;
 import java.beans.Transient;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Schema(title = "Room (Short)")
 public class ShortResponseRoom implements IRoom {
@@ -92,7 +93,7 @@ public class ShortResponseRoom implements IRoom {
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return Objects.hash(id, nodeId);
     }
 
     @Override
@@ -100,7 +101,7 @@ public class ShortResponseRoom implements IRoom {
         if (object == this) return true;
         if (object == null) return false;
         if (object instanceof ShortResponseRoom other) {
-            return id.equals(other.id);
+            return id.equals(other.id) && nodeId.equals(other.nodeId);
         }
         return false;
     }

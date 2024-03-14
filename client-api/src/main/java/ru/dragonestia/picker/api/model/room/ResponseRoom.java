@@ -10,6 +10,7 @@ import ru.dragonestia.picker.api.repository.type.RoomPath;
 import java.beans.Transient;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Schema(title = "Room")
 public class ResponseRoom implements IRoom {
@@ -116,7 +117,7 @@ public class ResponseRoom implements IRoom {
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return Objects.hash(id, nodeId);
     }
 
     @Override
@@ -124,7 +125,7 @@ public class ResponseRoom implements IRoom {
         if (object == this) return true;
         if (object == null) return false;
         if (object instanceof ResponseRoom other) {
-            return id.equals(other.id);
+            return id.equals(other.id) && nodeId.equals(other.nodeId);
         }
         return false;
     }
