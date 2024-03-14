@@ -166,16 +166,26 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Map<String, Integer> countUsersForNodes() {
-        var map = new HashMap<String, Integer>();
+        var map = new HashMap<String, Set<User>>();
 
         lock.readLock().lock();
         try {
-            roomUsers.forEach((path, users) -> map.put(path.node, users.size()));
+            roomUsers.forEach((path, users) -> {
+                if (map.containsKey(path.node)) {
+                    map.get(path.node).addAll(users);
+                    return;
+                }
+
+                map.put(path.node, new HashSet<>(users));
+            });
         } finally {
             lock.readLock().unlock();
         }
 
-        return map;
+        var result = new HashMap<String, Integer>();
+        map.forEach((node, users) -> result.put(node, users.size()));
+
+        return result;
     }
 
     private record NodeRoomPath(String node, String room) {
