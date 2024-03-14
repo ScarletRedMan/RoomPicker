@@ -10,6 +10,7 @@ import ru.dragonestia.picker.repository.impl.cache.NodeId2PickerModeCache;
 import ru.dragonestia.picker.repository.impl.picker.LeastPickedPicker;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -19,8 +20,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class UserRepositoryImpl implements UserRepository {
 
     private final NodeId2PickerModeCache nodeId2PickerModeCache;
-    private final Map<User, Set<Room>> usersMap = new HashMap<>();
-    private final Map<NodeRoomPath, Set<User>> roomUsers = new HashMap<>();
+    private final Map<User, Set<Room>> usersMap = new ConcurrentHashMap<>();
+    private final Map<NodeRoomPath, Set<User>> roomUsers = new ConcurrentHashMap<>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     @Override
@@ -115,8 +116,10 @@ public class UserRepositoryImpl implements UserRepository {
     public void onRemoveRoom(Room room) {
         lock.writeLock().lock();
         try {
-            usersMap.forEach((user, set) -> {
+            roomUsers.remove(new NodeRoomPath(room.getNodeIdentifier(), room.getIdentifier())).forEach(user -> {
+                var set = usersMap.getOrDefault(user, new HashSet<>());
                 set.remove(room);
+
                 if (set.isEmpty()) {
                     usersMap.remove(user);
                 }
@@ -175,11 +178,11 @@ public class UserRepositoryImpl implements UserRepository {
         return map;
     }
 
-    private record NodeRoomPath(String node, String bucket) {
+    private record NodeRoomPath(String node, String room) {
 
         @Override
         public int hashCode() {
-            return Objects.hash(node, bucket);
+            return Objects.hash(node, room);
         }
 
         @Override
@@ -187,7 +190,7 @@ public class UserRepositoryImpl implements UserRepository {
             if (o == null) return false;
             if (o == this) return true;
             if (o instanceof NodeRoomPath other) {
-                return other.node().equals(node()) && other.bucket().equals(bucket());
+                return other.node().equals(node()) && other.room().equals(room());
             }
             return false;
         }
