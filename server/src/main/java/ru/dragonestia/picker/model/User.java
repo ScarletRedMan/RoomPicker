@@ -30,6 +30,11 @@ public class User implements IUser {
     }
 
     @Override
+    public String toString() {
+        return identifier;
+    }
+
+    @Override
     public int hashCode() {
         return identifier.hashCode();
     }

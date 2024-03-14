@@ -8,6 +8,8 @@ import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 
+import java.util.Objects;
+
 public class Room implements IRoom {
 
     private final String identifier;
@@ -80,7 +82,7 @@ public class Room implements IRoom {
 
     @Override
     public int hashCode() {
-        return identifier.hashCode();
+        return Objects.hash(identifier, nodeIdentifier);
     }
 
     @Override
@@ -88,7 +90,7 @@ public class Room implements IRoom {
         if (object == this) return true;
         if (object == null) return false;
         if (object instanceof Room other) {
-            return identifier.equals(other.identifier);
+            return identifier.equals(other.identifier) && nodeIdentifier.equals(other.nodeIdentifier);
         }
         return false;
     }
