@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface UserRepository {
 
-    Map<User, Boolean> linkWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException;
+    int linkWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException;
 
     void unlinkWithRoom(Room room, Collection<User> users);
 

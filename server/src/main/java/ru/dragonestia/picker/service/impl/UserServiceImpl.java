@@ -37,9 +37,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int linkUsersWithRoom(Room room, Collection<User> users, boolean force) {
+    public void linkUsersWithRoom(Room room, Collection<User> users, boolean force) {
         userRepository.linkWithRoom(room, users, force);
-        return userRepository.usersOf(room).size();
     }
 
     @Override

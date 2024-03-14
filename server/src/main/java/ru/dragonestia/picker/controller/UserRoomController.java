@@ -55,7 +55,8 @@ public class UserRoomController {
     ) {
         var room = getNodeAndRoom(nodeId, roomId).room();
         var users = namingValidator.validateUserIds(Arrays.stream(userIds.split(",")).toList());
-        var usedSlots = userService.linkUsersWithRoom(room, users, force);
+        userService.linkUsersWithRoom(room, users, force);
+        var usedSlots = userService.getRoomUsers(room).size();
         return ResponseEntity.ok(new LinkUsersWithRoomResponse(usedSlots, room.getMaxSlots()));
     }
 
