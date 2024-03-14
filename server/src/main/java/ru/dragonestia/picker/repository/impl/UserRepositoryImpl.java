@@ -151,6 +151,30 @@ public class UserRepositoryImpl implements UserRepository {
         }
     }
 
+    @Override
+    public int countAllUsers() {
+        lock.readLock().lock();
+        try {
+            return usersMap.size();
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public Map<String, Integer> countUsersForNodes() {
+        var map = new HashMap<String, Integer>();
+
+        lock.readLock().lock();
+        try {
+            roomUsers.forEach((path, users) -> map.put(path.node, users.size()));
+        } finally {
+            lock.readLock().unlock();
+        }
+
+        return map;
+    }
+
     private record NodeRoomPath(String node, String bucket) {
 
         @Override

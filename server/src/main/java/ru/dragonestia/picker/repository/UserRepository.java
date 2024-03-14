@@ -21,4 +21,8 @@ public interface UserRepository {
     List<User> usersOf(Room room);
 
     List<User> search(String input);
+
+    int countAllUsers();
+
+    Map<String, Integer> countUsersForNodes();
 }
