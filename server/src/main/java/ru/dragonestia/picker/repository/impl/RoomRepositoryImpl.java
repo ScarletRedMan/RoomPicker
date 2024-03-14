@@ -120,7 +120,7 @@ public class RoomRepositoryImpl implements RoomRepository {
             if (container.isPresent()) {
                 var cont = container.get();
                 var addedUsers = userRepository.linkWithRoom(cont.room(), users, false);
-                cont.used().getAndAdd((int) addedUsers.values().stream().filter(Boolean.TRUE::equals).count());
+                cont.used().getAndAdd(addedUsers);
             }
 
             return container.map(RoomContainer::room);

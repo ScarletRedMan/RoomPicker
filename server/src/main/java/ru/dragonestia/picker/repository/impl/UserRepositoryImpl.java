@@ -25,34 +25,30 @@ public class UserRepositoryImpl implements UserRepository {
     private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
     @Override
-    public Map<User, Boolean> linkWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException {
-        var result = new HashMap<User, Boolean>();
+    public int linkWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException {
+        var toAdd = new HashSet<User>();
 
         lock.writeLock().lock();
         try {
             var path = new NodeRoomPath(room.getNodeIdentifier(), room.getIdentifier());
             var usersSet = roomUsers.getOrDefault(path, new HashSet<>());
 
-            if (force || room.hasUnlimitedSlots()) {
-                users.forEach(user -> result.put(user, true));
-            } else {
-                for (var user : users) {
-                    var set = usersMap.getOrDefault(user, new HashSet<>());
-                    result.put(user, !set.contains(room));
-                }
-
+            if (!force && !room.hasUnlimitedSlots()) {
                 if (room.getMaxSlots() < usersSet.size() + users.size()) {
                     throw new RoomAreFullException(room.getNodeIdentifier(), room.getIdentifier());
                 }
             }
 
-            for (var user: users) {
+            users.forEach(user -> {
                 var set = usersMap.getOrDefault(user, new HashSet<>());
-                set.add(room);
+                if (!set.contains(room)) {
+                    toAdd.add(user);
+                    set.add(room);
+                }
                 usersMap.put(user, set);
-            }
+            });
 
-            usersSet.addAll(users);
+            usersSet.addAll(toAdd);
             roomUsers.put(path, usersSet);
 
             var picker = nodeId2PickerModeCache.get(room.getNodeIdentifier());
@@ -62,8 +58,7 @@ public class UserRepositoryImpl implements UserRepository {
         } finally {
             lock.writeLock().unlock();
         }
-
-        return result;
+        return toAdd.size();
     }
 
     @Override

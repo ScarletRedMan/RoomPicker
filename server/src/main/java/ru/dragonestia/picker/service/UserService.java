@@ -18,7 +18,7 @@ public interface UserService {
 
     List<ShortResponseRoom> getUserRoomsWithDetails(User user, Set<RoomDetails> details);
 
-    int linkUsersWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException;
+    void linkUsersWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException;
 
     void unlinkUsersFromRoom(Room room, Collection<User> users);
 
