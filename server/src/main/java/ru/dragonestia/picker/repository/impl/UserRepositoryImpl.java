@@ -116,7 +116,11 @@ public class UserRepositoryImpl implements UserRepository {
     public void onRemoveRoom(Room room) {
         lock.writeLock().lock();
         try {
-            roomUsers.remove(new NodeRoomPath(room.getNodeIdentifier(), room.getIdentifier())).forEach(user -> {
+            var users = roomUsers.remove(new NodeRoomPath(room.getNodeIdentifier(), room.getIdentifier()));
+
+            if (users == null) return;
+
+            users.forEach(user -> {
                 var set = usersMap.getOrDefault(user, new HashSet<>());
                 set.remove(room);
 
