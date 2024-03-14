@@ -1,5 +1,6 @@
 package ru.dragonestia.picker.aspect;
 
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +9,11 @@ import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.repository.UserRepository;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
@@ -22,24 +26,46 @@ public class UserMetricsAspect {
     private final MeterRegistry meterRegistry;
 
     private final AtomicInteger totalUsers = new AtomicInteger(0);
+    private final Map<String, Gauge> nodeGauges = new ConcurrentHashMap<>();
+    private final Map<String, Integer> nodeUsers = new ConcurrentHashMap<>();
 
     @PostConstruct
     void init() {
         meterRegistry.gauge("roompicker_total_users", totalUsers);
     }
 
-    @After("execution(void ru.dragonestia.picker.repository.UserRepository.linkWithRoom(..))")
+    @After("execution(* ru.dragonestia.picker.repository.UserRepository.linkWithRoom(..))")
     void onLinkUsers() {
-        totalUsers.set(userRepository.countAllUsers());
+        countAllUsers();
     }
 
     @After("execution(void ru.dragonestia.picker.repository.UserRepository.unlinkWithRoom(..))")
     void onUnlinkUsers() {
+        countAllUsers();
+    }
+
+    private void countAllUsers() {
         totalUsers.set(userRepository.countAllUsers());
+    }
+
+    @After(value = "execution(void ru.dragonestia.picker.repository.NodeRepository.create(ru.dragonestia.picker.model.Node)) && args(node)", argNames = "node")
+    void onCreateNode(Node node) {
+        var nodeId = node.getIdentifier();
+        var gauge = Gauge.builder("roompicker_node_users_total", () -> nodeUsers.getOrDefault(nodeId, 0))
+                .tag("nodeId", nodeId)
+                .register(meterRegistry);
+
+        nodeGauges.put(nodeId, gauge);
+    }
+
+    @After(value = "execution(* ru.dragonestia.picker.repository.NodeRepository.delete(ru.dragonestia.picker.model.Node)) && args(node)", argNames = "node")
+    void onDeleteNode(Node node) {
+        meterRegistry.remove(nodeGauges.remove(node.getIdentifier()));
+        nodeUsers.remove(node.getIdentifier());
     }
 
     @Scheduled(fixedDelay = 3_000)
     void updateUserMetrics() {
-        // TODO: metrics for userRepository.countUsersForNodes()
+        nodeUsers.putAll(userRepository.countUsersForNodes());
     }
 }
