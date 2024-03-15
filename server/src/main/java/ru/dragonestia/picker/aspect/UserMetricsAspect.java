@@ -47,6 +47,11 @@ public class UserMetricsAspect {
         countAllUsers();
     }
 
+    @After("execution(void ru.dragonestia.picker.repository.UserRepository.onRemoveRoom(..))")
+    void onRemoveRoom() {
+        countAllUsers();
+    }
+
     private void countAllUsers() {
         totalUsers.set(userRepository.countAllUsers());
     }
