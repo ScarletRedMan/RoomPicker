@@ -7,7 +7,7 @@ Features:
 - Simple to use. Everything works out of the box.
 - 3 picking methods (Sequential filling, Round Robin, Least picked).
 - Optional control panel.
-- Collecting metrics using Prometheus integration.
+- Collecting metrics using Prometheus integration ([ready Grafana dashboard](./RoomPicker-Grafana-Dashboard.json)).
 
 **This project is under development. Do not use in production!**
 
