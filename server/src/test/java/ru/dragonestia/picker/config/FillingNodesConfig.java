@@ -10,6 +10,7 @@ import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.factory.RoomFactory;
 import ru.dragonestia.picker.repository.NodeRepository;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.UserRepository;
@@ -46,6 +47,9 @@ public class FillingNodesConfig {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoomFactory roomFactory;
 
     private Node seqNode;
     private Node roundNode;
@@ -85,7 +89,7 @@ public class FillingNodesConfig {
         for (int i = 0, n = 5; i < n; i++) {
             for (int j = 0; j < 3; j++) {
                 var roomId = "room-" + i + "-" + j;
-                var room = new Room(RoomIdentifier.of(roomId), node, n, "", false);
+                var room = roomFactory.create(RoomIdentifier.of(roomId), node, n, "", false);
                 roomRepository.create(room);
 
                 var users = n - i;

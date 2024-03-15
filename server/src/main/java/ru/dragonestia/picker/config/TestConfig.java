@@ -19,6 +19,7 @@ import ru.dragonestia.picker.interceptor.DebugInterceptor;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.factory.RoomFactory;
 import ru.dragonestia.picker.model.type.SlotLimit;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.NodeRepository;
@@ -36,6 +37,7 @@ public class TestConfig implements WebMvcConfigurer {
     private final NodeRepository nodeRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final RoomFactory roomFactory;
 
     private final Random rand = new Random(0);
 
@@ -58,7 +60,7 @@ public class TestConfig implements WebMvcConfigurer {
 
         for (int i = 1; i <= 5; i++) {
             var slots = 5 * i;
-            var room = new Room(RoomIdentifier.of("test-" + i), node, slots, json.writeValueAsString(generatePayload()), false);
+            var room = roomFactory.create(RoomIdentifier.of("test-" + i), node, slots, json.writeValueAsString(generatePayload()), false);
             roomRepository.create(room);
 
             for (int j = 0, n = rand.nextInt(slots + 1); j < n; j++) {
@@ -68,7 +70,7 @@ public class TestConfig implements WebMvcConfigurer {
         }
 
         for (int i = 0; i < 5; i++) {
-            var room = new Room(RoomIdentifier.of(randomUUID().toString()), node, IRoom.UNLIMITED_SLOTS, json.writeValueAsString(generatePayload()), false);
+            var room = roomFactory.create(RoomIdentifier.of(randomUUID().toString()), node, IRoom.UNLIMITED_SLOTS, json.writeValueAsString(generatePayload()), false);
             room.setLocked((i & 1) == 0);
             roomRepository.create(room);
         }

@@ -13,6 +13,7 @@ import ru.dragonestia.picker.api.repository.response.RoomInfoResponse;
 import ru.dragonestia.picker.api.repository.response.RoomListResponse;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 import ru.dragonestia.picker.model.Room;
+import ru.dragonestia.picker.model.factory.RoomFactory;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.util.DetailsParser;
@@ -28,6 +29,7 @@ public class RoomController {
     private final RoomService roomService;
     private final NamingValidator namingValidator;
     private final DetailsParser detailsParser;
+    private final RoomFactory roomFactory;
 
     @Operation(summary = "Get all rooms from node")
     @GetMapping
@@ -54,7 +56,7 @@ public class RoomController {
             @Parameter(description = "Save room") @RequestParam(name = "persist", required = false, defaultValue = "false") boolean persist
     ) {
         var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
-        var room = new Room(RoomIdentifier.of(roomId), node, slots, payload, persist);
+        var room = roomFactory.create(RoomIdentifier.of(roomId), node, slots, payload, persist);
         room.setLocked(locked);
         roomService.create(room);
 
