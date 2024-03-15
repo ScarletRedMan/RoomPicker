@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.event.UpdateRoomLockStateEvent;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.Room;
+import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.UserRepository;
 
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Log4j2
 public class UserMetricsAspect {
 
+    private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final MeterRegistry meterRegistry;
 
@@ -95,7 +97,11 @@ public class UserMetricsAspect {
                 .tag("nodeId", nodeId)
                 .register(meterRegistry);
 
-        data.put(nodeId, new NodeData(gauge, new AtomicInteger(0), counter, new HashSet<>(), lockedGauge));
+        var roomsGauge = Gauge.builder("roompicker_rooms", () -> roomRepository.all(node).size())
+                .tag("nodeId", nodeId)
+                .register(meterRegistry);
+
+        data.put(nodeId, new NodeData(gauge, new AtomicInteger(0), counter, new HashSet<>(), lockedGauge, roomsGauge));
     }
 
     @After(value = "execution(* ru.dragonestia.picker.repository.NodeRepository.delete(ru.dragonestia.picker.model.Node)) && args(node)", argNames = "node")
@@ -105,6 +111,7 @@ public class UserMetricsAspect {
         meterRegistry.remove(data.usersGauge());
         meterRegistry.remove(data.picksPerMinute());
         meterRegistry.remove(data.lockedGauge());
+        meterRegistry.remove(data.roomsGauge());
     }
 
     @AfterReturning(value = "execution(* ru.dragonestia.picker.repository.RoomRepository.pickFree(ru.dragonestia.picker.model.Node, *)) && args(node, ..)", argNames = "node")
@@ -122,5 +129,5 @@ public class UserMetricsAspect {
         userRepository.countUsersForNodes().forEach((nodeId, users) -> data.get(nodeId).users().set(users));
     }
 
-    private record NodeData(Gauge usersGauge, AtomicInteger users, Counter picksPerMinute, Set<Room> locked, Gauge lockedGauge) {}
+    private record NodeData(Gauge usersGauge, AtomicInteger users, Counter picksPerMinute, Set<Room> locked, Gauge lockedGauge, Gauge roomsGauge) {}
 }
