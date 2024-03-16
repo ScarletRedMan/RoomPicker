@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
     private final DetailsExtractor detailsExtractor;
 
     @Override
-    public List<Room> getUserRooms(User user) {
+    public Collection<Room> getUserRooms(User user) {
         return userRepository.findAllLinkedUserRooms(user);
     }
 
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getRoomUsers(Room room) {
+    public Collection<User> getRoomUsers(Room room) {
         return userRepository.usersOf(room);
     }
 

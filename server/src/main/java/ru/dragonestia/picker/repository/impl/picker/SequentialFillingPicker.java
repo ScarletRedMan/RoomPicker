@@ -1,9 +1,8 @@
 package ru.dragonestia.picker.repository.impl.picker;
 
 import ru.dragonestia.picker.api.model.node.PickingMethod;
-import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
-import ru.dragonestia.picker.repository.UserRepository;
+import ru.dragonestia.picker.repository.impl.container.RoomContainer;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -11,29 +10,24 @@ import java.util.Map;
 
 public class SequentialFillingPicker implements RoomPicker {
 
-    private final UserRepository userRepository;
     private final Map<String, RoomWrapper> wrappers = new LinkedHashMap<>();
 
-    public SequentialFillingPicker(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
     @Override
-    public void add(Room room) {
+    public void add(RoomContainer container) {
         synchronized (wrappers) {
-            wrappers.put(room.getIdentifier(), new RoomWrapper(room, () -> userRepository.usersOf(room).size()));
+            wrappers.put(container.getRoom().getIdentifier(), new RoomWrapper(container));
         }
     }
 
     @Override
-    public void remove(Room room) {
+    public void remove(RoomContainer container) {
         synchronized (wrappers) {
-            wrappers.remove(room.getIdentifier());
+            wrappers.remove(container.getRoom().getIdentifier());
         }
     }
 
     @Override
-    public Room pick(Collection<User> users) {
+    public RoomContainer pick(Collection<User> users) {
         int amount = users.size();
 
         synchronized (wrappers) {

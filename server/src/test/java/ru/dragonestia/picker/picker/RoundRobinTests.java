@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import ru.dragonestia.picker.api.model.node.INode;
 import ru.dragonestia.picker.config.FillingNodesConfig;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.repository.RoomRepository;
@@ -39,7 +38,7 @@ public class RoundRobinTests {
     @ParameterizedTest
     @ArgumentsSource(PickingArgumentProvider.class)
     void testPicking(String expectedRoomId, int usersAmount) {
-        var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(usersAmount));
+        var roomOpt = roomRepository.pick(node, userFiller.createRandomUsers(usersAmount));
         Assertions.assertTrue(roomOpt.isPresent());
 
         var room = roomOpt.get();
@@ -69,7 +68,7 @@ public class RoundRobinTests {
     @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     @Test
     void testNoOneRoomExpected() { // Take 9 users. expected none result
-        var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(9));
+        var roomOpt = roomRepository.pick(node, userFiller.createRandomUsers(9));
         Assertions.assertTrue(roomOpt.isEmpty());
     }
 }

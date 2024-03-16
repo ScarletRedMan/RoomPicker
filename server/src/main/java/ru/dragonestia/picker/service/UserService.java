@@ -14,7 +14,7 @@ import java.util.Set;
 
 public interface UserService {
 
-    List<Room> getUserRooms(User user);
+    Collection<Room> getUserRooms(User user);
 
     List<ShortResponseRoom> getUserRoomsWithDetails(User user, Set<RoomDetails> details);
 
@@ -22,7 +22,7 @@ public interface UserService {
 
     void unlinkUsersFromRoom(Room room, Collection<User> users);
 
-    List<User> getRoomUsers(Room room);
+    Collection<User> getRoomUsers(Room room);
 
     List<ResponseUser> getRoomUsersWithDetailsResponse(Room room, Set<UserDetails> details);
 

@@ -5,34 +5,30 @@ import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.repository.impl.collection.DynamicSortedMap;
+import ru.dragonestia.picker.repository.impl.container.RoomContainer;
 
 import java.util.Collection;
 
 public class LeastPickedPicker implements RoomPicker {
 
-    private final UserRepository userRepository;
     private final DynamicSortedMap<RoomWrapper> map = new DynamicSortedMap<>();
 
-    public LeastPickedPicker(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
     @Override
-    public void add(Room room) {
+    public void add(RoomContainer container) {
         synchronized (map) {
-            map.put(new RoomWrapper(room, () -> userRepository.usersOf(room).size()));
+            map.put(new RoomWrapper(container));
         }
     }
 
     @Override
-    public void remove(Room room) {
+    public void remove(RoomContainer container) {
         synchronized (map) {
-            map.removeById(room.getIdentifier());
+            map.removeById(container.getRoom().getIdentifier());
         }
     }
 
     @Override
-    public Room pick(Collection<User> users) {
+    public RoomContainer pick(Collection<User> users) {
         RoomWrapper wrapper;
 
         synchronized (map) {

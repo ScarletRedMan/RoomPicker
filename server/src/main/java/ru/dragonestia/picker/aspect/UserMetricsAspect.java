@@ -115,7 +115,7 @@ public class UserMetricsAspect {
         meterRegistry.remove(data.roomsGauge());
     }
 
-    @AfterReturning(value = "execution(* ru.dragonestia.picker.repository.RoomRepository.pickFree(ru.dragonestia.picker.model.Node, *)) && args(node, ..)", argNames = "node")
+    @AfterReturning(value = "execution(* ru.dragonestia.picker.repository.RoomRepository.pick(ru.dragonestia.picker.model.Node, *)) && args(node, ..)", argNames = "node")
     void onPickRoom(Node node) {
         data.get(node.getIdentifier()).picksPerMinute().increment();
     }
