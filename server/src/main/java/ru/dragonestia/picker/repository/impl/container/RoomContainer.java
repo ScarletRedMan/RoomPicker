@@ -90,6 +90,7 @@ public class RoomContainer {
     }
 
     public boolean canBePicked(int users) {
+        usersLock.readLock().lock();
         try {
             return !room.isLocked() && canAdd0(users);
         } finally {

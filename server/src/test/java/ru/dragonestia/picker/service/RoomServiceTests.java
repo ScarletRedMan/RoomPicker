@@ -21,6 +21,7 @@ import ru.dragonestia.picker.model.factory.RoomFactory;
 import ru.dragonestia.picker.model.type.SlotLimit;
 
 import java.util.List;
+import java.util.Set;
 
 @SpringBootTest
 public class RoomServiceTests {
@@ -93,7 +94,7 @@ public class RoomServiceTests {
 
         rooms.forEach(room -> roomService.create(room));
 
-        var users = List.of(
+        var users = Set.of(
                 new User(UserIdentifier.of("1")),
                 new User(UserIdentifier.of("2")),
                 new User(UserIdentifier.of("3")),
@@ -121,6 +122,6 @@ public class RoomServiceTests {
         Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.create(room));
         Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.remove(room));
         Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.find(node, "Bruh"));
-        Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.pickAvailable(node, List.of(new User(UserIdentifier.of("1")))));
+        Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.pickAvailable(node, Set.of(new User(UserIdentifier.of("1")))));
     }
 }

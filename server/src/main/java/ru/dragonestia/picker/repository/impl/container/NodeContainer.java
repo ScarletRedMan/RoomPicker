@@ -35,9 +35,9 @@ public class NodeContainer {
 
     private @NotNull RoomPicker initPicker() {
         return switch (node.getPickingMethod()) {
-            case SEQUENTIAL_FILLING -> new SequentialFillingPicker();
-            case ROUND_ROBIN -> new RoundRobinPicker();
-            case LEAST_PICKED -> new LeastPickedPicker();
+            case SEQUENTIAL_FILLING -> new SequentialFillingPicker(this);
+            case ROUND_ROBIN -> new RoundRobinPicker(this);
+            case LEAST_PICKED -> new LeastPickedPicker(this);
         };
     }
 
@@ -93,9 +93,11 @@ public class NodeContainer {
     }
 
     public @NotNull Room pick(@NotNull Set<User> users) {
-        var room = picker.pick(users);
-        transactionListener.accept(new UserTransaction(room.getRoom(), users));
-        return room.getRoom();
+        synchronized (picker) {
+            var room = picker.pick(users);
+            transactionListener.accept(new UserTransaction(room.getRoom(), users));
+            return room.getRoom();
+        }
     }
 
     public @NotNull RoomPicker getPicker() {
