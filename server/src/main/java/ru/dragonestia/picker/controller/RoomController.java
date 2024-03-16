@@ -57,8 +57,8 @@ public class RoomController {
     ) {
         var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
         var room = roomFactory.create(RoomIdentifier.of(roomId), node, slots, payload, persist);
-        room.setLocked(locked);
         roomService.create(room);
+        room.setLocked(locked);
 
         return ResponseEntity.ok().build();
     }
