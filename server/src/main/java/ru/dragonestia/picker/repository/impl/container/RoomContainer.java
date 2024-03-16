@@ -20,7 +20,7 @@ public class RoomContainer {
     private final Room room;
     private final NodeContainer container;
 
-    private final ReadWriteLock usersLock = new ReentrantReadWriteLock();
+    private final ReadWriteLock usersLock = new ReentrantReadWriteLock(true);
     private final Set<User> users = new HashSet<>();
 
     public RoomContainer(@NotNull Room room, @NotNull NodeContainer container) {
