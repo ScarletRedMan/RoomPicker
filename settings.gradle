@@ -4,4 +4,5 @@ include 'server'
 include 'control-panel'
 include 'client-api'
 include 'client-impl'
+include 'noiser'
 
