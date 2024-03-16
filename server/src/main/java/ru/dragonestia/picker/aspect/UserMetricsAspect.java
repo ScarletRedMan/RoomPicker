@@ -9,19 +9,16 @@ import lombok.extern.log4j.Log4j2;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ru.dragonestia.picker.event.UpdateRoomLockStateEvent;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.UserRepository;
+import ru.dragonestia.picker.repository.impl.ContainerRepository;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -31,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Log4j2
 public class UserMetricsAspect {
 
+    private final ContainerRepository containerRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final MeterRegistry meterRegistry;
@@ -53,33 +51,8 @@ public class UserMetricsAspect {
         countAllUsers(room);
     }
 
-    @AfterReturning(value = "execution(void ru.dragonestia.picker.repository.RoomRepository.create(ru.dragonestia.picker.model.Room)) && args(room)", argNames = "room")
-    void onCreateRoom(Room room) {
-        checkRoom(room);
-    }
-
-    @After(value = "execution(void ru.dragonestia.picker.repository.UserRepository.onRemoveRoom(ru.dragonestia.picker.model.Room)) && args(room, ..)", argNames = "room")
-    void onRemoveRoom(Room room) {
-        countAllUsers(room);
-    }
-
     private void countAllUsers(Room room) {
         totalUsers.set(userRepository.countAllUsers());
-
-        checkRoom(room);
-    }
-
-    private void checkRoom(Room room) {
-        var set = data.get(room.getNodeIdentifier()).locked();
-        if (room.isLocked()) {
-            set.add(room);
-            return;
-        }
-        if (!room.hasUnlimitedSlots() && userRepository.usersOf(room).size() >= room.getMaxSlots()) {
-            set.add(room);
-            return;
-        }
-        set.remove(room);
     }
 
     @After(value = "execution(void ru.dragonestia.picker.repository.NodeRepository.create(ru.dragonestia.picker.model.Node)) && args(node)", argNames = "node")
@@ -94,7 +67,7 @@ public class UserMetricsAspect {
                 .baseUnit("1s")
                 .register(meterRegistry);
 
-        var lockedGauge = Gauge.builder("roompicker_locked_rooms", () -> data.get(nodeId).locked().size())
+        var lockedGauge = Gauge.builder("roompicker_locked_rooms", () -> data.get(nodeId).locked())
                 .tag("nodeId", nodeId)
                 .register(meterRegistry);
 
@@ -102,7 +75,7 @@ public class UserMetricsAspect {
                 .tag("nodeId", nodeId)
                 .register(meterRegistry);
 
-        data.put(nodeId, new NodeData(gauge, new AtomicInteger(0), counter, new HashSet<>(), lockedGauge, roomsGauge));
+        data.put(nodeId, new NodeData(gauge, new AtomicInteger(0), counter, new AtomicInteger(0), lockedGauge, roomsGauge));
     }
 
     @After(value = "execution(* ru.dragonestia.picker.repository.NodeRepository.delete(ru.dragonestia.picker.model.Node)) && args(node)", argNames = "node")
@@ -120,17 +93,23 @@ public class UserMetricsAspect {
         data.get(node.getIdentifier()).picksPerMinute().increment();
     }
 
-    @EventListener
-    void onRoomChangeLockState(UpdateRoomLockStateEvent event) {
-        checkRoom(event.room());
-    }
-
     @Scheduled(fixedDelay = 3_000)
     void updateUserMetrics() {
         userRepository.countUsersForNodes().forEach((nodeId, users) -> {
             Optional.ofNullable(data.get(nodeId)).ifPresent(node -> node.users().set(users));
         });
+
+        containerRepository.all().forEach(nodeContainer -> {
+            var locked = data.get(nodeContainer.getNode().getIdentifier()).locked();
+            locked.set(0);
+
+            nodeContainer.allRooms().forEach(roomContainer -> {
+                if (roomContainer.canBePicked(1)) return;
+
+                locked.incrementAndGet();
+            });
+        });
     }
 
-    private record NodeData(Gauge usersGauge, AtomicInteger users, Counter picksPerMinute, Set<Room> locked, Gauge lockedGauge, Gauge roomsGauge) {}
+    private record NodeData(Gauge usersGauge, AtomicInteger users, Counter picksPerMinute, AtomicInteger locked, Gauge lockedGauge, Gauge roomsGauge) {}
 }

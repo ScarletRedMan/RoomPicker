@@ -19,15 +19,13 @@ public class Room implements IRoom {
     private final String payload;
     private final boolean persist;
     private boolean locked = false;
-    private final UpdateRoomLockStateEvent.Listener updateLockStateListener;
 
-    public Room(@NotNull RoomIdentifier identifier, @NotNull Node node, int slots, @NotNull String payload, boolean persist, @Nullable UpdateRoomLockStateEvent.Listener listener) {
+    public Room(@NotNull RoomIdentifier identifier, @NotNull Node node, int slots, @NotNull String payload, boolean persist) {
         this.identifier = identifier.getValue();
         this.nodeIdentifier = node.getIdentifier();
         this.slots = slots;
         this.payload = payload;
         this.persist = persist;
-        this.updateLockStateListener = listener;
     }
 
     @Override
@@ -52,10 +50,6 @@ public class Room implements IRoom {
 
     public void setLocked(boolean value) {
         locked = value;
-
-        if (updateLockStateListener != null) {
-            updateLockStateListener.accept(new UpdateRoomLockStateEvent(this));
-        }
     }
 
     @Override
