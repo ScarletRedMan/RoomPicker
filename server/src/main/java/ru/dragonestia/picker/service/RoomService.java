@@ -9,6 +9,7 @@ import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
 import ru.dragonestia.picker.model.User;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -21,11 +22,11 @@ public interface RoomService {
 
     Optional<Room> find(Node node, String roomId);
 
-    List<Room> all(Node node);
+    Collection<Room> all(Node node);
 
     List<ShortResponseRoom> getAllRoomsWithDetailsResponse(Node node, Set<RoomDetails> details);
 
-    PickedRoomResponse pickAvailable(Node node, List<User> users);
+    PickedRoomResponse pickAvailable(Node node, Set<User> users);
 
     void updateState(Room room);
 }

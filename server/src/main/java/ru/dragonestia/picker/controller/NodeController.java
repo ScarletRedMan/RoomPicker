@@ -8,17 +8,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
+import ru.dragonestia.picker.api.model.user.UserDefinition;
 import ru.dragonestia.picker.api.repository.response.NodeDetailsResponse;
 import ru.dragonestia.picker.api.repository.response.NodeListResponse;
 import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
+import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.model.Node;
+import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.util.DetailsParser;
 import ru.dragonestia.picker.util.NamingValidator;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Tag(name = "Nodes", description = "Node management")
 @RestController
@@ -82,7 +86,9 @@ public class NodeController {
         namingValidator.validateNodeId(nodeId);
 
         var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
-        var users = namingValidator.validateUserIds(Arrays.stream(userIds.split(",")).toList());
+        var users = Arrays.stream(userIds.split(","))
+                .map(userId -> new User(UserIdentifier.of(userId)))
+                .collect(Collectors.toSet());
         var response = roomService.pickAvailable(node, users);
 
         return ResponseEntity.ok(response);

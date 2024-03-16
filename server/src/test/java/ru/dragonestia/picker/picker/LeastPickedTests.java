@@ -40,7 +40,7 @@ public class LeastPickedTests {
     @ParameterizedTest
     @ArgumentsSource(PickingArgumentProvider.class)
     void testPicking(String expectedRoomId, int usersAmount) {
-        var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(usersAmount));
+        var roomOpt = roomRepository.pick(node, userFiller.createRandomUsers(usersAmount));
         Assertions.assertTrue(roomOpt.isPresent());
 
         var room = roomOpt.get();
@@ -73,7 +73,7 @@ public class LeastPickedTests {
     @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     @Test
     void testNoOneRoomExpected() { // Take 9 users. expected none result
-        var roomOpt = roomRepository.pickFree(node, userFiller.createRandomUsers(9));
+        var roomOpt = roomRepository.pick(node, userFiller.createRandomUsers(9));
         Assertions.assertTrue(roomOpt.isEmpty());
     }
 }

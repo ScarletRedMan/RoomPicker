@@ -58,4 +58,9 @@ public class Node implements INode {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "{Node id='%s'}".formatted(identifier);
+    }
 }

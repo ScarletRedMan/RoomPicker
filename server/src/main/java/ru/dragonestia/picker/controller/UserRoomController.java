@@ -10,8 +10,10 @@ import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
 import ru.dragonestia.picker.api.repository.response.LinkUsersWithRoomResponse;
 import ru.dragonestia.picker.api.repository.response.RoomUserListResponse;
+import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
+import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.service.UserService;
@@ -19,6 +21,7 @@ import ru.dragonestia.picker.util.DetailsParser;
 import ru.dragonestia.picker.util.NamingValidator;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Tag(name = "Users", description = "User management")
 @RequiredArgsConstructor
@@ -54,7 +57,9 @@ public class UserRoomController {
             @Parameter(description = "Ignore slot limitation") @RequestParam(name = "force") boolean force
     ) {
         var room = getNodeAndRoom(nodeId, roomId).room();
-        var users = namingValidator.validateUserIds(Arrays.stream(userIds.split(",")).toList());
+        var users = Arrays.stream(userIds.split(","))
+                .map(userId -> new User(UserIdentifier.of(userId)))
+                .collect(Collectors.toSet());
         userService.linkUsersWithRoom(room, users, force);
         var usedSlots = userService.getRoomUsers(room).size();
         return ResponseEntity.ok(new LinkUsersWithRoomResponse(usedSlots, room.getMaxSlots()));
@@ -69,7 +74,9 @@ public class UserRoomController {
     ) {
 
         var room = getNodeAndRoom(nodeId, roomId).room();
-        var users = namingValidator.validateUserIds(Arrays.stream(userIds.split(",")).toList());
+        var users = Arrays.stream(userIds.split(","))
+                .map(userId -> new User(UserIdentifier.of(userId)))
+                .collect(Collectors.toSet());
         userService.unlinkUsersFromRoom(room, users);
         return ResponseEntity.ok().build();
     }

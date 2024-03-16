@@ -1,46 +1,43 @@
 package ru.dragonestia.picker.repository.impl.picker;
 
-import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.repository.impl.collection.QueuedLinkedList;
 import ru.dragonestia.picker.repository.impl.collection.DynamicSortedMap;
+import ru.dragonestia.picker.repository.impl.container.RoomContainer;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-public class RoomWrapper implements ItemWrapper<Room>, QueuedLinkedList.Item, DynamicSortedMap.Item {
+public class RoomWrapper implements ItemWrapper<RoomContainer>, QueuedLinkedList.Item, DynamicSortedMap.Item {
 
-    private final Room room;
-    private final Supplier<Integer> userCountSupplier;
+    private final RoomContainer container;
     private Consumer<Integer> setter;
 
-    public RoomWrapper(Room room, Supplier<Integer> userCountSupplier) {
-        this.room = room;
-        this.userCountSupplier = userCountSupplier;
+    public RoomWrapper(RoomContainer container) {
+        this.container = container;
     }
 
     @Override
     public String getId() {
-        return room.getIdentifier();
+        return container.getRoom().getIdentifier();
     }
 
     @Override
     public int countUnits() {
-        return userCountSupplier.get();
+        return container.countUsers();
     }
 
     @Override
     public int maxUnits() {
-        return room.getMaxSlots();
+        return container.getRoom().getMaxSlots();
     }
 
     @Override
-    public Room getItem() {
-        return room;
+    public RoomContainer getItem() {
+        return container;
     }
 
     @Override
     public boolean canAddUnits(int amount) {
-        return ItemWrapper.super.canAddUnits(amount) && !room.isLocked();
+        return container.canBePicked(amount);
     }
 
     @Override

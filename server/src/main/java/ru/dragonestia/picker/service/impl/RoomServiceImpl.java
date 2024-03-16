@@ -21,10 +21,7 @@ import ru.dragonestia.picker.storage.NodeAndRoomStorage;
 import ru.dragonestia.picker.util.DetailsExtractor;
 import ru.dragonestia.picker.util.NamingValidator;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -43,7 +40,7 @@ public class RoomServiceImpl implements RoomService {
     public void create(Room room) throws InvalidRoomIdentifierException, RoomAlreadyExistException, NotPersistedNodeException {
         namingValidator.validateRoomId(room.getNodeIdentifier(), room.getIdentifier());
 
-        var node = nodeRepository.find(room.getNodeIdentifier()).orElseThrow(() -> new NodeNotFoundException(room.getNodeIdentifier()));
+        var node = nodeRepository.findById(room.getNodeIdentifier()).orElseThrow(() -> new NodeNotFoundException(room.getNodeIdentifier()));
         if (!node.isPersist() && room.isPersist()) {
             throw new NotPersistedNodeException(node.getIdentifier(), room.getIdentifier());
         }
@@ -64,7 +61,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<Room> all(Node node) {
+    public Collection<Room> all(Node node) {
         return roomRepository.all(node);
     }
 
@@ -78,9 +75,8 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public PickedRoomResponse pickAvailable(Node node, List<User> users) {
-        var room = roomRepository.pickFree(node, users)
-                .orElseThrow(() -> new RuntimeException("There are no rooms available. Given users count: " + users.size()));
+    public PickedRoomResponse pickAvailable(Node node, Set<User> users) {
+        var room = roomRepository.pick(node, users);
         var roomUsers = userRepository.usersOf(room);
 
         return new PickedRoomResponse(

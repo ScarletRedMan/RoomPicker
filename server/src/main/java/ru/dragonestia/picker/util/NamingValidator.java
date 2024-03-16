@@ -8,6 +8,7 @@ import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.api.util.IdentifierValidator;
 import ru.dragonestia.picker.model.User;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class NamingValidator {
         return IdentifierValidator.forUser(input);
     }
 
-    public List<User> validateUserIds(List<String> input) throws InvalidUsernamesException {
+    public void validateUserIds(Collection<String> input) throws InvalidUsernamesException {
         var users = new LinkedList<User>();
         var invalid = new LinkedList<String>();
 
@@ -44,9 +45,7 @@ public class NamingValidator {
         }
 
         if (!invalid.isEmpty()) {
-            throw new InvalidUsernamesException(input, invalid);
+            throw new InvalidUsernamesException(input.stream().toList(), invalid);
         }
-
-        return users;
     }
 }

@@ -10,17 +10,15 @@ import java.util.Map;
 
 public interface UserRepository {
 
-    int linkWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException;
+    void linkWithRoom(Room room, Collection<User> users, boolean force) throws RoomAreFullException;
 
     void unlinkWithRoom(Room room, Collection<User> users);
 
-    List<Room> findAllLinkedUserRooms(User user);
+    Collection<Room> findAllLinkedUserRooms(User user);
 
-    void onRemoveRoom(Room room);
+    Collection<User> usersOf(Room room);
 
-    List<User> usersOf(Room room);
-
-    List<User> search(String input);
+    Collection<User> search(String input);
 
     int countAllUsers();
 
