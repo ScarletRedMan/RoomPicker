@@ -20,6 +20,7 @@ import ru.dragonestia.picker.repository.UserRepository;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -126,7 +127,9 @@ public class UserMetricsAspect {
 
     @Scheduled(fixedDelay = 3_000)
     void updateUserMetrics() {
-        userRepository.countUsersForNodes().forEach((nodeId, users) -> data.get(nodeId).users().set(users));
+        userRepository.countUsersForNodes().forEach((nodeId, users) -> {
+            Optional.ofNullable(data.get(nodeId)).ifPresent(node -> node.users().set(users));
+        });
     }
 
     private record NodeData(Gauge usersGauge, AtomicInteger users, Counter picksPerMinute, Set<Room> locked, Gauge lockedGauge, Gauge roomsGauge) {}
