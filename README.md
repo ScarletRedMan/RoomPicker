@@ -60,3 +60,12 @@ class Example {
     }
 }
 ```
+
+
+Stress testing
+----------
+
+If you want to stress test the server, you can run the script from the `noiser` module.
+Before starting stress testing, you'd better run Prometheus and Grafana from `docker-compose.yml`.
+In Grafana, you can see this view:
+![Grafana](.github/img/grafana.png)
