@@ -95,6 +95,7 @@ public class NodeContainer {
     public @NotNull Room pick(@NotNull Set<User> users) {
         synchronized (picker) {
             var room = picker.pick(users);
+            room.addUsers(users, false);
             transactionListener.accept(new UserTransaction(room.getRoom(), users));
             return room.getRoom();
         }
