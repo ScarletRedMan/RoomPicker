@@ -13,10 +13,8 @@ import ru.dragonestia.picker.model.Room;
 @RequiredArgsConstructor
 public class RoomFactory {
 
-    private final ApplicationEventPublisher eventPublisher;
-
     @Contract("_, _, _, _, _ -> new")
     public @NotNull Room create(@NotNull RoomIdentifier identifier, @NotNull Node node, int slots, @NotNull String payload, boolean persist) {
-        return new Room(identifier, node, slots, payload, persist, eventPublisher::publishEvent);
+        return new Room(identifier, node, slots, payload, persist);
     }
 }
