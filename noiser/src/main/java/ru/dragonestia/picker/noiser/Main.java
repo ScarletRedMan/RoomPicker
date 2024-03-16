@@ -64,7 +64,7 @@ public class Main {
         for (var nodeId: nodes) {
             for (int i = 0; i < roomsPerNode; i++) {
                 client.getRoomRepository().saveRoom(
-                        new RoomDefinition(nodeId, RoomIdentifier.of(UUID.randomUUID().toString())).setMaxSlots(roomsPerNode)
+                        new RoomDefinition(nodeId, RoomIdentifier.of(UUID.randomUUID().toString())).setMaxSlots(10)
                 );
             }
         }
@@ -104,7 +104,7 @@ public class Main {
                         } catch (Exception ex) {
                             System.out.println("Error(" + ex.getClass().getSimpleName() + "): " + ex.getMessage());
                         }
-                    }, random.nextInt(1000) + 100, TimeUnit.MILLISECONDS);
+                    }, random.nextInt(10) + 1, TimeUnit.SECONDS);
                 }
             } catch (Exception ex) {
                 System.out.println("Error(" + ex.getClass().getSimpleName() + "): " + ex.getMessage());
