@@ -3,9 +3,7 @@ package ru.dragonestia.picker.api.impl.util;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
+import okhttp3.*;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import ru.dragonestia.picker.api.exception.ExceptionFactory;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
@@ -65,6 +63,22 @@ public class RestTemplate {
     public <T> T query(String uri, HttpMethod method, Class<T> clazz, ParamsConsumer paramsConsumer) {
         var request = client.prepareRequestBuilder(uri + queryEncode(paramsConsumer))
                 .method(method.name(), method == HttpMethod.GET? null : new FormBody.Builder().build())
+                .build();
+
+        try (var response = httpClient.newCall(request).execute()) {
+            checkResponseForErrors(response);
+
+            return json.readValue(new String(Objects.requireNonNull(response.body()).bytes(), StandardCharsets.UTF_8), clazz);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException("Json processing error", ex);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public <T> T queryPostWithBody(String uri, Class<T> clazz, ParamsConsumer paramsConsumer, String body) {
+        var request = client.prepareRequestBuilder(uri + queryEncode(paramsConsumer))
+                .post(RequestBody.create(body, MediaType.get("text/plain")))
                 .build();
 
         try (var response = httpClient.newCall(request).execute()) {

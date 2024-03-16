@@ -76,6 +76,10 @@ public class NodeRepositoryImpl implements NodeRepository {
 
     @Override
     public @NotNull PickedRoomResponse pickRoom(@NotNull NodeIdentifier identifier, @NotNull Set<UserIdentifier> users) {
-        throw new UnsupportedOperationException("Not implemented");
+        return rest.queryPostWithBody(
+                "/nodes/" + identifier.getValue() + "/pick",
+                PickedRoomResponse.class,
+                params -> {}, String.join(",", users.stream().map(user -> user.getValue()).toList())
+        );
     }
 }

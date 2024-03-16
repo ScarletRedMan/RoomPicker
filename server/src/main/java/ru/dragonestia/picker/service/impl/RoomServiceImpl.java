@@ -80,7 +80,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public PickedRoomResponse pickAvailable(Node node, List<User> users) {
         var room = roomRepository.pickFree(node, users)
-                .orElseThrow(() -> new RuntimeException("There are no rooms available"));
+                .orElseThrow(() -> new RuntimeException("There are no rooms available. Given users count: " + users.size()));
         var roomUsers = userRepository.usersOf(room);
 
         return new PickedRoomResponse(

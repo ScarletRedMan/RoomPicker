@@ -77,7 +77,7 @@ public class NodeController {
     @PostMapping("/{nodeId}/pick")
     ResponseEntity<PickedRoomResponse> pickRoom(
             @Parameter(description = "Node identifier") @PathVariable("nodeId") String nodeId,
-            @Parameter(description = "Users to add", example = "user1,user3,user3") @RequestParam(name = "userIds") String userIds
+            @RequestBody String userIds
     ) {
         namingValidator.validateNodeId(nodeId);
 
