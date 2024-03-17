@@ -20,6 +20,6 @@ public class RoomPickerConfig {
 
     @Bean
     RoomPickerClient roomPickerClient() {
-        return new RoomPickerClient(serverUrl, "test", "test");
+        return new RoomPickerClient(serverUrl, "admin", "qwerty123");
     }
 }

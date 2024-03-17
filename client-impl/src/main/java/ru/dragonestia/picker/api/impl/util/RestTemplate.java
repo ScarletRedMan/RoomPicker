@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import ru.dragonestia.picker.api.impl.exception.NotEnoughPermissions;
+import ru.dragonestia.picker.api.impl.repository.AuthException;
 import ru.dragonestia.picker.api.exception.ExceptionFactory;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.impl.util.type.HttpMethod;
@@ -110,6 +112,13 @@ public class RestTemplate {
         var statusCode = code / 100;
 
         if (statusCode == 4) {
+            if (code == 401) {
+                throw new AuthException("Invalid username and password");
+            }
+            if (code == 403) {
+                throw new NotEnoughPermissions("Not enough permissions");
+            }
+
             var body = new String(Objects.requireNonNull(response.body()).bytes(), StandardCharsets.UTF_8);
             throw ExceptionFactory.of(json.readValue(body, ErrorResponse.class));
         }
