@@ -7,10 +7,7 @@ import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.repository.impl.picker.LeastPickedPicker;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -67,7 +64,7 @@ public class RoomContainer {
     public @NotNull Collection<User> allUsers() {
         usersLock.readLock().lock();
         try {
-            return Collections.unmodifiableSet(users);
+            return new ArrayList<>(users);
         } finally {
             usersLock.readLock().unlock();
         }
