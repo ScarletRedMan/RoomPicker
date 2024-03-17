@@ -64,7 +64,7 @@ public class Main {
         for (var nodeId: nodes) {
             for (int i = 0; i < roomsPerNode; i++) {
                 client.getRoomRepository().saveRoom(
-                        new RoomDefinition(nodeId, RoomIdentifier.of(UUID.randomUUID().toString())).setMaxSlots(10)
+                        new RoomDefinition(nodeId, RoomIdentifier.of(UUID.randomUUID().toString())).setMaxSlots(50)
                 );
             }
         }
@@ -117,7 +117,6 @@ public class Main {
 
         while (true) {
             pickUsers();
-            Thread.sleep(10);
         }
     }
 
