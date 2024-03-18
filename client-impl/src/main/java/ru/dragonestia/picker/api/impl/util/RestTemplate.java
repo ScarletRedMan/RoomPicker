@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import ru.dragonestia.picker.api.impl.exception.NotEnoughPermissions;
-import ru.dragonestia.picker.api.impl.repository.AuthException;
+import ru.dragonestia.picker.api.impl.exception.AuthException;
 import ru.dragonestia.picker.api.exception.ExceptionFactory;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.impl.util.type.HttpMethod;

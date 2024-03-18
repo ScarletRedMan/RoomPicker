@@ -5,11 +5,13 @@ import okhttp3.Request;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
+import ru.dragonestia.picker.api.impl.repository.AccountRepositoryImpl;
 import ru.dragonestia.picker.api.impl.repository.NodeRepositoryImpl;
 import ru.dragonestia.picker.api.impl.repository.RoomRepositoryImpl;
 import ru.dragonestia.picker.api.impl.repository.UserRepositoryImpl;
 import ru.dragonestia.picker.api.impl.util.RestTemplate;
 import ru.dragonestia.picker.api.impl.util.type.HttpMethod;
+import ru.dragonestia.picker.api.repository.AccountRepository;
 import ru.dragonestia.picker.api.repository.NodeRepository;
 import ru.dragonestia.picker.api.repository.RoomRepository;
 import ru.dragonestia.picker.api.repository.UserRepository;
@@ -24,6 +26,7 @@ public class RoomPickerClient {
     private final NodeRepository nodeRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
 
     public RoomPickerClient(@NotNull String url, @NotNull String username, @NotNull String password) {
         this.url = url;
@@ -33,6 +36,7 @@ public class RoomPickerClient {
         this.nodeRepository = new NodeRepositoryImpl(this);
         this.roomRepository = new RoomRepositoryImpl(this);
         this.userRepository = new UserRepositoryImpl(this);
+        this.accountRepository = new AccountRepositoryImpl(this);
     }
 
     @Internal
