@@ -3,12 +3,16 @@ package ru.dragonestia.picker.model;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.dragonestia.picker.api.model.account.IAccount;
+import ru.dragonestia.picker.api.model.account.ResponseAccount;
 
+import java.beans.Transient;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class Account implements UserDetails {
+public class Account implements IAccount, UserDetails {
 
     private final String username;
     private final String lowerUsername;
@@ -24,8 +28,13 @@ public class Account implements UserDetails {
     }
 
     @Override
-    public Collection<Permission> getAuthorities() {
+    public @NotNull Collection<Permission> getAuthorities() {
         return permissions;
+    }
+
+    @Override
+    public boolean isLocked() {
+        return locked;
     }
 
     @Contract("_ -> this")
@@ -35,8 +44,13 @@ public class Account implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
+    public @NotNull String getPassword() {
         return password;
+    }
+
+    @Override
+    public @NotNull Set<String> getPermissions() {
+        return getAuthorities().stream().map(Enum::name).collect(Collectors.toSet());
     }
 
     @Contract("_ -> this")
@@ -95,5 +109,9 @@ public class Account implements UserDetails {
             return lowerUsername.equals(other.lowerUsername);
         }
         return false;
+    }
+
+    public @NotNull ResponseAccount toResponseObject() {
+        return new ResponseAccount(username, password, getPermissions(), locked);
     }
 }
