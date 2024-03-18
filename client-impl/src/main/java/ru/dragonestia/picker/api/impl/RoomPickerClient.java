@@ -63,6 +63,10 @@ public class RoomPickerClient {
         return userRepository;
     }
 
+    public @NotNull  AccountRepository getAccountRepository() {
+        return accountRepository;
+    }
+
     public @NotNull RoomPickerInfoResponse getServerInfo() {
         return restTemplate.query("/info", HttpMethod.GET, RoomPickerInfoResponse.class, params -> {});
     }
