@@ -31,6 +31,8 @@ dependencies {
     implementation project(":client-impl")
 
     implementation 'com.vaadin:vaadin-spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.jetbrains:annotations:24.1.0'
     compileOnly 'org.projectlombok:lombok'
 
     annotationProcessor 'org.projectlombok:lombok'
