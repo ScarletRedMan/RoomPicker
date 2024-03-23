@@ -1,53 +1,48 @@
 package ru.dragonestia.picker.cp.page;
 
 import com.vaadin.flow.component.Html;
-import com.vaadin.flow.component.Unit;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.login.LoginForm;
+import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.PasswordField;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
-import org.springframework.beans.factory.annotation.Autowired;
-import ru.dragonestia.picker.api.impl.RoomPickerClient;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Route("/login")
-public class LoginPage extends VerticalLayout {
+public class LoginPage extends VerticalLayout implements BeforeEnterObserver {
 
-    private final RoomPickerClient client;
-    private final TextField fieldLogin;
-    private final PasswordField fieldPassword;
+    private final LoginForm formLogin;
 
-    @Autowired
-    public LoginPage(RoomPickerClient client) {
-        this.client = client;
-
+    public LoginPage() {
         setAlignItems(Alignment.CENTER);
 
         add(new Html("<h1><u>RoomPicker!</u></h1>"));
-        add(fieldLogin = createLoginField());
-        add(fieldPassword = createPasswordField());
-        add(createLoginButton());
+        add(formLogin = createFormLogin());
     }
 
-    private TextField createLoginField() {
-        var field = new TextField("Account login");
-        field.setRequired(true);
-        field.setMinWidth(20, Unit.PERCENTAGE);
-        return field;
+    private LoginForm createFormLogin() {
+        var form = new LoginForm();
+        form.setAction("login");
+        form.setForgotPasswordButtonVisible(false);
+
+        var i18n = LoginI18n.createDefault();
+        i18n.getForm().setTitle(null);
+        i18n.getForm().setUsername("Account username");
+        i18n.getForm().setSubmit("Login");
+        form.setI18n(i18n);
+        return form;
     }
 
-    private PasswordField createPasswordField() {
-        var field = new PasswordField("Password");
-        field.setRequired(true);
-        field.setMinWidth(20, Unit.PERCENTAGE);
-        return field;
-    }
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        if(event.getLocation()
+                .getQueryParameters()
+                .getParameters()
+                .containsKey("error")) {
 
-    private Button createLoginButton() {
-        var button = new Button("Login");
-        button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        button.setMinWidth(20, Unit.PERCENTAGE);
-        return button;
+            formLogin.setError(true);
+        }
     }
 }
