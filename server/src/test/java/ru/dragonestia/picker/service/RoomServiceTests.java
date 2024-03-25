@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.NotPersistedNodeException;
@@ -46,6 +47,7 @@ public class RoomServiceTests {
         } catch (NodeAlreadyExistException ignore) {}
     }
 
+    @WithMockUser(roles = {"NODE_MANAGEMENT"})
     @Test
     void test_createAndRemove() {
         var room = roomFactory.create(RoomIdentifier.of("test-room"), node, IRoom.UNLIMITED_SLOTS, "", false);
@@ -59,6 +61,7 @@ public class RoomServiceTests {
         Assertions.assertFalse(roomService.find(node, room.getIdentifier()).isPresent());
     }
 
+    @WithMockUser(roles = {"NODE_MANAGEMENT"})
     @Test
     void test_allRooms() {
         var rooms = List.of(
@@ -76,6 +79,7 @@ public class RoomServiceTests {
         Assertions.assertTrue(rooms.containsAll(list));
     }
 
+    @WithMockUser(roles = {"NODE_MANAGEMENT"})
     @Test
     void test_exceptNotPersistedNode() {
         Assertions.assertThrows(NotPersistedNodeException.class, () -> {
@@ -83,6 +87,7 @@ public class RoomServiceTests {
         });
     }
 
+    @WithMockUser(roles = {"NODE_MANAGEMENT"})
     @Test
     void test_pickRoom() {
         var rooms = List.of(
@@ -107,6 +112,7 @@ public class RoomServiceTests {
         Assertions.assertEquals("test-room4", roomService.pickAvailable(node, users).roomId());
     }
 
+    @WithMockUser(roles = {"NODE_MANAGEMENT"})
     @Test
     void test_removeNode() {
         nodeService.remove(node);
@@ -114,6 +120,7 @@ public class RoomServiceTests {
         Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.all(node));
     }
 
+    @WithMockUser(roles = {"NODE_MANAGEMENT"})
     @Test
     void test_nodeDoesNotExists() {
         var node = new Node(NodeIdentifier.of("bruh"), PickingMethod.ROUND_ROBIN, false);
