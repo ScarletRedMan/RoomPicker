@@ -2,6 +2,7 @@ package ru.dragonestia.picker.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ public class AccountsController {
         return account.toResponseObject();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{accountId}")
     ResponseEntity<ResponseAccount> findAccount(@PathVariable String accountId) {
         try {
