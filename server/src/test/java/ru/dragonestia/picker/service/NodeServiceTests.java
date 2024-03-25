@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
@@ -17,6 +18,7 @@ public class NodeServiceTests {
     @Autowired
     private NodeService nodeService;
 
+    @WithMockUser(roles = {"NODE_MANAGEMENT"})
     @Test
     void test_nodeCreateAndRemove() {
         var node = new Node(NodeIdentifier.of("test"), PickingMethod.SEQUENTIAL_FILLING, false);
@@ -30,6 +32,7 @@ public class NodeServiceTests {
         Assertions.assertFalse(() -> nodeService.find(node.getIdentifier()).isPresent());
     }
 
+    @WithMockUser(roles = {"NODE_MANAGEMENT"})
     @Test
     void test_allNodes() {
         nodeService.all().forEach(node -> nodeService.remove(node));
