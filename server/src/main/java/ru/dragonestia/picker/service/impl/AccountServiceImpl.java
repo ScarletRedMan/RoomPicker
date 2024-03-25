@@ -10,10 +10,11 @@ import ru.dragonestia.picker.model.Account;
 import ru.dragonestia.picker.model.Permission;
 import ru.dragonestia.picker.service.AccountService;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,7 @@ public class AccountServiceImpl implements AccountService {
     @PostConstruct
     void init() {
         var account = createNewAccount("admin", "qwerty123");
-        account.setAuthorities(Set.of(Permission.ADMIN));
+        account.setAuthorities(Arrays.stream(Permission.values()).collect(Collectors.toSet()));
     }
 
     public @NotNull Account createNewAccount(@NotNull String username, @NotNull String password) {

@@ -16,13 +16,11 @@ import ru.dragonestia.picker.cp.annotation.ServerURL;
 
 public class MainLayout extends AppLayout {
 
-    private final RoomPickerClient client;
     private final RoomPickerInfoResponse serverInfo;
     private final String serverUrl;
 
-    public MainLayout(RoomPickerClient client, @ServerURL String serverUrl) {
-        this.client = client;
-        this.serverInfo = client.getServerInfo();
+    public MainLayout(RoomPickerClient adminClient, @ServerURL String serverUrl) {
+        this.serverInfo = adminClient.getServerInfo();
         this.serverUrl = serverUrl;
 
         var toggle = new DrawerToggle();
@@ -47,7 +45,6 @@ public class MainLayout extends AppLayout {
         nav.addItem(new SideNavItem("Search users", UserSearchPage.class, VaadinIcon.SEARCH.create()));
         nav.addItem(new SideNavItem("Documentation", "https://github.com/ScarletRedMan/RoomPicker", VaadinIcon.BOOK.create()));
         nav.addItem(new SideNavItem("Swagger UI", serverUrl + "/api-docs-ui", VaadinIcon.CURLY_BRACKETS.create()));
-        nav.addItem(new SideNavItem("Sign-out", HomePage.class, VaadinIcon.SIGN_OUT.create()));
         return nav;
     }
 }

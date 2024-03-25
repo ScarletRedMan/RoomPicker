@@ -61,6 +61,11 @@ public class ExceptionHandlerController {
         return create(400, ex);
     }
 
+    @ExceptionHandler(AccountDoesNotExistsException.class)
+    ResponseEntity<?> accountDoesNotExists(AccountDoesNotExistsException ex) {
+        return create(404, ex);
+    }
+
     private ResponseEntity<ErrorResponse> create(int code, ApiException ex) {
         var details = new HashMap<String, String>();
         ex.appendDetailsToErrorResponse(details);

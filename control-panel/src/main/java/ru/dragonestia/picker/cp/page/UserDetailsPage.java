@@ -1,6 +1,5 @@
 package ru.dragonestia.picker.cp.page;
 
-import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
@@ -12,6 +11,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
@@ -21,11 +21,11 @@ import ru.dragonestia.picker.api.repository.query.user.FindRoomsLinkedWithUser;
 import ru.dragonestia.picker.cp.component.RefreshableTable;
 import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
 @RequiredArgsConstructor
+@PermitAll
 @PageTitle("User details")
 @Route(value = "/users/:userId", layout = MainLayout.class)
 public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserver, RefreshableTable {
@@ -34,7 +34,6 @@ public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserv
     private final RouteParamsExtractor paramsExtractor;
     private IUser user;
     private Grid<ShortResponseRoom> gridRooms;
-    private List<ShortResponseRoom> cachedRooms = new LinkedList<>();
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
@@ -79,13 +78,9 @@ public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserv
         return grid;
     }
 
-    private Html createComponent(String defaultValue) {
-        return new Html("<span>" + defaultValue + "</span>");
-    }
-
     @Override
     public void refresh() {
-        cachedRooms = client.getUserRepository()
+        List<ShortResponseRoom> cachedRooms = client.getUserRepository()
                 .findRoomsLinkedWithUser(FindRoomsLinkedWithUser.withAllDetails(user.getIdentifierObject()));
         gridRooms.setItems(cachedRooms);
     }

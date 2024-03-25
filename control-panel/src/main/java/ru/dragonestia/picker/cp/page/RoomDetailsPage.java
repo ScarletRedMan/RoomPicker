@@ -13,6 +13,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.model.node.INode;
@@ -31,6 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@PermitAll
 @PageTitle("Room details")
 @Route(value = "/nodes/:nodeId/rooms/:roomId", layout = MainLayout.class)
 public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserver {
@@ -40,7 +42,6 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
 
     private INode node;
     private ResponseRoom room;
-    private AddUsers addUsers;
     private UserList userList;
     private Button lockRoomButton;
     private VerticalLayout roomInfo;
@@ -58,7 +59,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
         add(new H2("Room details"));
         printRoomDetails();
         add(new Hr());
-        add(addUsers = new AddUsers(room, (users, ignoreLimitation) -> appendUsers(room, users, ignoreLimitation)));
+        add(new AddUsers(room, (users, ignoreLimitation) -> appendUsers(room, users, ignoreLimitation)));
         add(new Hr());
         add(new H2("Users"));
         add(userList = new UserList(room, client.getUserRepository()));
