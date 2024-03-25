@@ -25,4 +25,9 @@ public class SecurityService {
         var logoutHandler = new SecurityContextLogoutHandler();
         logoutHandler.logout(VaadinServletRequest.getCurrent().getHttpServletRequest(), null, null);
     }
+
+    public boolean hasRole(String role) {
+        var r = "ROLE_" + role;
+        return getAuthenticatedAccount().getAuthorities().stream().anyMatch(permission -> r.equals(permission.getAuthority()));
+    }
 }
