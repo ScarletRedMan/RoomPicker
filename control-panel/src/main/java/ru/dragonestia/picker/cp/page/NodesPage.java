@@ -4,8 +4,8 @@ import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
+import com.vaadin.flow.router.RouteAlias;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.picker.api.exception.ApiException;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
@@ -14,14 +14,13 @@ import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.NodeList;
 import ru.dragonestia.picker.cp.component.RegisterNode;
 
-@Log4j2
-@Getter
+@PermitAll
 @PageTitle("Nodes")
+@RouteAlias(value = "/", layout = MainLayout.class)
 @Route(value = "/nodes", layout = MainLayout.class)
 public class NodesPage extends VerticalLayout {
 
     private final NodeRepository nodeRepository;
-    private final RegisterNode registerNode;
     private final NodeList nodeList;
 
     public NodesPage(@Autowired RoomPickerClient client) {
@@ -29,7 +28,7 @@ public class NodesPage extends VerticalLayout {
         this.nodeRepository = client.getNodeRepository();
 
         add(NavPath.rootNodes());
-        add(registerNode = createRegisterNodeElement());
+        add(createRegisterNodeElement());
         add(new Hr());
         add(nodeList = createNodeListElement());
     }

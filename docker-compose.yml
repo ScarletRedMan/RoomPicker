@@ -17,3 +17,12 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: admin
     volumes:
       - "./appdata/grafana:/var/lib/grafana/"
+
+  server:
+    image: openjdk:17-oracle
+    ports:
+      - "8080:8080"
+    working_dir: "/app"
+    volumes:
+      - "./appdata/server:/app"
+    entrypoint: "java -jar -Dspring.profiles.active='test' server.jar"

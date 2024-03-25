@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import ru.dragonestia.picker.cp.page.LoginPage;
 import ru.dragonestia.picker.cp.service.AccountService;
 
@@ -39,16 +40,17 @@ public class SecurityConfig extends VaadinWebSecurity {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> {
-
-        });
-
-        http.formLogin(login -> {
-            login.successForwardUrl("/nodes");
+            auth.requestMatchers(AntPathRequestMatcher.antMatcher("/static/**")).permitAll();
         });
 
         http.userDetailsService(accountService);
 
         super.configure(http);
+
+        http.formLogin(login -> {
+            login.successForwardUrl("/nodes");
+            login.defaultSuccessUrl("/nodes");
+        });
         setLoginView(http, LoginPage.class);
     }
 }

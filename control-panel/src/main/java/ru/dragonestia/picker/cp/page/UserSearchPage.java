@@ -13,6 +13,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.model.user.IUser;
@@ -26,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+@PermitAll
 @PageTitle("Search users")
 @Route(value = "/users", layout = MainLayout.class)
 public class UserSearchPage extends VerticalLayout implements RefreshableTable {

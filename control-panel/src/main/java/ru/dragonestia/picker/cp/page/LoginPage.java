@@ -7,9 +7,11 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
+@AnonymousAllowed
 @Route("/login")
 public class LoginPage extends VerticalLayout implements BeforeEnterObserver {
 
