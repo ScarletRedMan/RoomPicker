@@ -45,9 +45,6 @@ public class SecurityConfig {
             auth
                     .requestMatchers("/actuator").permitAll()
                     .requestMatchers("/actuator/**").permitAll()
-                    .requestMatchers("/api-docs-ui").permitAll()
-                    .requestMatchers("/swagger-ui").permitAll()
-                    .requestMatchers("/swagger-ui/**").permitAll()
                     .requestMatchers("/info").permitAll()
                     .anyRequest().authenticated();
         });
