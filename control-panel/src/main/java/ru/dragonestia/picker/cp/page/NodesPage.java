@@ -13,6 +13,7 @@ import ru.dragonestia.picker.api.repository.NodeRepository;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.NodeList;
 import ru.dragonestia.picker.cp.component.RegisterNode;
+import ru.dragonestia.picker.cp.service.SecurityService;
 
 @PermitAll
 @PageTitle("Nodes")
@@ -23,12 +24,16 @@ public class NodesPage extends VerticalLayout {
     private final NodeRepository nodeRepository;
     private final NodeList nodeList;
 
-    public NodesPage(@Autowired RoomPickerClient client) {
-        super();
+    @Autowired
+    public NodesPage(RoomPickerClient client, SecurityService securityService) {
         this.nodeRepository = client.getNodeRepository();
 
         add(NavPath.rootNodes());
-        add(createRegisterNodeElement());
+
+        if (securityService.hasRole("NODE_MANAGEMENT")) {
+            add(createRegisterNodeElement());
+        }
+
         add(new Hr());
         add(nodeList = createNodeListElement());
     }
