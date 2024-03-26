@@ -28,6 +28,9 @@ public class SecurityService {
 
     public boolean hasRole(String role) {
         var r = "ROLE_" + role;
-        return getAuthenticatedAccount().getAuthorities().stream().anyMatch(permission -> r.equals(permission.getAuthority()));
+        for (var permission: getAuthenticatedAccount().getAuthorities()) {
+            if (r.equals(permission.getAuthority())) return true;
+        }
+        return false;
     }
 }
