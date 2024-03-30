@@ -10,6 +10,8 @@ import ru.dragonestia.picker.api.model.account.ResponseAccount;
 import ru.dragonestia.picker.model.Account;
 import ru.dragonestia.picker.service.AccountService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/accounts")
 @RequiredArgsConstructor
@@ -31,5 +33,25 @@ public class AccountsController {
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping
+    List<ResponseAccount> allAccounts() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @PostMapping
+    ResponseAccount registerAccount(@RequestParam String username, @RequestParam String password, @RequestParam String permissions) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @PutMapping("/{accountId}")
+    ResponseEntity<?> updatePermissions(@PathVariable String accountId, @RequestParam String permissions) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @DeleteMapping("/{accountId}")
+    ResponseEntity<?> removeAccount(@PathVariable String accountId) {
+        throw new UnsupportedOperationException("Not implemented");
     }
 }
