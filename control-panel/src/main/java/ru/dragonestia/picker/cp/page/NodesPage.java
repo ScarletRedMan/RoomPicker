@@ -5,7 +5,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.picker.api.exception.ApiException;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
@@ -15,7 +15,7 @@ import ru.dragonestia.picker.cp.component.NodeList;
 import ru.dragonestia.picker.cp.component.RegisterNode;
 import ru.dragonestia.picker.cp.service.SecurityService;
 
-@PermitAll
+@RolesAllowed("USER")
 @PageTitle("Nodes")
 @RouteAlias(value = "/", layout = MainLayout.class)
 @Route(value = "/nodes", layout = MainLayout.class)

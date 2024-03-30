@@ -20,6 +20,7 @@ public class Account implements IAccount, UserDetails {
         this.original = original;
         this.client = client;
         permissions = original.getPermissions().stream().map(permission -> new Permission("ROLE_" + permission)).collect(Collectors.toSet());
+        permissions.add(new Permission("ROLE_USER"));
     }
 
     public @NotNull RoomPickerClient getClient() {

@@ -13,7 +13,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.model.node.INode;
@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-@PermitAll
+@RolesAllowed("USER")
 @PageTitle("Room details")
 @Route(value = "/nodes/:nodeId/rooms/:roomId", layout = MainLayout.class)
 public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserver {
