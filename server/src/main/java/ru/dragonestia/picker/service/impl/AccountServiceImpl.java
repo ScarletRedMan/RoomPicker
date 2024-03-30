@@ -50,6 +50,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public void updateState(@NotNull Account account) {
+        // TODO: save data to local storage
+    }
+
+    @Override
     public Account loadUserByUsername(String username) throws UsernameNotFoundException {
         var lowerUsername = username.toLowerCase();
         if (accounts.containsKey(lowerUsername)) {
