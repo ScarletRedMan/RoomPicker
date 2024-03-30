@@ -74,6 +74,9 @@ public class MainLayout extends AppLayout {
         var nav = new SideNav();
         nav.addItem(new SideNavItem("Nodes list", NodesPage.class, VaadinIcon.FOLDER_O.create()));
         nav.addItem(new SideNavItem("Search users", UserSearchPage.class, VaadinIcon.SEARCH.create()));
+        if (isAdmin) {
+            nav.addItem(new SideNavItem("Accounts", AccountsPage.class, VaadinIcon.USERS.create()));
+        }
         nav.addItem(new SideNavItem("Documentation", "https://github.com/ScarletRedMan/RoomPicker", VaadinIcon.BOOK.create()));
         nav.addItem(new SideNavItem("Swagger UI", serverUrl + "/api-docs-ui", VaadinIcon.CURLY_BRACKETS.create()));
         return nav;
