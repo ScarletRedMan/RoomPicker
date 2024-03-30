@@ -7,6 +7,7 @@ import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.cp.annotation.ServerURL;
 import ru.dragonestia.picker.cp.model.Account;
 import ru.dragonestia.picker.cp.model.provider.AccountProvider;
+import ru.dragonestia.picker.cp.util.AdminRoomPickerClient;
 
 @Configuration
 public class RoomPickerConfig {
@@ -28,7 +29,7 @@ public class RoomPickerConfig {
 
     @Bean
     RoomPickerClient adminClient() {
-        return new RoomPickerClient(serverUrl, "admin", "qwerty123");
+        return new AdminRoomPickerClient(serverUrl, adminUsername, adminPassword);
     }
 
     @Bean

@@ -63,7 +63,7 @@ public class RoomPickerClient {
         return userRepository;
     }
 
-    public @NotNull  AccountRepository getAccountRepository() {
+    public @NotNull AccountRepository getAccountRepository() {
         return accountRepository;
     }
 
