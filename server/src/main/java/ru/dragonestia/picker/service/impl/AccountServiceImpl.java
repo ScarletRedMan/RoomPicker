@@ -28,6 +28,8 @@ public class AccountServiceImpl implements AccountService {
     void init() {
         var account = createNewAccount("admin", "qwerty123");
         account.setAuthorities(Arrays.stream(Permission.values()).collect(Collectors.toSet()));
+
+        createNewAccount("test", "qwerty123");
     }
 
     public @NotNull Account createNewAccount(@NotNull String username, @NotNull String password) {

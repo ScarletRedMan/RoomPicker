@@ -11,6 +11,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
@@ -19,6 +20,7 @@ import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.model.user.IUser;
 import ru.dragonestia.picker.api.repository.query.user.FindRoomsLinkedWithUser;
 import ru.dragonestia.picker.cp.component.RefreshableTable;
+import ru.dragonestia.picker.cp.service.SecurityService;
 import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 
 import java.util.List;
@@ -30,10 +32,17 @@ import java.util.Objects;
 @Route(value = "/users/:userId", layout = MainLayout.class)
 public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserver, RefreshableTable {
 
-    private final RoomPickerClient client;
+    private final SecurityService securityService;
     private final RouteParamsExtractor paramsExtractor;
+
+    private RoomPickerClient client;
     private IUser user;
     private Grid<ShortResponseRoom> gridRooms;
+
+    @PostConstruct
+    void postConstruct() {
+        client = securityService.getAuthenticatedAccount().getClient();
+    }
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {

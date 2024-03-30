@@ -15,13 +15,13 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.model.user.IUser;
 import ru.dragonestia.picker.api.model.user.UserDetails;
 import ru.dragonestia.picker.api.repository.UserRepository;
 import ru.dragonestia.picker.api.repository.query.user.SearchUsers;
 import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.cp.component.RefreshableTable;
+import ru.dragonestia.picker.cp.service.SecurityService;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -39,8 +39,8 @@ public class UserSearchPage extends VerticalLayout implements RefreshableTable {
     private List<IUser> cachedUsers = new LinkedList<>();
 
     @Autowired
-    public UserSearchPage(RoomPickerClient client) {
-        this.userRepository = client.getUserRepository();
+    public UserSearchPage(SecurityService securityService) {
+        this.userRepository = securityService.getAuthenticatedAccount().getClient().getUserRepository();
 
         foundUsers = new Span();
         add(fieldUsername = createUsernameInputField());

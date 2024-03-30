@@ -8,7 +8,6 @@ import com.vaadin.flow.router.RouteAlias;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.picker.api.exception.ApiException;
-import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.repository.NodeRepository;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.NodeList;
@@ -25,8 +24,8 @@ public class NodesPage extends VerticalLayout {
     private final NodeList nodeList;
 
     @Autowired
-    public NodesPage(RoomPickerClient client, SecurityService securityService) {
-        this.nodeRepository = client.getNodeRepository();
+    public NodesPage(SecurityService securityService) {
+        this.nodeRepository = securityService.getAuthenticatedAccount().getClient().getNodeRepository();
 
         add(NavPath.rootNodes());
 

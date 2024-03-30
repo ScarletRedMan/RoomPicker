@@ -8,6 +8,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import ru.dragonestia.picker.api.model.node.INode;
 import ru.dragonestia.picker.cp.component.RoomList;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.RegisterRoom;
+import ru.dragonestia.picker.cp.service.SecurityService;
 import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 
 @Getter
@@ -25,12 +27,18 @@ import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 @Route(value = "/nodes/:nodeId", layout = MainLayout.class)
 public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
-    private final RoomPickerClient client;
+    private final SecurityService securityService;
     private final RouteParamsExtractor paramsExtractor;
 
+    private RoomPickerClient client;
     private INode node;
     private RegisterRoom registerRoom;
     private RoomList roomList;
+
+    @PostConstruct
+    void postConstruct() {
+        client = securityService.getAuthenticatedAccount().getClient();
+    }
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
