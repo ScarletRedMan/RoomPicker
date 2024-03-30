@@ -19,6 +19,9 @@ public interface AccountService extends UserDetailsService {
     @PreAuthorize("hasRole('ADMIN')")
     void removeAccount(@NotNull Account account);
 
+    @PreAuthorize("hasRole('ADMIN')")
+    void updateState(@NotNull Account account);
+
     @Override
     Account loadUserByUsername(String username) throws UsernameNotFoundException;
 }
