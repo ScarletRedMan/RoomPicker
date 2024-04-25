@@ -27,6 +27,7 @@ public class ExceptionFactory {
         factory.put(NotPersistedNodeException.ERROR_ID, NotPersistedNodeException::new);
         factory.put(AccountDoesNotExistsException.ERROR_ID, AccountDoesNotExistsException::new);
         factory.put(PermissionNotFoundException.ERROR_ID, PermissionNotFoundException::new);
+        factory.put(ConstantAdminParamsException.ERROR_ID, err -> new ConstantAdminParamsException());
 
         return factory;
     }

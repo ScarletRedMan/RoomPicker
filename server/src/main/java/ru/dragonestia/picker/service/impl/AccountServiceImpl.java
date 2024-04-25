@@ -6,6 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.dragonestia.picker.api.exception.ConstantAdminParamsException;
+import ru.dragonestia.picker.config.RoomPickerServerConfig;
 import ru.dragonestia.picker.model.Account;
 import ru.dragonestia.picker.model.Permission;
 import ru.dragonestia.picker.service.AccountService;
@@ -22,12 +24,13 @@ import java.util.stream.Collectors;
 public class AccountServiceImpl implements AccountService {
 
     private final PasswordEncoder passwordEncoder;
+    private final RoomPickerServerConfig.AdminCredentials adminCredentials;
 
     private final Map<String, Account> accounts = new ConcurrentHashMap<>();
 
     @PostConstruct
     void init() {
-        var account = createNewAccount("admin", "qwerty123");
+        var account = createNewAccount(adminCredentials.username(), adminCredentials.password());
         account.setAuthorities(Arrays.stream(Permission.values()).collect(Collectors.toSet()));
 
         createNewAccount("test", "qwerty123");
@@ -46,17 +49,21 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public @NotNull Collection<Account> allAccounts() {
-        return accounts.values();
+        return accounts.values().stream()
+                .filter(account -> !adminCredentials.username().equals(account.getUsername()))
+                .toList();
     }
 
     @Override
     public void removeAccount(@NotNull Account account) {
+        checkAdmin(account.getUsername());
         accounts.remove(account.getUsername());
         account.setEnabled(false);
     }
 
     @Override
     public void updateState(@NotNull Account account) {
+        checkAdmin(account.getUsername());
         // TODO: save data to local storage
     }
 
@@ -68,5 +75,11 @@ public class AccountServiceImpl implements AccountService {
         }
 
         throw new UsernameNotFoundException("User '" + username + "' does not exists");
+    }
+
+    private void checkAdmin(String accountId) {
+        if (adminCredentials.username().equals(accountId)) {
+            throw new ConstantAdminParamsException();
+        }
     }
 }
