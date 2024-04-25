@@ -71,6 +71,11 @@ public class ExceptionHandlerController {
         return create(400, ex);
     }
 
+    @ExceptionHandler({ConstantAdminParamsException.class})
+    ResponseEntity<?> constantAdminParams(ConstantAdminParamsException ex) {
+        return create(401, ex);
+    }
+
     private ResponseEntity<ErrorResponse> create(int code, ApiException ex) {
         var details = new HashMap<String, String>();
         ex.appendDetailsToErrorResponse(details);
