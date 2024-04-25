@@ -6,9 +6,12 @@ import ru.dragonestia.picker.api.exception.AccountDoesNotExistsException;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.impl.util.RestTemplate;
 import ru.dragonestia.picker.api.impl.util.type.HttpMethod;
+import ru.dragonestia.picker.api.model.account.IAccount;
 import ru.dragonestia.picker.api.model.account.ResponseAccount;
 import ru.dragonestia.picker.api.repository.AccountRepository;
+import ru.dragonestia.picker.api.repository.response.AllAccountsResponse;
 
+import java.util.List;
 import java.util.Optional;
 
 public class AccountRepositoryImpl implements AccountRepository {
@@ -28,5 +31,31 @@ public class AccountRepositoryImpl implements AccountRepository {
         } catch (AccountDoesNotExistsException ex) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public @NotNull List<ResponseAccount> allAccounts() {
+        var response = rest.query("/accounts", HttpMethod.GET, AllAccountsResponse.class);
+        return response.accounts();
+    }
+
+    @Override
+    public void createAccount(@NotNull String accountId, @NotNull String password) {
+        rest.query("/accounts", HttpMethod.POST, params -> {
+            params.put("username", accountId);
+            params.put("password", password);
+        });
+    }
+
+    @Override
+    public void removeAccount(@NotNull IAccount account) {
+        rest.query("/accounts/" + account.getUsername(), HttpMethod.DELETE);
+    }
+
+    @Override
+    public void setPermissions(@NotNull IAccount account, @NotNull List<String> permissions) {
+        rest.query("/accounts/" + account.getUsername(), HttpMethod.PUT, params -> {
+            params.put("permissions", String.join(",", permissions));
+        });
     }
 }
