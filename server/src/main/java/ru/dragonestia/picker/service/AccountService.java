@@ -7,11 +7,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import ru.dragonestia.picker.model.Account;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface AccountService extends UserDetailsService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @NotNull Account createNewAccount(@NotNull String username, @NotNull String password);
+
+    @NotNull Optional<Account> findAccount(@NotNull String accountId);
 
     @PreAuthorize("hasRole('ADMIN')")
     @NotNull Collection<Account> allAccounts();
