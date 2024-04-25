@@ -6,11 +6,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import ru.dragonestia.picker.api.exception.AccountDoesNotExistsException;
+import ru.dragonestia.picker.api.exception.PermissionNotFoundException;
 import ru.dragonestia.picker.api.model.account.ResponseAccount;
+import ru.dragonestia.picker.api.repository.response.AllAccountsResponse;
 import ru.dragonestia.picker.model.Account;
+import ru.dragonestia.picker.model.Permission;
 import ru.dragonestia.picker.service.AccountService;
 
-import java.util.List;
+import java.util.HashSet;
 
 @RestController
 @RequestMapping("/accounts")
@@ -36,22 +40,57 @@ public class AccountsController {
     }
 
     @GetMapping
-    List<ResponseAccount> allAccounts() {
-        throw new UnsupportedOperationException("Not implemented");
+    AllAccountsResponse allAccounts() {
+        return new AllAccountsResponse(accountService.allAccounts().stream()
+                .map(Account::toResponseObject)
+                .toList());
     }
 
     @PostMapping
     ResponseAccount registerAccount(@RequestParam String username, @RequestParam String password, @RequestParam String permissions) {
-        throw new UnsupportedOperationException("Not implemented");
+        var account = accountService.createNewAccount(username, password);
+
+        var authorities = new HashSet<Permission>();
+        for (var permStr : permissions.split(",")) {
+            try {
+                var perm = Permission.valueOf(permStr);
+                authorities.add(perm);
+            } catch (IllegalArgumentException ex) {
+                throw new PermissionNotFoundException(permStr);
+            }
+        }
+        account.setAuthorities(authorities);
+
+        accountService.updateState(account);
+
+        return account.toResponseObject();
     }
 
     @PutMapping("/{accountId}")
     ResponseEntity<?> updatePermissions(@PathVariable String accountId, @RequestParam String permissions) {
-        throw new UnsupportedOperationException("Not implemented");
+        var account = accountService.findAccount(accountId).orElseThrow(() -> new AccountDoesNotExistsException(accountId));
+
+        var authorities = new HashSet<Permission>();
+        for (var permStr : permissions.split(",")) {
+            try {
+                var perm = Permission.valueOf(permStr);
+                authorities.add(perm);
+            } catch (IllegalArgumentException ex) {
+                throw new PermissionNotFoundException(permStr);
+            }
+        }
+        account.setAuthorities(authorities);
+
+        accountService.updateState(account);
+
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{accountId}")
     ResponseEntity<?> removeAccount(@PathVariable String accountId) {
-        throw new UnsupportedOperationException("Not implemented");
+        var account = accountService.findAccount(accountId).orElseThrow(() -> new AccountDoesNotExistsException(accountId));
+        accountService.removeAccount(account);
+
+        return ResponseEntity.ok().build();
     }
 }

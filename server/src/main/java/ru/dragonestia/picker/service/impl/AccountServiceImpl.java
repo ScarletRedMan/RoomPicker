@@ -13,6 +13,7 @@ import ru.dragonestia.picker.service.AccountService;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,11 @@ public class AccountServiceImpl implements AccountService {
         var account = new Account(username, passwordEncoder.encode(password));
         accounts.put(account.getUsername().toLowerCase(), account);
         return account;
+    }
+
+    @Override
+    public @NotNull Optional<Account> findAccount(@NotNull String accountId) {
+        return Optional.ofNullable(accounts.getOrDefault(accountId, null));
     }
 
     @Override

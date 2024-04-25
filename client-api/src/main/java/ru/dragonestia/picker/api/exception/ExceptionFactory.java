@@ -26,6 +26,7 @@ public class ExceptionFactory {
         factory.put(RoomNotFoundException.ERROR_ID, RoomNotFoundException::new);
         factory.put(NotPersistedNodeException.ERROR_ID, NotPersistedNodeException::new);
         factory.put(AccountDoesNotExistsException.ERROR_ID, AccountDoesNotExistsException::new);
+        factory.put(PermissionNotFoundException.ERROR_ID, PermissionNotFoundException::new);
 
         return factory;
     }
