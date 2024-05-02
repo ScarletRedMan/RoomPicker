@@ -13,6 +13,7 @@ import ru.dragonestia.picker.api.repository.response.AllAccountsResponse;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class AccountRepositoryImpl implements AccountRepository {
 
@@ -40,10 +41,11 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public void createAccount(@NotNull String accountId, @NotNull String password) {
+    public void createAccount(@NotNull String accountId, @NotNull String password, @NotNull Set<String> permissions) {
         rest.query("/accounts", HttpMethod.POST, params -> {
             params.put("username", accountId);
             params.put("password", password);
+            params.put("permissions", String.join(",", permissions));
         });
     }
 

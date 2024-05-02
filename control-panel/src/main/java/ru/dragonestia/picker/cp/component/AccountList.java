@@ -1,5 +1,6 @@
 package ru.dragonestia.picker.cp.component;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -20,10 +21,8 @@ import ru.dragonestia.picker.api.model.account.ResponseAccount;
 import ru.dragonestia.picker.api.repository.AccountRepository;
 import ru.dragonestia.picker.cp.model.Permission;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class AccountList extends VerticalLayout implements RefreshableTable {
 
@@ -100,13 +99,7 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
 
     @Override
     public void refresh() {
-        var list = new ArrayList<ResponseAccount>();
-        for (int i = 0; i < 5; i++) {
-            var acc = new ResponseAccount("test" + i, "", Set.of(), false);
-            list.add(acc);
-        }
-
-        cachedAccounts = list; // TODO: accountRepository.getAllAccounts();
+        cachedAccounts = accountRepository.allAccounts();
         applySearch(searchField.getValue());
     }
 
@@ -167,8 +160,33 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
         dialog.open();
     }
 
-    private void validateAndRegister(Dialog dialog, TextField username, PasswordField passwordField, PasswordField confirm, List<PermissionCheckBox> permissionCheckBoxes) {
-        // TODO: validate and send request
+    private void validateAndRegister(Dialog dialog, TextField usernameField, PasswordField passwordField, PasswordField confirmPasswordField, List<PermissionCheckBox> permissionCheckBoxes) {
+        var username = usernameField.getValue().trim();
+        var password = passwordField.getValue();
+        var confirmPassword = confirmPasswordField.getValue();
+
+        if (username.length() < 3 || username.length() > 32) {
+            Notifications.error("Invalid username length. Valid is 3-32");
+            return;
+        }
+
+        if (password.length() < 5 || password.length() > 32) {
+            Notifications.error("Invalid username length. Valid is 5-32");
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            Notifications.error("Passwords are not equals");
+            return;
+        }
+
+        var permissions = permissionCheckBoxes.stream()
+                .filter(AbstractField::getValue)
+                .map(PermissionCheckBox::getOption)
+                .map(Enum::name)
+                .collect(Collectors.toSet());
+
+        accountRepository.createAccount(username, password, permissions);
 
         dialog.close();
         refresh();

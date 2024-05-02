@@ -6,6 +6,7 @@ import ru.dragonestia.picker.api.model.account.ResponseAccount;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface AccountRepository {
 
@@ -13,7 +14,7 @@ public interface AccountRepository {
 
     @NotNull List<ResponseAccount> allAccounts();
 
-    void createAccount(@NotNull String accountId, @NotNull String password);
+    void createAccount(@NotNull String accountId, @NotNull String password, @NotNull Set<String> permissions);
 
     void removeAccount(@NotNull IAccount account);
 
