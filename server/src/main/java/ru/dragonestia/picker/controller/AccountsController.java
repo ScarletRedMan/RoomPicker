@@ -1,6 +1,7 @@
 package ru.dragonestia.picker.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,7 @@ import ru.dragonestia.picker.service.AccountService;
 
 import java.util.HashSet;
 
+@Log4j2
 @RestController
 @RequestMapping("/accounts")
 @RequiredArgsConstructor
