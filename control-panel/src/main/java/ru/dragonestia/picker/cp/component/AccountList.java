@@ -73,7 +73,9 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
             var button = new Button("Manage", VaadinIcon.COG_O.create());
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             button.addClickListener(event -> {
-
+                getUI().ifPresent(ui -> {
+                    ui.navigate("/admin/accounts/" + account.getUsername());
+                });
             });
             layout.add(button);
         }
@@ -171,7 +173,7 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
         }
 
         if (password.length() < 5 || password.length() > 32) {
-            Notifications.error("Invalid username length. Valid is 5-32");
+            Notifications.error("Invalid password length. Valid is 5-32");
             return;
         }
 
@@ -192,7 +194,7 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
         refresh();
     }
 
-    private static class PermissionCheckBox extends Checkbox {
+    public static class PermissionCheckBox extends Checkbox {
 
         private final Permission.Enum option;
 
