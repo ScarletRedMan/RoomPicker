@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomNotFoundException;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
+import ru.dragonestia.picker.api.model.account.IAccount;
 import ru.dragonestia.picker.api.model.node.INode;
 import ru.dragonestia.picker.api.model.room.IRoom;
 import ru.dragonestia.picker.api.model.user.IUser;
@@ -36,5 +37,10 @@ public class RouteParamsExtractor {
     public IUser extractUser(BeforeEnterEvent e) {
         var userId = UserIdentifier.of(e.getRouteParameters().get("userId").orElseThrow(RuntimeException::new));
         return client.getUserRepository().findUserById(FindUserById.withAllDetails(userId));
+    }
+
+    public IAccount extractAccount(BeforeEnterEvent e) {
+        var accountId = e.getRouteParameters().get("accountId").orElseThrow(RuntimeException::new);
+        return client.getAccountRepository().findAccountByUsername(accountId).orElseThrow(RuntimeException::new);
     }
 }

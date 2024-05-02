@@ -49,11 +49,12 @@ public class AccountsController {
     }
 
     @PostMapping
-    ResponseAccount registerAccount(@RequestParam String username, @RequestParam String password, @RequestParam String permissions) {
+    ResponseAccount registerAccount(@RequestParam String username, @RequestParam String password, @RequestParam(defaultValue = "") String permissions) {
         var account = accountService.createNewAccount(username, password);
 
         var authorities = new HashSet<Permission>();
         for (var permStr : permissions.split(",")) {
+            if (permStr.isBlank()) continue;
             try {
                 var perm = Permission.valueOf(permStr);
                 authorities.add(perm);
@@ -69,11 +70,12 @@ public class AccountsController {
     }
 
     @PutMapping("/{accountId}")
-    ResponseEntity<?> updatePermissions(@PathVariable String accountId, @RequestParam String permissions) {
+    ResponseEntity<?> updatePermissions(@PathVariable String accountId, @RequestParam(defaultValue = "") String permissions) {
         var account = accountService.findAccount(accountId).orElseThrow(() -> new AccountDoesNotExistsException(accountId));
 
         var authorities = new HashSet<Permission>();
         for (var permStr : permissions.split(",")) {
+            if (permStr.isBlank()) continue;
             try {
                 var perm = Permission.valueOf(permStr);
                 authorities.add(perm);
