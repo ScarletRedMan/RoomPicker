@@ -22,7 +22,7 @@ public interface AccountService extends UserDetailsService {
     @PreAuthorize("hasRole('ADMIN')")
     void removeAccount(@NotNull Account account);
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') || principal.username.equals(account.username)")
     void updateState(@NotNull Account account);
 
     @Override

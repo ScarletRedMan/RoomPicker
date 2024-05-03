@@ -91,7 +91,7 @@ public class AccountDetailsPage extends VerticalLayout implements BeforeEnterObs
                 return;
             }
 
-            //TODO: change password
+            client.getAccountRepository().setPassword(account, pass);
             Notifications.success("Password successfully changed!");
             newPassword.setValue("");
             confirmPassword.setValue("");

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.dragonestia.picker.api.exception.AccountDoesNotExistsException;
 import ru.dragonestia.picker.api.exception.PermissionNotFoundException;
@@ -24,6 +25,7 @@ import java.util.HashSet;
 public class AccountsController {
 
     private final AccountService accountService;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/current")
     ResponseAccount currentAccount() {
@@ -94,6 +96,16 @@ public class AccountsController {
     ResponseEntity<?> removeAccount(@PathVariable String accountId) {
         var account = accountService.findAccount(accountId).orElseThrow(() -> new AccountDoesNotExistsException(accountId));
         accountService.removeAccount(account);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN') || principal.username.equals(accountId)")
+    @PutMapping("/{accountId}/password")
+    ResponseEntity<?> changePassword(@PathVariable String accountId, @RequestParam String newPassword) {
+        var account = accountService.findAccount(accountId).orElseThrow(() -> new AccountDoesNotExistsException(accountId));
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountService.updateState(account);
 
         return ResponseEntity.ok().build();
     }
