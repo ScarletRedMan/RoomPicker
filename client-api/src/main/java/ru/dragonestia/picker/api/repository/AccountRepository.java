@@ -19,4 +19,6 @@ public interface AccountRepository {
     void removeAccount(@NotNull IAccount account);
 
     void setPermissions(@NotNull IAccount account, @NotNull List<String> permissions);
+
+    void setPassword(@NotNull IAccount account, @NotNull String newPassword);
 }

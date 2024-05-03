@@ -60,4 +60,11 @@ public class AccountRepositoryImpl implements AccountRepository {
             params.put("permissions", String.join(",", permissions));
         });
     }
+
+    @Override
+    public void setPassword(@NotNull IAccount account, @NotNull String newPassword) {
+        rest.query("/accounts/" + account.getUsername() + "/password", HttpMethod.PUT, params -> {
+            params.put("newPassword", newPassword);
+        });
+    }
 }
