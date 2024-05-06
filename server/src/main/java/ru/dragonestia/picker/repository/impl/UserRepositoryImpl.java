@@ -62,7 +62,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Collection<Room> findAllLinkedUserRooms(User user) {
-        return Collections.unmodifiableSet(userRooms.get(user));
+        var result = userRooms.get(user);
+        return Collections.unmodifiableSet(result == null? new HashSet<>() : result);
     }
 
     @Override
