@@ -15,3 +15,8 @@ springdoc:
   swagger-ui:
     path: /api-docs-ui
     default-models-expand-depth: -1
+
+spring:
+  graphql:
+    graphiql:
+      enabled: true
