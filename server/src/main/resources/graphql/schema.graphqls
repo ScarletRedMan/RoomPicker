@@ -3,7 +3,6 @@ type Query {
     nodeById(id: String!): Node
     allRooms(nodeId: String!): [Room]
     roomById(nodeId: String!, roomId: String!): Room
-    roomUsers(nodeId: String!, roomId: String!): [User]
 }
 
 type Node {

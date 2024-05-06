@@ -1,8 +1,11 @@
 package ru.dragonestia.picker.controller.graphql;
 
+import jakarta.validation.constraints.NotNull;
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 import ru.dragonestia.picker.controller.graphql.entity.EntityNode;
+import ru.dragonestia.picker.controller.graphql.entity.EntityRoom;
 import ru.dragonestia.picker.controller.graphql.entity.type.DataProvider;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.service.RoomService;
@@ -30,5 +33,32 @@ public class GraphqlController {
         return nodeService.all().stream()
                 .map(node -> new EntityNode(node, dataProvider))
                 .toList();
+    }
+
+    @QueryMapping
+    EntityNode nodeById(@Argument String id) {
+        return nodeService.find(id)
+                .map(node -> new EntityNode(node, dataProvider))
+                .orElse(null);
+    }
+
+    @QueryMapping
+    List<EntityRoom> allRooms(@NotNull String nodeId) {
+        var node = nodeService.find(nodeId).orElse(null);
+        if (node == null) return null;
+
+        return roomService.all(node).stream()
+                .map(room -> new EntityRoom(room, dataProvider))
+                .toList();
+    }
+
+    @QueryMapping
+    EntityRoom roomById(@Argument String nodeId, @NotNull String roomId) {
+        var node = nodeService.find(nodeId).orElse(null);
+        if (node == null) return null;
+
+        return roomService.find(node, roomId)
+                .map(room -> new EntityRoom(room, dataProvider))
+                .orElse(null);
     }
 }
