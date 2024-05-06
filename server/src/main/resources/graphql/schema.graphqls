@@ -4,6 +4,7 @@ type Query {
     allRooms(nodeId: String!): [Room]
     roomById(nodeId: String!, roomId: String!): Room
     userById(id: String!): User!
+    searchUser(input: String!): [User]
 }
 
 type Node {
