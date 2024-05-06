@@ -9,16 +9,25 @@ type Query {
 type Node {
     id: String!
     method: String!
+    rooms: [Room]
+    countRooms: Int!
+    persist: Boolean!
 }
 
 type Room {
     id: String!
     nodeId: String!
+    node: Node!
     slots: Int!
     payload: String!
     locked: Boolean!
+    users: [User]
+    countUsers: Int!
+    persist: Boolean!
 }
 
 type User {
     id: String!
+    rooms: [Room]
+    countRooms: Int!
 }
