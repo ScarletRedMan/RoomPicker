@@ -1,0 +1,24 @@
+type Query {
+    allNodes: [Node]
+    nodeById(id: String!): Node
+    allRooms(nodeId: String!): [Room]
+    roomById(nodeId: String!, roomId: String!): Room
+    roomUsers(nodeId: String!, roomId: String!): [User]
+}
+
+type Node {
+    id: String!
+    method: String!
+}
+
+type Room {
+    id: String!
+    nodeId: String!
+    slots: Int!
+    payload: String!
+    locked: Boolean!
+}
+
+type User {
+    id: String!
+}
