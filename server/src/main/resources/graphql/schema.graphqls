@@ -3,6 +3,7 @@ type Query {
     nodeById(id: String!): Node
     allRooms(nodeId: String!): [Room]
     roomById(nodeId: String!, roomId: String!): Room
+    userById(id: String!): User!
 }
 
 type Node {

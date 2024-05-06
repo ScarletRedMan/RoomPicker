@@ -4,9 +4,12 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.controller.graphql.entity.EntityNode;
 import ru.dragonestia.picker.controller.graphql.entity.EntityRoom;
+import ru.dragonestia.picker.controller.graphql.entity.EntityUser;
 import ru.dragonestia.picker.controller.graphql.entity.type.DataProvider;
+import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.service.UserService;
@@ -60,5 +63,10 @@ public class GraphqlController {
         return roomService.find(node, roomId)
                 .map(room -> new EntityRoom(room, dataProvider))
                 .orElse(null);
+    }
+
+    @QueryMapping
+    EntityUser userById(@Argument String id) {
+        return new EntityUser(new User(UserIdentifier.of(id)), dataProvider);
     }
 }
