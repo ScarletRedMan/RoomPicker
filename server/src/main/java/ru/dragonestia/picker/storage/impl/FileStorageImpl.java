@@ -66,7 +66,7 @@ public class FileStorageImpl implements InstanceAndRoomStorage {
     @Override
     public void saveInstance(Instance instance) {
         if (!instance.isPersist()) return;
-        var instanceFile = new File(path + "/instances/" + instance.getIdentifier() + ".json");
+        var instanceFile = new File(path + "/instances/" + instance.getId() + ".json");
         var writer = objectMapper.writer();
 
         try {
@@ -79,16 +79,16 @@ public class FileStorageImpl implements InstanceAndRoomStorage {
     @Override
     public void removeInstance(Instance instance) {
         if (!instance.isPersist()) return;
-        new File(path + "/nodes/" + instance.getIdentifier() + ".json").delete();
+        new File(path + "/nodes/" + instance.getId() + ".json").delete();
 
-        log.info("Removed instance '%s' from disk storage".formatted(instance.getIdentifier()));
+        log.info("Removed instance '%s' from disk storage".formatted(instance.getId()));
     }
 
     @SneakyThrows
     @Override
     public void saveRoom(Room room) {
         if (!room.isPersist()) return;
-        var roomFile = new File("%s/rooms/%s.%s.json".formatted(path, room.getInstanceIdentifier(), room.getIdentifier()));
+        var roomFile = new File("%s/rooms/%s.%s.json".formatted(path, room.getInstance().getId(), room.getId()));
         var writer = objectMapper.writer();
 
         try {
@@ -101,8 +101,8 @@ public class FileStorageImpl implements InstanceAndRoomStorage {
     @Override
     public void removeRoom(Room room) {
         if (!room.isPersist()) return;
-        new File("%s/rooms/%s.%s.json".formatted(path, room.getInstanceIdentifier(), room.getIdentifier())).delete();
+        new File("%s/rooms/%s.%s.json".formatted(path, room.getInstance().getId(), room.getId())).delete();
 
-        log.info("Removed room '%s/%s' from disk storage".formatted(room.getInstanceIdentifier(), room.getIdentifier()));
+        log.info("Removed room '%s/%s' from disk storage".formatted(room.getInstance().getId(), room.getId()));
     }
 }

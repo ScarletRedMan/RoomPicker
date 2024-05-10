@@ -57,30 +57,30 @@ public class UserMetricsAspect {
 
     @After(value = "execution(void ru.dragonestia.picker.repository.InstanceRepository.create(ru.dragonestia.picker.model.instance.Instance)) && args(instance)", argNames = "instance")
     void onCreateNode(Instance instance) {
-        var nodeId = instance.getIdentifier();
-        var gauge = Gauge.builder("roompicker_node_users_total", () -> data.get(nodeId).users())
-                .tag("nodeId", nodeId)
+        var nodeId = instance.getId();
+        var gauge = Gauge.builder("roompicker_node_users_total", () -> data.get(nodeId.getValue()).users())
+                .tag("nodeId", nodeId.getValue())
                 .register(meterRegistry);
 
         var counter = Counter.builder("roompicker_picks")
-                .tag("nodeId", nodeId)
+                .tag("nodeId", nodeId.getValue())
                 .baseUnit("1s")
                 .register(meterRegistry);
 
-        var lockedGauge = Gauge.builder("roompicker_locked_rooms", () -> data.get(nodeId).locked())
-                .tag("nodeId", nodeId)
+        var lockedGauge = Gauge.builder("roompicker_locked_rooms", () -> data.get(nodeId.getValue()).locked())
+                .tag("nodeId", nodeId.getValue())
                 .register(meterRegistry);
 
-        var roomsGauge = Gauge.builder("roompicker_rooms", () -> roomRepository.all(instance).size())
-                .tag("nodeId", nodeId)
+        var roomsGauge = Gauge.builder("roompicker_rooms", () -> roomRepository.all(instance.getId()).size())
+                .tag("nodeId", nodeId.getValue())
                 .register(meterRegistry);
 
-        data.put(nodeId, new NodeData(gauge, new AtomicInteger(0), counter, new AtomicInteger(0), lockedGauge, roomsGauge));
+        data.put(nodeId.getValue(), new NodeData(gauge, new AtomicInteger(0), counter, new AtomicInteger(0), lockedGauge, roomsGauge));
     }
 
     @After(value = "execution(* ru.dragonestia.picker.repository.InstanceRepository.delete(ru.dragonestia.picker.model.instance.Instance)) && args(instance)", argNames = "instance")
     void onDeleteNode(Instance instance) {
-        var data = this.data.remove(instance.getIdentifier());
+        var data = this.data.remove(instance.getId().getValue());
 
         meterRegistry.remove(data.usersGauge());
         meterRegistry.remove(data.picksPerMinute());
@@ -90,17 +90,17 @@ public class UserMetricsAspect {
 
     @AfterReturning(value = "execution(* ru.dragonestia.picker.repository.RoomRepository.pick(ru.dragonestia.picker.model.instance.Instance, *)) && args(instance, ..)", argNames = "instance")
     void onPickRoom(Instance instance) {
-        data.get(instance.getIdentifier()).picksPerMinute().increment();
+        data.get(instance.getId().getValue()).picksPerMinute().increment();
     }
 
     @Scheduled(fixedDelay = 3_000)
     void updateUserMetrics() {
-        entityRepository.countEntitiesForNodes().forEach((nodeId, users) -> {
+        entityRepository.countEntitiesForInstances().forEach((nodeId, users) -> {
             Optional.ofNullable(data.get(nodeId)).ifPresent(node -> node.users().set(users));
         });
 
         containerRepository.all().forEach(nodeContainer -> {
-            var locked = data.get(nodeContainer.getInstance().getIdentifier()).locked();
+            var locked = data.get(nodeContainer.getInstance().getId().getValue()).locked();
             locked.set(0);
 
             nodeContainer.allRooms().forEach(roomContainer -> {

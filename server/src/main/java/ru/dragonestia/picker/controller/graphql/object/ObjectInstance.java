@@ -14,7 +14,7 @@ public class ObjectInstance {
     private List<ObjectRoom> cachedRooms = null;
 
     public String getId() {
-        return instance.getIdentifier();
+        return instance.getId().getValue();
     }
 
     public String getMethod() {
@@ -26,7 +26,7 @@ public class ObjectInstance {
             return cachedRooms;
         }
 
-        cachedRooms = dataProvider.roomService().all(instance).stream()
+        cachedRooms = dataProvider.roomService().all(instance.getId()).stream()
                 .map(room -> new ObjectRoom(room, dataProvider))
                 .toList();
 

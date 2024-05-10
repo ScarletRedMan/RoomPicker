@@ -48,8 +48,8 @@ public class LeastPickedTests {
         var users = entityRepository.entitiesOf(room);
         Assertions.assertTrue(slots == -1 || slots >= users.size()); // check slots limitation
 
-        System.out.printf("Room(%s) has %s/%s users. Expected: %s(%s), added: %s%n", room.getIdentifier(), users.size(), slots, expectedRoomId, expectedRoomUsers, usersAmount);
-        Assertions.assertEquals(expectedRoomId, room.getIdentifier());
+        System.out.printf("Room(%s) has %s/%s users. Expected: %s(%s), added: %s%n", room.getId(), users.size(), slots, expectedRoomId, expectedRoomUsers, usersAmount);
+        Assertions.assertEquals(expectedRoomId, room.getId());
     }
 
     public static class PickingArgumentProvider implements ArgumentsProvider {

@@ -3,9 +3,9 @@ package ru.dragonestia.picker.repository.impl;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.dragonestia.picker.api.exception.InstanceNotFoundException;
-import ru.dragonestia.picker.api.exception.RoomAreFullException;
-import ru.dragonestia.picker.api.exception.RoomNotFoundException;
+import ru.dragonestia.picker.exception.DoesNotExistsException;
+import ru.dragonestia.picker.exception.RoomAreFullException;
+import ru.dragonestia.picker.model.entity.EntityId;
 import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.model.entity.Entity;
 import ru.dragonestia.picker.repository.EntityRepository;
@@ -20,14 +20,14 @@ public class EntityRepositoryImpl implements EntityRepository {
 
     private final ContainerRepository containerRepository;
 
-    private final Map<Entity, Set<Room>> entityRooms = new ConcurrentHashMap<>();
+    private final Map<EntityId, Set<Room>> entityRooms = new ConcurrentHashMap<>();
 
     @PostConstruct
     void init() {
         containerRepository.setTransactionListener(transaction -> {
             synchronized (entityRooms) {
                 for (var entity: transaction.target()) {
-                    var set = entityRooms.computeIfAbsent(entity, k -> new HashSet<>());
+                    var set = entityRooms.computeIfAbsent(entity.getId(), k -> new HashSet<>());
                     set.add(transaction.room());
                 }
             }
@@ -35,9 +35,9 @@ public class EntityRepositoryImpl implements EntityRepository {
     }
 
     @Override
-    public void linkWithRoom(Room room, Collection<Entity> entities, boolean force) throws RoomAreFullException {
+    public void linkWithRoom(Room room, Collection<EntityId> entities, boolean force) throws RoomAreFullException {
         synchronized (entityRooms) {
-            getRoomContainer(room).addEntities(entities, force);
+            getRoomContainer(room).addEntities(entities.stream().map(Entity::new).toList(), force);
 
             for (var entity: entities) {
                 var set = entityRooms.computeIfAbsent(entity, k -> new HashSet<>());
@@ -47,9 +47,9 @@ public class EntityRepositoryImpl implements EntityRepository {
     }
 
     @Override
-    public void unlinkWithRoom(Room room, Collection<Entity> entities) {
+    public void unlinkWithRoom(Room room, Collection<EntityId> entities) {
         synchronized (entityRooms) {
-            getRoomContainer(room).removeEntities(entities);
+            getRoomContainer(room).removeEntities(entities.stream().map(Entity::new).toList());
 
             for (var entity: entities) {
                 var set = entityRooms.get(entity);
@@ -61,7 +61,7 @@ public class EntityRepositoryImpl implements EntityRepository {
     }
 
     @Override
-    public Collection<Room> findAllLinkedEntityRooms(Entity entity) {
+    public Collection<Room> findAllLinkedEntityRooms(EntityId entity) {
         var result = entityRooms.get(entity);
         return Collections.unmodifiableSet(result == null? new HashSet<>() : result);
     }
@@ -72,8 +72,12 @@ public class EntityRepositoryImpl implements EntityRepository {
     }
 
     @Override
-    public Collection<Entity> search(String input) {
-        return entityRooms.keySet().stream().filter(entity -> entity.getIdentifier().startsWith(input)).toList();
+    public Collection<Entity> search(EntityId input) {
+        var inputStr = input.getValue();
+        return entityRooms.keySet().stream()
+                .filter(entity -> entity.getValue().startsWith(inputStr))
+                .map(Entity::new)
+                .toList();
     }
 
     @Override
@@ -82,14 +86,14 @@ public class EntityRepositoryImpl implements EntityRepository {
     }
 
     @Override
-    public Map<String, Integer> countEntitiesForNodes() {
+    public Map<String, Integer> countEntitiesForInstances() {
         var result = new HashMap<String, Integer>();
 
         containerRepository.all().forEach(nodeContainer -> {
-            var nodeId = nodeContainer.getInstance().getIdentifier();
+            var nodeId = nodeContainer.getInstance().getId();
 
             nodeContainer.allRooms().forEach(roomContainer -> {
-                result.put(nodeId, result.getOrDefault(nodeId, 0) + roomContainer.countEntities());
+                result.put(nodeId.getValue(), result.getOrDefault(nodeId.getValue(), 0) + roomContainer.countEntities());
             });
         });
 
@@ -97,9 +101,9 @@ public class EntityRepositoryImpl implements EntityRepository {
     }
 
     private RoomContainer getRoomContainer(Room room) {
-        return containerRepository.findById(room.getInstanceIdentifier())
-                .orElseThrow(() -> new InstanceNotFoundException(room.getInstanceIdentifier()))
-                .findRoomById(room.getIdentifier())
-                .orElseThrow(() -> new RoomNotFoundException(room.getInstanceIdentifier(), room.getIdentifier()));
+        return containerRepository.findById(room.getInstance().getId())
+                .orElseThrow(() -> DoesNotExistsException.forInstance(room.getInstance().getId()))
+                .findRoomById(room.getId())
+                .orElseThrow(() -> DoesNotExistsException.forRoom(room.getId()));
     }
 }

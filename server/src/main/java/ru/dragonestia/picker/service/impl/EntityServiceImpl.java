@@ -2,7 +2,7 @@ package ru.dragonestia.picker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dragonestia.picker.api.model.user.ResponseUser;
+import ru.dragonestia.picker.model.entity.EntityId;
 import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.model.entity.Entity;
 import ru.dragonestia.picker.repository.EntityRepository;
@@ -17,17 +17,17 @@ public class EntityServiceImpl implements EntityService {
     private final EntityRepository entityRepository;
 
     @Override
-    public Collection<Room> getEntityRooms(Entity entity) {
-        return entityRepository.findAllLinkedEntityRooms(entity);
+    public Collection<Room> getEntityRooms(EntityId id) {
+        return entityRepository.findAllLinkedEntityRooms(id);
     }
 
     @Override
-    public void linkEntitiesWithRoom(Room room, Collection<Entity> entities, boolean force) {
+    public void linkEntitiesWithRoom(Room room, Collection<EntityId> entities, boolean force) {
         entityRepository.linkWithRoom(room, entities, force);
     }
 
     @Override
-    public void unlinkEntitiesFromRoom(Room room, Collection<Entity> entities) {
+    public void unlinkEntitiesFromRoom(Room room, Collection<EntityId> entities) {
         entityRepository.unlinkWithRoom(room, entities);
     }
 
@@ -37,12 +37,7 @@ public class EntityServiceImpl implements EntityService {
     }
 
     @Override
-    public List<ResponseUser> searchEntities(String input) {
-        return entityRepository.search(input).stream().map(Entity::toResponseObject).toList();
-    }
-
-    @Override
-    public ResponseUser getEntityDetails(String userId) {
-        throw new UnsupportedOperationException("Not implemented");
+    public List<Entity> searchEntities(EntityId input) {
+        return entityRepository.search(input).stream().toList();
     }
 }

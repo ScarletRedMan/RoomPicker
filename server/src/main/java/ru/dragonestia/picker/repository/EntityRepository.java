@@ -1,6 +1,7 @@
 package ru.dragonestia.picker.repository;
 
-import ru.dragonestia.picker.api.exception.RoomAreFullException;
+import ru.dragonestia.picker.exception.RoomAreFullException;
+import ru.dragonestia.picker.model.entity.EntityId;
 import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.model.entity.Entity;
 
@@ -9,17 +10,17 @@ import java.util.Map;
 
 public interface EntityRepository {
 
-    void linkWithRoom(Room room, Collection<Entity> entities, boolean force) throws RoomAreFullException;
+    void linkWithRoom(Room room, Collection<EntityId> entities, boolean force) throws RoomAreFullException;
 
-    void unlinkWithRoom(Room room, Collection<Entity> entities);
+    void unlinkWithRoom(Room room, Collection<EntityId> entities);
 
-    Collection<Room> findAllLinkedEntityRooms(Entity entity);
+    Collection<Room> findAllLinkedEntityRooms(EntityId entity);
 
     Collection<Entity> entitiesOf(Room room);
 
-    Collection<Entity> search(String input);
+    Collection<Entity> search(EntityId input);
 
     int countAllEntities();
 
-    Map<String, Integer> countEntitiesForNodes();
+    Map<String, Integer> countEntitiesForInstances();
 }

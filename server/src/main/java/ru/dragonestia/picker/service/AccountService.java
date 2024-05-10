@@ -1,10 +1,10 @@
 package ru.dragonestia.picker.service;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import ru.dragonestia.picker.model.account.Account;
+import ru.dragonestia.picker.model.account.AccountId;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -12,18 +12,18 @@ import java.util.Optional;
 public interface AccountService extends UserDetailsService {
 
     @PreAuthorize("hasRole('ADMIN')")
-    @NotNull Account createNewAccount(@NotNull String username, @NotNull String password);
+    Account createNewAccount(AccountId id, String password);
 
-    @NotNull Optional<Account> findAccount(@NotNull String accountId);
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @NotNull Collection<Account> allAccounts();
+    Optional<Account> findAccount(String accountId);
 
     @PreAuthorize("hasRole('ADMIN')")
-    void removeAccount(@NotNull Account account);
+    Collection<Account> allAccounts();
+
+    @PreAuthorize("hasRole('ADMIN')")
+    void removeAccount(Account account);
 
     @PreAuthorize("hasRole('ADMIN') || principal.username.equals(account.username)")
-    void updateState(@NotNull Account account);
+    void updateState(Account account);
 
     @Override
     Account loadUserByUsername(String username) throws UsernameNotFoundException;

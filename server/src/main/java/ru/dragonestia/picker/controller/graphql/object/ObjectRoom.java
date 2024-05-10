@@ -14,21 +14,21 @@ public class ObjectRoom {
     private List<ObjectEntity> cachedUsers = null;
 
     public String getId() {
-        return room.getIdentifier();
+        return room.getId().getValue();
     }
 
     public String getInstanceId() {
-        return room.getInstanceIdentifier();
+        return room.getInstance().getId().getValue();
     }
 
     public ObjectInstance getInstance() {
-        return dataProvider.instanceService().find(room.getInstanceIdentifier())
+        return dataProvider.instanceService().find(room.getInstance().getId())
                 .map(node -> new ObjectInstance(node, dataProvider))
                 .orElseThrow();
     }
 
     public int getSlots() {
-        return room.getMaxSlots();
+        return room.getSlots();
     }
 
     public String getPayload() {

@@ -17,7 +17,7 @@ public class RoomWrapper implements ItemWrapper<RoomContainer>, QueuedLinkedList
 
     @Override
     public String getId() {
-        return container.getRoom().getIdentifier();
+        return container.getRoom().getId().getValue();
     }
 
     @Override
@@ -27,7 +27,7 @@ public class RoomWrapper implements ItemWrapper<RoomContainer>, QueuedLinkedList
 
     @Override
     public int maxUnits() {
-        return container.getRoom().getMaxSlots();
+        return container.getRoom().getSlots();
     }
 
     @Override

@@ -1,9 +1,9 @@
 package ru.dragonestia.picker.repository.impl.picker;
 
 import lombok.RequiredArgsConstructor;
-import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
-import ru.dragonestia.picker.api.model.node.PickingMethod;
+import ru.dragonestia.picker.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.model.entity.Entity;
+import ru.dragonestia.picker.model.instance.type.PickingMethod;
 import ru.dragonestia.picker.repository.impl.container.InstanceContainer;
 import ru.dragonestia.picker.repository.impl.container.RoomContainer;
 
@@ -20,14 +20,14 @@ public class SequentialFillingPicker implements RoomPicker {
     @Override
     public void add(RoomContainer container) {
         synchronized (wrappers) {
-            wrappers.put(container.getRoom().getIdentifier(), new RoomWrapper(container));
+            wrappers.put(container.getRoom().getId().getValue(), new RoomWrapper(container));
         }
     }
 
     @Override
     public void remove(RoomContainer container) {
         synchronized (wrappers) {
-            wrappers.remove(container.getRoom().getIdentifier());
+            wrappers.remove(container.getRoom().getId());
         }
     }
 
@@ -43,7 +43,7 @@ public class SequentialFillingPicker implements RoomPicker {
             }
         }
 
-        throw new NoRoomsAvailableException(container.getInstance().getIdentifier());
+        throw new NoRoomsAvailableException(container.getInstance().getId());
     }
 
     @Override

@@ -24,12 +24,12 @@ public class InstanceServiceTests {
         var node = new Instance(NodeIdentifier.of("test"), PickingMethod.SEQUENTIAL_FILLING, false);
 
         Assertions.assertDoesNotThrow(() -> instanceService.create(node));
-        Assertions.assertTrue(instanceService.find(node.getIdentifier()).isPresent());
+        Assertions.assertTrue(instanceService.find(node.getId()).isPresent());
         Assertions.assertThrows(InstanceAlreadyExistException.class, () -> instanceService.create(node));
 
         instanceService.remove(node);
 
-        Assertions.assertFalse(() -> instanceService.find(node.getIdentifier()).isPresent());
+        Assertions.assertFalse(() -> instanceService.find(node.getId()).isPresent());
     }
 
     @WithMockUser(roles = {"NODE_MANAGEMENT"})

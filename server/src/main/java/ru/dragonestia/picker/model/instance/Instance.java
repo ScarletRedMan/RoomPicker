@@ -1,52 +1,24 @@
 package ru.dragonestia.picker.model.instance;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import ru.dragonestia.picker.api.model.node.INode;
-import ru.dragonestia.picker.api.model.node.NodeDetails;
-import ru.dragonestia.picker.api.model.node.PickingMethod;
-import ru.dragonestia.picker.api.model.node.ResponseNode;
-import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
+import lombok.Getter;
+import ru.dragonestia.picker.model.instance.type.PickingMethod;
 
-public class Instance implements INode {
+@Getter
+public class Instance {
 
-    private final String identifier;
+    private final InstanceId id;
     private final PickingMethod pickingMethod;
     private final boolean persist;
 
-    public Instance(@NotNull NodeIdentifier identifier, @NotNull PickingMethod pickingMethod, boolean persist) {
-        this.identifier = identifier.getValue();
+    public Instance(InstanceId id, PickingMethod pickingMethod, boolean persist) {
+        this.id = id;
         this.pickingMethod = pickingMethod;
         this.persist = persist;
     }
 
     @Override
-    public @NotNull String getIdentifier() {
-        return identifier;
-    }
-
-    @Override
-    public @NotNull PickingMethod getPickingMethod() {
-        return pickingMethod;
-    }
-
-    @Override
-    public @NotNull Boolean isPersist() {
-        return persist;
-    }
-
-    @Override
-    public @Nullable String getDetail(@NotNull NodeDetails detail) {
-        throw new UnsupportedOperationException();
-    }
-
-    public @NotNull ResponseNode toResponseObject() {
-        return new ResponseNode(identifier, pickingMethod);
-    }
-
-    @Override
     public int hashCode() {
-        return identifier.hashCode();
+        return id.hashCode();
     }
 
     @Override
@@ -54,13 +26,13 @@ public class Instance implements INode {
         if (object == this) return true;
         if (object == null) return false;
         if (object instanceof Instance other) {
-            return identifier.equals(other.identifier);
+            return id.equals(other.id);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "{Instance id='%s'}".formatted(identifier);
+        return "{Instance id='%s'}".formatted(id);
     }
 }

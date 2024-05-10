@@ -1,8 +1,8 @@
 package ru.dragonestia.picker.repository.impl.picker;
 
 import lombok.RequiredArgsConstructor;
-import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
-import ru.dragonestia.picker.api.model.node.PickingMethod;
+import ru.dragonestia.picker.exception.NoRoomsAvailableException;
+import ru.dragonestia.picker.model.instance.type.PickingMethod;
 import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.model.entity.Entity;
 import ru.dragonestia.picker.repository.impl.collection.DynamicSortedMap;
@@ -27,7 +27,7 @@ public class LeastPickedPicker implements RoomPicker {
     @Override
     public void remove(RoomContainer container) {
         synchronized (map) {
-            map.removeById(container.getRoom().getIdentifier());
+            map.removeById(container.getRoom().getId().getValue());
         }
     }
 
@@ -41,7 +41,7 @@ public class LeastPickedPicker implements RoomPicker {
 
                 if (!wrapper.canAddUnits(entities.size())) throw new RuntimeException();
             } catch (RuntimeException ex) {
-                throw new NoRoomsAvailableException(container.getInstance().getIdentifier());
+                throw new NoRoomsAvailableException(container.getInstance().getId());
             }
         }
 
@@ -50,7 +50,7 @@ public class LeastPickedPicker implements RoomPicker {
 
     public void updateEntitiesAmount(Room room, int users) {
         synchronized (map) {
-            map.updateItem(room.getIdentifier(), prevValue -> users);
+            map.updateItem(room.getId().getValue(), prevValue -> users);
         }
     }
 

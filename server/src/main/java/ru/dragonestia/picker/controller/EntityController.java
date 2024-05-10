@@ -1,41 +1,28 @@
 package ru.dragonestia.picker.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.dragonestia.picker.api.repository.response.LinkedRoomsWithUserResponse;
-import ru.dragonestia.picker.api.repository.response.SearchUserResponse;
-import ru.dragonestia.picker.api.repository.response.UserDetailsResponse;
 
-@Tag(name = "Users", description = "Entity management")
+import java.util.List;
+import java.util.Map;
+
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/entities")
 public class EntityController {
 
-    @Operation(summary = "Search user by identifier")
     @GetMapping("/search")
-    SearchUserResponse search(
-            @Parameter(description = "Entity identifier input") @RequestParam(name = "input") String input
-    ) {
+    List<String> search(@RequestParam String input) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    @Operation(summary = "Get user info")
-    @GetMapping("/{userId}")
-    UserDetailsResponse find(
-            @Parameter(description = "Entity identifier") @PathVariable(value = "userId") String userId
-    ) {
+    @GetMapping("/target/rooms")
+    List<String> find(@RequestParam String id) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    @Operation(summary = "Get rooms linked with user")
-    @GetMapping("/{userId}/rooms")
-    LinkedRoomsWithUserResponse roomsOf(
-            @Parameter(description = "Entity identifier") @PathVariable(value = "userId") String userId
-    ) {
+    @GetMapping("/list/rooms")
+    Map<String, List<String>> roomsOf(@RequestParam List<String> id) {
         throw new UnsupportedOperationException("Not implemented");
     }
 }

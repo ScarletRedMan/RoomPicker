@@ -1,66 +1,37 @@
 package ru.dragonestia.picker.model.account;
 
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.dragonestia.picker.api.model.account.IAccount;
-import ru.dragonestia.picker.api.model.account.ResponseAccount;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-public class Account implements IAccount, UserDetails {
+public class Account implements UserDetails {
 
-    private final String username;
+    @Getter private final AccountId id;
+    @Getter private final String username;
     private final String lowerUsername;
-    private String password;
+    @Getter @Setter private String password;
     private Set<Permission> permissions = new HashSet<>();
-    private boolean locked = false;
-    private boolean enabled = true;
+    @Getter @Setter private boolean locked = false;
+    @Getter @Setter private boolean enabled = true;
 
-    public Account(@NotNull String username, @NotNull String password) {
-        this.username = username;
+    public Account(AccountId id, String password) {
+        this.id = id;
+        this.username = id.getValue();
         this.lowerUsername = username.toLowerCase();
         this.password = password;
     }
 
     @Override
-    public @NotNull Collection<Permission> getAuthorities() {
+    public Collection<Permission> getAuthorities() {
         return permissions;
     }
 
-    @Override
-    public boolean isLocked() {
-        return locked;
-    }
-
-    @Contract("_ -> this")
-    public @NotNull Account setAuthorities(@NotNull Set<Permission> permissions) {
+    public void setAuthorities(Set<Permission> permissions) {
         this.permissions = permissions;
-        return this;
-    }
-
-    @Override
-    public @NotNull String getPassword() {
-        return password;
-    }
-
-    @Override
-    public @NotNull Set<String> getPermissions() {
-        return getAuthorities().stream().map(Enum::name).collect(Collectors.toSet());
-    }
-
-    @Contract("_ -> this")
-    public @NotNull Account setPassword(String value) {
-        password = value;
-        return this;
-    }
-
-    @Override
-    public @NotNull String getUsername() {
-        return username;
     }
 
     @Override
@@ -73,26 +44,9 @@ public class Account implements IAccount, UserDetails {
         return !locked;
     }
 
-    @Contract("_ -> this")
-    public @NotNull Account setLocked(boolean value) {
-        locked = value;
-        return this;
-    }
-
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @Contract("_ -> this")
-    public @NotNull Account setEnabled(boolean value) {
-        enabled = value;
-        return this;
     }
 
     @Override
@@ -108,9 +62,5 @@ public class Account implements IAccount, UserDetails {
             return lowerUsername.equals(other.lowerUsername);
         }
         return false;
-    }
-
-    public @NotNull ResponseAccount toResponseObject() {
-        return new ResponseAccount(username, password, getPermissions(), locked);
     }
 }

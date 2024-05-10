@@ -1,52 +1,59 @@
 package ru.dragonestia.picker.controller;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.dragonestia.picker.api.model.account.ResponseAccount;
-import ru.dragonestia.picker.api.repository.response.AllAccountsResponse;
+import ru.dragonestia.picker.controller.response.ResponseObject;
 
-@Log4j2
+import java.util.List;
+
 @RestController
 @RequestMapping("/accounts")
 @RequiredArgsConstructor
 public class AccountsController {
 
-    @GetMapping("/current")
-    ResponseAccount currentAccount() {
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping
+    List<String> listAccounts() {
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/{accountId}")
-    ResponseEntity<ResponseAccount> findAccount(@PathVariable String accountId) {
+    @GetMapping("/target/{accountId}")
+    ResponseObject.Account targetAccountDetails(@PathVariable String accountId) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    @GetMapping
-    AllAccountsResponse allAccounts() {
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/list")
+    ResponseObject.Account listAccountsDetails(@RequestParam List<String> id) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    ResponseAccount registerAccount(@RequestParam String username, @RequestParam String password, @RequestParam(defaultValue = "") String permissions) {
+    ResponseEntity<Void> createAccount(@RequestParam String username,
+                                       @RequestParam String password,
+                                       @RequestParam List<String> permissions) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    @PutMapping("/{accountId}")
-    ResponseEntity<?> updatePermissions(@PathVariable String accountId, @RequestParam(defaultValue = "") String permissions) {
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/target/{accountId}")
+    ResponseEntity<Void> removeAccount(@PathVariable String accountId) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    @DeleteMapping("/{accountId}")
-    ResponseEntity<?> removeAccount(@PathVariable String accountId) {
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/target/{accountId}/permissions")
+    ResponseEntity<Void> setPermissions(@PathVariable String accountId,
+                                        @RequestParam List<String> permissions) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @PreAuthorize("hasRole('ADMIN') || principal.username.equals(accountId)")
-    @PutMapping("/{accountId}/password")
+    @PutMapping("/target/{accountId}/password")
     ResponseEntity<?> changePassword(@PathVariable String accountId, @RequestParam String newPassword) {
         throw new UnsupportedOperationException("Not implemented");
     }

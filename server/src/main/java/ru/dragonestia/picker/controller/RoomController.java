@@ -1,68 +1,54 @@
 package ru.dragonestia.picker.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.dragonestia.picker.api.repository.response.RoomInfoResponse;
-import ru.dragonestia.picker.api.repository.response.RoomListResponse;
+import ru.dragonestia.picker.controller.response.ResponseObject;
 
-@Tag(name = "Rooms", description = "Room management")
+import java.util.List;
+
 @RestController
-@RequestMapping("/instances/{instanceId}/rooms")
+@RequestMapping("/instances/target/{instanceId}/rooms")
 @RequiredArgsConstructor
 public class RoomController {
 
-    @Operation(summary = "Get all rooms from node")
     @GetMapping
-    ResponseEntity<RoomListResponse> all(
-            @Parameter(description = "Instance identifier") @PathVariable(name = "instanceId") String instanceId
-    ) {
+    List<String> listRooms(@PathVariable String instanceId) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    @Operation(summary = "Register new room")
+    @GetMapping("/target/{roomId}")
+    ResponseObject.Room targetRoomDetails(@PathVariable String instanceId, @PathVariable String roomId) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @GetMapping("/list")
+    List<ResponseObject.Room> listRoomDetails(@PathVariable String instanceId, @RequestParam List<String> id) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
     @PostMapping
-    ResponseEntity<?> register(
-            @Parameter(description = "Instance identifier") @PathVariable(name = "instanceId") String instanceId,
-            @Parameter(description = "Room identifier") @RequestParam(name = "roomId") String roomId,
-            @Parameter(description = "Maximum users count in room") @RequestParam(name = "slots") int slots,
-            @Parameter(description = "Payload. Some data") @RequestParam(name = "payload") String payload,
-            @Parameter(description = "Lock for picking") @RequestParam(name = "locked", required = false, defaultValue = "false") boolean locked,
-            @Parameter(description = "Save room") @RequestParam(name = "persist", required = false, defaultValue = "false") boolean persist
-    ) {
+    ResponseEntity<Void> createRoom(@PathVariable String instanceId,
+                                    @RequestParam String id,
+                                    @RequestParam int slots,
+                                    @RequestParam String payload,
+                                    @RequestParam(defaultValue = "false") boolean locked,
+                                    @RequestParam(defaultValue = "false") boolean persist) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    @Operation(summary = "Unregister room")
-    @DeleteMapping("/{roomId}")
-    ResponseEntity<?> remove(
-            @Parameter(description = "Instance identifier") @PathVariable("instanceId") String instanceId,
-            @Parameter(description = "Room identifier") @PathVariable("roomId") String roomId
-    ) {
+    @DeleteMapping("/target/{roomId}")
+    ResponseEntity<Void> deleteRoom(@PathVariable String instanceId, @PathVariable String roomId) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    @Operation(summary = "Get room details")
-    @GetMapping("/{roomId}")
-    ResponseEntity<RoomInfoResponse> info(
-            @Parameter(description = "Instance identifier") @PathVariable("instanceId") String instanceId,
-            @Parameter(description = "Room identifier") @PathVariable("roomId") String roomId
-    ) {
+    @DeleteMapping("/list")
+    ResponseEntity<Void> deleteRooms(@PathVariable String instanceId, @RequestParam List<String> id) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    @Operation(summary = "Lock/unlock room")
-    @ApiResponse(description = "New lock state")
-    @PutMapping("/{roomId}/lock")
-    ResponseEntity<Boolean> lockRoom(
-            @Parameter(description = "Instance identifier") @PathVariable("instanceId") String instanceId,
-            @Parameter(description = "Room identifier") @PathVariable("roomId") String roomId,
-            @Parameter(description = "New state for Lock property") @RequestParam(name = "newState") boolean value
-    ) {
+    @PutMapping("/target/{roomId}/lock")
+    ResponseEntity<Void> lockRoom(@PathVariable String instanceId, @PathVariable String roomId, @RequestParam boolean newState) {
         throw new UnsupportedOperationException("Not implemented");
     }
 }
