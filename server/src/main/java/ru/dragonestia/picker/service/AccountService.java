@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import ru.dragonestia.picker.model.Account;
+import ru.dragonestia.picker.model.account.Account;
 
 import java.util.Collection;
 import java.util.Optional;

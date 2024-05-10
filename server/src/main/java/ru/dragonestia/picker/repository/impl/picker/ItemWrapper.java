@@ -1,6 +1,6 @@
 package ru.dragonestia.picker.repository.impl.picker;
 
-import ru.dragonestia.picker.model.type.SlotLimit;
+import ru.dragonestia.picker.model.room.type.SlotLimit;
 
 public interface ItemWrapper<ITEM> {
 

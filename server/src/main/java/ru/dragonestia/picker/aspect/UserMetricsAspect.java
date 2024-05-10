@@ -11,8 +11,8 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ru.dragonestia.picker.model.Node;
-import ru.dragonestia.picker.model.Room;
+import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.repository.impl.ContainerRepository;
@@ -41,12 +41,12 @@ public class UserMetricsAspect {
         meterRegistry.gauge("roompicker_total_users", totalUsers);
     }
 
-    @After(value = "execution(* ru.dragonestia.picker.repository.UserRepository.linkWithRoom(ru.dragonestia.picker.model.Room, ..)) && args(room, ..)", argNames = "room")
+    @After(value = "execution(* ru.dragonestia.picker.repository.UserRepository.linkWithRoom(ru.dragonestia.picker.model.room.Room, ..)) && args(room, ..)", argNames = "room")
     void onLinkUsers(Room room) {
         countAllUsers(room);
     }
 
-    @After(value = "execution(void ru.dragonestia.picker.repository.UserRepository.unlinkWithRoom(ru.dragonestia.picker.model.Room, ..)) && args(room, ..)", argNames = "room")
+    @After(value = "execution(void ru.dragonestia.picker.repository.UserRepository.unlinkWithRoom(ru.dragonestia.picker.model.room.Room, ..)) && args(room, ..)", argNames = "room")
     void onUnlinkUsers(Room room) {
         countAllUsers(room);
     }
@@ -55,7 +55,7 @@ public class UserMetricsAspect {
         totalUsers.set(userRepository.countAllUsers());
     }
 
-    @After(value = "execution(void ru.dragonestia.picker.repository.NodeRepository.create(ru.dragonestia.picker.model.Node)) && args(node)", argNames = "node")
+    @After(value = "execution(void ru.dragonestia.picker.repository.NodeRepository.create(ru.dragonestia.picker.model.node.Node)) && args(node)", argNames = "node")
     void onCreateNode(Node node) {
         var nodeId = node.getIdentifier();
         var gauge = Gauge.builder("roompicker_node_users_total", () -> data.get(nodeId).users())
@@ -78,7 +78,7 @@ public class UserMetricsAspect {
         data.put(nodeId, new NodeData(gauge, new AtomicInteger(0), counter, new AtomicInteger(0), lockedGauge, roomsGauge));
     }
 
-    @After(value = "execution(* ru.dragonestia.picker.repository.NodeRepository.delete(ru.dragonestia.picker.model.Node)) && args(node)", argNames = "node")
+    @After(value = "execution(* ru.dragonestia.picker.repository.NodeRepository.delete(ru.dragonestia.picker.model.node.Node)) && args(node)", argNames = "node")
     void onDeleteNode(Node node) {
         var data = this.data.remove(node.getIdentifier());
 
@@ -88,7 +88,7 @@ public class UserMetricsAspect {
         meterRegistry.remove(data.roomsGauge());
     }
 
-    @AfterReturning(value = "execution(* ru.dragonestia.picker.repository.RoomRepository.pick(ru.dragonestia.picker.model.Node, *)) && args(node, ..)", argNames = "node")
+    @AfterReturning(value = "execution(* ru.dragonestia.picker.repository.RoomRepository.pick(ru.dragonestia.picker.model.node.Node, *)) && args(node, ..)", argNames = "node")
     void onPickRoom(Node node) {
         data.get(node.getIdentifier()).picksPerMinute().increment();
     }

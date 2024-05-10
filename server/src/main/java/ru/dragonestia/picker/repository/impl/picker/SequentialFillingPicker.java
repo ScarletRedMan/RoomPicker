@@ -3,7 +3,7 @@ package ru.dragonestia.picker.repository.impl.picker;
 import lombok.RequiredArgsConstructor;
 import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
-import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.user.User;
 import ru.dragonestia.picker.repository.impl.container.NodeContainer;
 import ru.dragonestia.picker.repository.impl.container.RoomContainer;
 

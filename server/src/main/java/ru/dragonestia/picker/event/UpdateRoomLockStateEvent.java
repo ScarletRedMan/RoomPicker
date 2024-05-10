@@ -1,7 +1,7 @@
 package ru.dragonestia.picker.event;
 
 import org.jetbrains.annotations.NotNull;
-import ru.dragonestia.picker.model.Room;
+import ru.dragonestia.picker.model.room.Room;
 
 import java.util.function.Consumer;
 

@@ -2,7 +2,7 @@ package ru.dragonestia.picker.util;
 
 import org.springframework.boot.test.context.TestComponent;
 import ru.dragonestia.picker.api.repository.type.UserIdentifier;
-import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.user.User;
 
 import java.util.*;
 

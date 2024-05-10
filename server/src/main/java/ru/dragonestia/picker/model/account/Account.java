@@ -1,4 +1,4 @@
-package ru.dragonestia.picker.model;
+package ru.dragonestia.picker.model.account;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import ru.dragonestia.picker.api.model.account.IAccount;
 import ru.dragonestia.picker.api.model.account.ResponseAccount;
 
-import java.beans.Transient;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;

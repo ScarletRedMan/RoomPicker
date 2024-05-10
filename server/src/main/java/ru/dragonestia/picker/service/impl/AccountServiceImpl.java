@@ -8,8 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.dragonestia.picker.api.exception.ConstantAdminParamsException;
 import ru.dragonestia.picker.config.RoomPickerServerConfig;
-import ru.dragonestia.picker.model.Account;
-import ru.dragonestia.picker.model.Permission;
+import ru.dragonestia.picker.model.account.Account;
+import ru.dragonestia.picker.model.account.Permission;
 import ru.dragonestia.picker.service.AccountService;
 
 import java.util.Arrays;

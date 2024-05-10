@@ -2,9 +2,9 @@ package ru.dragonestia.picker.repository;
 
 import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
-import ru.dragonestia.picker.model.Room;
-import ru.dragonestia.picker.model.Node;
-import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.room.Room;
+import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.user.User;
 
 import java.util.Collection;
 import java.util.Optional;

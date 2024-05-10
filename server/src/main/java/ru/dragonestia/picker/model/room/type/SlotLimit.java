@@ -1,4 +1,4 @@
-package ru.dragonestia.picker.model.type;
+package ru.dragonestia.picker.model.room.type;
 
 import lombok.Getter;
 
