@@ -2,7 +2,7 @@ package ru.dragonestia.picker.repository.impl.container;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import ru.dragonestia.picker.api.exception.RoomAreFullException;
+import ru.dragonestia.picker.exception.RoomAreFullException;
 import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.model.entity.Entity;
 import ru.dragonestia.picker.repository.impl.picker.LeastPickedPicker;
@@ -32,7 +32,7 @@ public class RoomContainer {
                 entities.addAll(toAdd);
                 noticePickersAboutEntityNumberUpdate();
             } else {
-                throw new RoomAreFullException(room.getInstanceIdentifier(), room.getIdentifier());
+                throw new RoomAreFullException(room.getInstance().getId(), room.getId());
             }
         } finally {
             entityLock.writeLock().unlock();
@@ -75,7 +75,7 @@ public class RoomContainer {
     }
 
     private boolean canAdd0(int entities) {
-        return room.hasUnlimitedSlots() || entities + countEntities() <= room.getMaxSlots();
+        return room.getSlots() == -1 || entities + countEntities() <= room.getSlots();
     }
 
     public boolean canAdd(int entities) {

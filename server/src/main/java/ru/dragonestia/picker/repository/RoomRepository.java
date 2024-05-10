@@ -1,10 +1,11 @@
 package ru.dragonestia.picker.repository;
 
-import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
-import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
-import ru.dragonestia.picker.model.instance.Instance;
+import ru.dragonestia.picker.exception.AlreadyExistsException;
+import ru.dragonestia.picker.exception.NoRoomsAvailableException;
+import ru.dragonestia.picker.model.entity.EntityId;
+import ru.dragonestia.picker.model.instance.InstanceId;
 import ru.dragonestia.picker.model.room.Room;
-import ru.dragonestia.picker.model.entity.Entity;
+import ru.dragonestia.picker.model.room.RoomId;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -12,13 +13,13 @@ import java.util.Set;
 
 public interface RoomRepository {
 
-    void create(Room room) throws RoomAlreadyExistException;
+    void create(Room room) throws AlreadyExistsException;
 
-    void remove(Room room);
+    void remove(InstanceId instanceId, RoomId roomId);
 
-    Optional<Room> find(Instance instance, String identifier);
+    Optional<Room> find(InstanceId instanceId, RoomId roomId);
 
-    Collection<Room> all(Instance instance);
+    Collection<Room> all(InstanceId instanceId);
 
-    Room pick(Instance instance, Set<Entity> entities) throws NoRoomsAvailableException;
+    Room pick(InstanceId instanceId, Set<EntityId> entities) throws NoRoomsAvailableException;
 }

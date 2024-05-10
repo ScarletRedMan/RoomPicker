@@ -44,7 +44,7 @@ public class RoundRobinTests {
         var users = entityRepository.entitiesOf(room);
         Assertions.assertTrue(slots == -1 || slots >= users.size()); // check slots limitation
 
-        Assertions.assertEquals(expectedRoomId, room.getIdentifier());
+        Assertions.assertEquals(expectedRoomId, room.getId());
     }
 
     public static class PickingArgumentProvider implements ArgumentsProvider {

@@ -17,7 +17,7 @@ import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.entity.Entity;
-import ru.dragonestia.picker.model.factory.RoomFactory;
+import ru.dragonestia.picker.model.room.factory.RoomFactory;
 
 import java.util.List;
 import java.util.Set;
@@ -51,12 +51,12 @@ public class RoomServiceTests {
         var room = roomFactory.create(RoomIdentifier.of("test-room"), instance, IRoom.UNLIMITED_SLOTS, "", false);
         roomService.create(room);
 
-        Assertions.assertTrue(roomService.find(instance, room.getIdentifier()).isPresent());
+        Assertions.assertTrue(roomService.find(instance, room.getId()).isPresent());
         Assertions.assertThrows(RoomAlreadyExistException.class, () -> roomService.create(room));
 
         roomService.remove(room);
 
-        Assertions.assertFalse(roomService.find(instance, room.getIdentifier()).isPresent());
+        Assertions.assertFalse(roomService.find(instance, room.getId()).isPresent());
     }
 
     @WithMockUser(roles = {"NODE_MANAGEMENT"})
@@ -107,7 +107,7 @@ public class RoomServiceTests {
         );
 
 
-        Assertions.assertEquals("test-room4", roomService.pickAvailable(instance, users).roomId());
+        Assertions.assertEquals("test-room4", roomService.pick(instance, users).roomId());
     }
 
     @WithMockUser(roles = {"NODE_MANAGEMENT"})
@@ -127,6 +127,6 @@ public class RoomServiceTests {
         Assertions.assertThrows(InstanceNotFoundException.class, () -> roomService.create(room));
         Assertions.assertThrows(InstanceNotFoundException.class, () -> roomService.remove(room));
         Assertions.assertThrows(InstanceNotFoundException.class, () -> roomService.find(node, "Bruh"));
-        Assertions.assertThrows(InstanceNotFoundException.class, () -> roomService.pickAvailable(node, Set.of(new Entity(EntityIdentifier.of("1")))));
+        Assertions.assertThrows(InstanceNotFoundException.class, () -> roomService.pick(node, Set.of(new Entity(EntityIdentifier.of("1")))));
     }
 }

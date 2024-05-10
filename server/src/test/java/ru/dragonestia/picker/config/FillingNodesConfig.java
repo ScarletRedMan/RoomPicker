@@ -9,7 +9,7 @@ import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.entity.Entity;
-import ru.dragonestia.picker.model.factory.RoomFactory;
+import ru.dragonestia.picker.model.room.factory.RoomFactory;
 import ru.dragonestia.picker.repository.InstanceRepository;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.EntityRepository;

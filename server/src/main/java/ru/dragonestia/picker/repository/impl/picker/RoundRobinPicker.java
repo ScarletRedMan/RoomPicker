@@ -1,9 +1,9 @@
 package ru.dragonestia.picker.repository.impl.picker;
 
 import lombok.RequiredArgsConstructor;
-import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
-import ru.dragonestia.picker.api.model.node.PickingMethod;
+import ru.dragonestia.picker.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.model.entity.Entity;
+import ru.dragonestia.picker.model.instance.type.PickingMethod;
 import ru.dragonestia.picker.repository.impl.collection.QueuedLinkedList;
 import ru.dragonestia.picker.repository.impl.container.InstanceContainer;
 import ru.dragonestia.picker.repository.impl.container.RoomContainer;
@@ -28,7 +28,7 @@ public class RoundRobinPicker implements RoomPicker {
     @Override
     public void remove(RoomContainer container) {
         synchronized (list) {
-            list.removeById(container.getRoom().getIdentifier());
+            list.removeById(container.getRoom().getId().getValue());
         }
     }
 
@@ -42,7 +42,7 @@ public class RoundRobinPicker implements RoomPicker {
                 addition.set(amount);
                 wrapper = list.pick();
             } catch (RuntimeException ex) {
-                throw new NoRoomsAvailableException(container.getInstance().getIdentifier());
+                throw new NoRoomsAvailableException(container.getInstance().getId());
             }
         }
 

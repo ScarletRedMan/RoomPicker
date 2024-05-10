@@ -1,42 +1,24 @@
 package ru.dragonestia.picker.model.entity;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import ru.dragonestia.picker.api.model.user.IUser;
-import ru.dragonestia.picker.api.model.user.ResponseUser;
-import ru.dragonestia.picker.api.model.user.UserDetails;
-import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
+import lombok.Getter;
 
-public class Entity implements IUser {
+@Getter
+public class Entity {
 
-    private final String identifier;
+    private final EntityId id;
 
-    public Entity(@NotNull EntityIdentifier identifier) {
-        this.identifier = identifier.getValue();
-    }
-
-    @Override
-    public @NotNull String getIdentifier() {
-        return identifier;
-    }
-
-    @Override
-    public @Nullable String getDetail(@NotNull UserDetails detail) {
-        throw new UnsupportedOperationException();
-    }
-
-    public @NotNull ResponseUser toResponseObject() {
-        return new ResponseUser(identifier);
+    public Entity(EntityId id) {
+        this.id = id;
     }
 
     @Override
     public String toString() {
-        return identifier;
+        return id.getValue();
     }
 
     @Override
     public int hashCode() {
-        return identifier.hashCode();
+        return id.hashCode();
     }
 
     @Override
@@ -44,7 +26,7 @@ public class Entity implements IUser {
         if (object == this) return true;
         if (object == null) return false;
         if (object instanceof Entity other) {
-            return identifier.equals(other.identifier);
+            return id.equals(other.id);
         }
         return false;
     }

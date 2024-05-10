@@ -2,13 +2,13 @@ package ru.dragonestia.picker.service.impl;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.dragonestia.picker.api.exception.ConstantAdminParamsException;
 import ru.dragonestia.picker.config.RoomPickerServerConfig;
+import ru.dragonestia.picker.exception.AdminAccountMutationException;
 import ru.dragonestia.picker.model.account.Account;
+import ru.dragonestia.picker.model.account.AccountId;
 import ru.dragonestia.picker.model.account.Permission;
 import ru.dragonestia.picker.service.AccountService;
 
@@ -30,39 +30,39 @@ public class AccountServiceImpl implements AccountService {
 
     @PostConstruct
     void init() {
-        var account = createNewAccount(adminCredentials.username(), adminCredentials.password());
+        var account = createNewAccount(AccountId.of(adminCredentials.username()), adminCredentials.password());
         account.setAuthorities(Arrays.stream(Permission.values()).collect(Collectors.toSet()));
 
-        createNewAccount("test", "qwerty123");
+        createNewAccount(AccountId.of("test"), "qwerty123");
     }
 
-    public @NotNull Account createNewAccount(@NotNull String username, @NotNull String password) {
-        var account = new Account(username, passwordEncoder.encode(password));
+    public Account createNewAccount(AccountId id, String password) {
+        var account = new Account(id, passwordEncoder.encode(password));
         accounts.put(account.getUsername().toLowerCase(), account);
         return account;
     }
 
     @Override
-    public @NotNull Optional<Account> findAccount(@NotNull String accountId) {
+    public Optional<Account> findAccount(String accountId) {
         return Optional.ofNullable(accounts.getOrDefault(accountId, null));
     }
 
     @Override
-    public @NotNull Collection<Account> allAccounts() {
+    public Collection<Account> allAccounts() {
         return accounts.values().stream()
                 .filter(account -> !adminCredentials.username().equals(account.getUsername()))
                 .toList();
     }
 
     @Override
-    public void removeAccount(@NotNull Account account) {
+    public void removeAccount(Account account) {
         checkAdmin(account.getUsername());
         accounts.remove(account.getUsername());
         account.setEnabled(false);
     }
 
     @Override
-    public void updateState(@NotNull Account account) {
+    public void updateState(Account account) {
         checkAdmin(account.getUsername());
         // TODO: save data to local storage
     }
@@ -79,7 +79,7 @@ public class AccountServiceImpl implements AccountService {
 
     private void checkAdmin(String accountId) {
         if (adminCredentials.username().equals(accountId)) {
-            throw new ConstantAdminParamsException();
+            throw new AdminAccountMutationException();
         }
     }
 }

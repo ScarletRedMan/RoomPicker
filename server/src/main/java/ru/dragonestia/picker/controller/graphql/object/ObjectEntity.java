@@ -15,7 +15,7 @@ public class ObjectEntity {
     private List<ObjectRoom> cachedRooms = null;
 
     public @NotNull String getId() {
-        return entity.getIdentifier();
+        return entity.getId().getValue();
     }
 
     public List<ObjectRoom> getRooms() {
@@ -23,7 +23,7 @@ public class ObjectEntity {
             return cachedRooms;
         }
 
-        cachedRooms = dataProvider.entityService().getEntityRooms(entity).stream()
+        cachedRooms = dataProvider.entityService().getEntityRooms(entity.getId()).stream()
                 .map(room -> new ObjectRoom(room, dataProvider))
                 .toList();
 

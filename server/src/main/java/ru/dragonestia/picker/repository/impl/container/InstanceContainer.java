@@ -1,11 +1,12 @@
 package ru.dragonestia.picker.repository.impl.container;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
+import ru.dragonestia.picker.exception.AlreadyExistsException;
+import ru.dragonestia.picker.model.entity.EntityId;
 import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.model.entity.Entity;
+import ru.dragonestia.picker.model.room.RoomId;
 import ru.dragonestia.picker.repository.impl.picker.LeastPickedPicker;
 import ru.dragonestia.picker.repository.impl.picker.RoomPicker;
 import ru.dragonestia.picker.repository.impl.picker.RoundRobinPicker;
@@ -19,21 +20,20 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class InstanceContainer {
 
-    @Getter
-    private final Instance instance;
+    @Getter private final Instance instance;
     private final EntityTransaction.Listener transactionListener;
-    private final RoomPicker picker;
+    @Getter private final RoomPicker picker;
 
     private final ReadWriteLock roomLock = new ReentrantReadWriteLock();
-    private final Map<String, RoomContainer> rooms = new ConcurrentHashMap<>();
+    private final Map<RoomId, RoomContainer> rooms = new ConcurrentHashMap<>();
 
-    public InstanceContainer(@NotNull Instance instance, @NotNull EntityTransaction.Listener transactionListener) {
+    public InstanceContainer(Instance instance, EntityTransaction.Listener transactionListener) {
         this.instance = instance;
         this.transactionListener = transactionListener;
         this.picker = initPicker();
     }
 
-    private @NotNull RoomPicker initPicker() {
+    private RoomPicker initPicker() {
         return switch (instance.getPickingMethod()) {
             case SEQUENTIAL_FILLING -> new SequentialFillingPicker(this);
             case ROUND_ROBIN -> new RoundRobinPicker(this);
@@ -41,31 +41,31 @@ public class InstanceContainer {
         };
     }
 
-    public void addRoom(Room room) throws RoomAlreadyExistException {
+    public void addRoom(Room room) throws AlreadyExistsException {
         roomLock.writeLock().lock();
         try {
-            if (rooms.containsKey(room.getIdentifier())) {
-                throw new RoomAlreadyExistException(instance.getIdentifier(), room.getIdentifier());
+            if (rooms.containsKey(room.getId())) {
+                throw AlreadyExistsException.forRoom(instance.getId(), room.getId());
             }
 
             var container = new RoomContainer(room, this);
-            rooms.put(room.getIdentifier(), container);
+            rooms.put(room.getId(), container);
             picker.add(container);
         } finally {
             roomLock.writeLock().unlock();
         }
     }
 
-    public void removeRoom(@NotNull Room room) {
+    public void removeRoom(RoomId roomId) {
         roomLock.writeLock().lock();
         try {
-            picker.remove(rooms.remove(room.getIdentifier()));
+            picker.remove(rooms.remove(roomId));
         } finally {
             roomLock.writeLock().unlock();
         }
     }
 
-    public void removeRoomsByIds(@NotNull Collection<String> roomIds) {
+    public void removeRoomsByIds(Collection<RoomId> roomIds) {
         roomLock.writeLock().lock();
         try {
             roomIds.forEach(roomId -> picker.remove(rooms.remove(roomId)));
@@ -74,7 +74,7 @@ public class InstanceContainer {
         }
     }
 
-    public @NotNull Optional<RoomContainer> findRoomById(@NotNull String roomId) {
+    public Optional<RoomContainer> findRoomById(RoomId roomId) {
         roomLock.readLock().lock();
         try {
             return Optional.ofNullable(rooms.get(roomId));
@@ -83,7 +83,7 @@ public class InstanceContainer {
         }
     }
 
-    public @NotNull Collection<RoomContainer> allRooms() {
+    public Collection<RoomContainer> allRooms() {
         roomLock.readLock().lock();
         try {
             return rooms.values();
@@ -92,16 +92,16 @@ public class InstanceContainer {
         }
     }
 
-    public @NotNull Room pick(@NotNull Set<Entity> entities) {
+    public Room pick(Set<EntityId> entities) {
+        var entitiesObj = entities.stream()
+                .map(Entity::new)
+                .toList(); // TODO: find entities
+
         synchronized (picker) {
-            var room = picker.pick(entities);
-            room.addEntities(entities, false);
-            transactionListener.accept(new EntityTransaction(room.getRoom(), entities));
+            var room = picker.pick(entitiesObj);
+            room.addEntities(entitiesObj, false);
+            transactionListener.accept(new EntityTransaction(room.getRoom(), entitiesObj));
             return room.getRoom();
         }
-    }
-
-    public @NotNull RoomPicker getPicker() {
-        return picker;
     }
 }

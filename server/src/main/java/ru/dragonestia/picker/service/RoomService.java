@@ -1,11 +1,11 @@
 package ru.dragonestia.picker.service;
 
-import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
-import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
-import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
-import ru.dragonestia.picker.model.instance.Instance;
+import ru.dragonestia.picker.exception.AlreadyExistsException;
+import ru.dragonestia.picker.exception.InvalidIdentifierException;
+import ru.dragonestia.picker.model.entity.EntityId;
+import ru.dragonestia.picker.model.instance.InstanceId;
 import ru.dragonestia.picker.model.room.Room;
-import ru.dragonestia.picker.model.entity.Entity;
+import ru.dragonestia.picker.model.room.RoomId;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -13,15 +13,15 @@ import java.util.Set;
 
 public interface RoomService {
 
-    void create(Room room) throws InvalidRoomIdentifierException, RoomAlreadyExistException;
+    void create(Room room) throws InvalidIdentifierException, AlreadyExistsException;
 
     void remove(Room room);
 
-    Optional<Room> find(Instance instance, String roomId);
+    Optional<Room> find(InstanceId instanceId, RoomId roomId);
 
-    Collection<Room> all(Instance instance);
+    Collection<Room> all(InstanceId instanceId);
 
-    PickedRoomResponse pickAvailable(Instance instance, Set<Entity> entities);
+    Room pick(InstanceId instanceId, Set<EntityId> entities);
 
     void updateState(Room room);
 }
