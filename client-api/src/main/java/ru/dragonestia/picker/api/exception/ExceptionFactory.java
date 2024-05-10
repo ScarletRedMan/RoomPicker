@@ -18,8 +18,8 @@ public class ExceptionFactory {
         factory.put(InvalidInstanceIdentifierException.ERROR_ID, InvalidInstanceIdentifierException::new);
         factory.put(InvalidRoomIdentifierException.ERROR_ID, InvalidRoomIdentifierException::new);
         factory.put(InvalidUsernamesException.ERROR_ID, InvalidUsernamesException::new);
-        factory.put(NodeAlreadyExistException.ERROR_ID, NodeAlreadyExistException::new);
-        factory.put(NodeNotFoundException.ERROR_ID, NodeNotFoundException::new);
+        factory.put(InstanceAlreadyExistException.ERROR_ID, InstanceAlreadyExistException::new);
+        factory.put(InstanceNotFoundException.ERROR_ID, InstanceNotFoundException::new);
         factory.put(NoRoomsAvailableException.ERROR_ID, NoRoomsAvailableException::new);
         factory.put(RoomAlreadyExistException.ERROR_ID, RoomAlreadyExistException::new);
         factory.put(RoomAreFullException.ERROR_ID, RoomAreFullException::new);

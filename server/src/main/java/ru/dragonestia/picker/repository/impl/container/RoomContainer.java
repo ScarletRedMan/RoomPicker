@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import ru.dragonestia.picker.api.exception.RoomAreFullException;
 import ru.dragonestia.picker.model.room.Room;
-import ru.dragonestia.picker.model.user.User;
+import ru.dragonestia.picker.model.entity.Entity;
 import ru.dragonestia.picker.repository.impl.picker.LeastPickedPicker;
 
 import java.util.*;
@@ -17,87 +17,87 @@ public class RoomContainer {
     private final Room room;
     private final InstanceContainer container;
 
-    private final ReadWriteLock usersLock = new ReentrantReadWriteLock(true);
-    private final Set<User> users = new HashSet<>();
+    private final ReadWriteLock entityLock = new ReentrantReadWriteLock(true);
+    private final Set<Entity> entities = new HashSet<>();
 
     public RoomContainer(@NotNull Room room, @NotNull InstanceContainer container) {
         this.room = room;
         this.container = container;
     }
 
-    public void addUsers(@NotNull Collection<User> toAdd, boolean force) {
-        usersLock.writeLock().lock();
+    public void addEntities(@NotNull Collection<Entity> toAdd, boolean force) {
+        entityLock.writeLock().lock();
         try {
             if (force || canAdd0(toAdd.size())) {
-                users.addAll(toAdd);
-                noticePickersAboutUserNumberUpdate();
+                entities.addAll(toAdd);
+                noticePickersAboutEntityNumberUpdate();
             } else {
                 throw new RoomAreFullException(room.getInstanceIdentifier(), room.getIdentifier());
             }
         } finally {
-            usersLock.writeLock().unlock();
+            entityLock.writeLock().unlock();
         }
     }
 
-    public void removeUsers(@NotNull Collection<User> toRemove) {
-        usersLock.writeLock().lock();
+    public void removeEntities(@NotNull Collection<Entity> toRemove) {
+        entityLock.writeLock().lock();
         try {
-            users.removeAll(toRemove);
-            noticePickersAboutUserNumberUpdate();
+            entities.removeAll(toRemove);
+            noticePickersAboutEntityNumberUpdate();
         } finally {
-            usersLock.writeLock().unlock();
+            entityLock.writeLock().unlock();
         }
     }
 
-    public @NotNull Collection<User> removeAllUsers() {
-        usersLock.writeLock().lock();
+    public @NotNull Collection<Entity> removeAllEntities() {
+        entityLock.writeLock().lock();
         try {
-            var set = new HashSet<>(users);
-            users.clear();
-            noticePickersAboutUserNumberUpdate();
+            var set = new HashSet<>(entities);
+            entities.clear();
+            noticePickersAboutEntityNumberUpdate();
             return set;
         } finally {
-            usersLock.writeLock().unlock();
+            entityLock.writeLock().unlock();
         }
     }
 
-    public @NotNull Collection<User> allUsers() {
-        usersLock.readLock().lock();
+    public @NotNull Collection<Entity> allEntities() {
+        entityLock.readLock().lock();
         try {
-            return new ArrayList<>(users);
+            return new ArrayList<>(entities);
         } finally {
-            usersLock.readLock().unlock();
+            entityLock.readLock().unlock();
         }
     }
 
-    public int countUsers() {
-        return users.size();
+    public int countEntities() {
+        return entities.size();
     }
 
-    private boolean canAdd0(int users) {
-        return room.hasUnlimitedSlots() || users + countUsers() <= room.getMaxSlots();
+    private boolean canAdd0(int entities) {
+        return room.hasUnlimitedSlots() || entities + countEntities() <= room.getMaxSlots();
     }
 
-    public boolean canAdd(int users) {
+    public boolean canAdd(int entities) {
         try {
-            return canAdd0(users);
+            return canAdd0(entities);
         } finally {
-            usersLock.readLock().unlock();
+            entityLock.readLock().unlock();
         }
     }
 
-    public boolean canBePicked(int users) {
-        usersLock.readLock().lock();
+    public boolean canBePicked(int entities) {
+        entityLock.readLock().lock();
         try {
-            return !room.isLocked() && canAdd0(users);
+            return !room.isLocked() && canAdd0(entities);
         } finally {
-            usersLock.readLock().unlock();
+            entityLock.readLock().unlock();
         }
     }
 
-    private void noticePickersAboutUserNumberUpdate() {
+    private void noticePickersAboutEntityNumberUpdate() {
         if (container.getPicker() instanceof LeastPickedPicker picker) {
-            picker.updateUsersAmount(room, countUsers());
+            picker.updateEntitiesAmount(room, countEntities());
         }
     }
 }

@@ -2,7 +2,7 @@ package ru.dragonestia.picker.api.impl.repository;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
-import ru.dragonestia.picker.api.exception.NodeNotFoundException;
+import ru.dragonestia.picker.api.exception.InstanceNotFoundException;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.impl.util.EnumUtils;
 import ru.dragonestia.picker.api.impl.util.RestTemplate;
@@ -17,7 +17,7 @@ import ru.dragonestia.picker.api.repository.response.NodeDetailsResponse;
 import ru.dragonestia.picker.api.repository.response.NodeListResponse;
 import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
+import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +46,7 @@ public class NodeRepositoryImpl implements NodeRepository {
                 params.put("requiredDetails", EnumUtils.enumSetToString(data.getDetails()));
             });
             return Optional.of(response.node());
-        } catch (NodeNotFoundException ex) {
+        } catch (InstanceNotFoundException ex) {
             return Optional.empty();
         }
     }
@@ -75,7 +75,7 @@ public class NodeRepositoryImpl implements NodeRepository {
     }
 
     @Override
-    public @NotNull PickedRoomResponse pickRoom(@NotNull NodeIdentifier identifier, @NotNull Set<UserIdentifier> users) {
+    public @NotNull PickedRoomResponse pickRoom(@NotNull NodeIdentifier identifier, @NotNull Set<EntityIdentifier> users) {
         return rest.queryPostWithBody(
                 "/nodes/" + identifier.getValue() + "/pick",
                 PickedRoomResponse.class,

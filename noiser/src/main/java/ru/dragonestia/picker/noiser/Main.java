@@ -8,7 +8,7 @@ import ru.dragonestia.picker.api.repository.query.node.GetAllNodes;
 import ru.dragonestia.picker.api.repository.query.user.UnlinkUsersFromRoom;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
+import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,13 +76,13 @@ public class Main {
 
             try {
                 synchronized (usersInNode) {
-                    var users = new HashSet<UserIdentifier>();
+                    var users = new HashSet<EntityIdentifier>();
                     var maxAdd = Math.min(10, (expectedUsers / nodes.size()) - usersInNode.get());
 
                     if (maxAdd == 0) return;
                     var add = maxAdd == 1 ? 1 : (random.nextInt(maxAdd - 1) + 1);
                     for (int i = 0; i < add; i++) {
-                        users.add(UserIdentifier.of(UUID.randomUUID().toString()));
+                        users.add(EntityIdentifier.of(UUID.randomUUID().toString()));
                     }
 
                     var request = client.getNodeRepository().pickRoom(nodeId, users);

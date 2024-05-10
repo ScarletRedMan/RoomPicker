@@ -9,16 +9,16 @@ import ru.dragonestia.picker.api.repository.response.LinkedRoomsWithUserResponse
 import ru.dragonestia.picker.api.repository.response.SearchUserResponse;
 import ru.dragonestia.picker.api.repository.response.UserDetailsResponse;
 
-@Tag(name = "Users", description = "User management")
+@Tag(name = "Users", description = "Entity management")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class EntityController {
 
     @Operation(summary = "Search user by identifier")
     @GetMapping("/search")
     SearchUserResponse search(
-            @Parameter(description = "User identifier input") @RequestParam(name = "input") String input
+            @Parameter(description = "Entity identifier input") @RequestParam(name = "input") String input
     ) {
         throw new UnsupportedOperationException("Not implemented");
     }
@@ -26,7 +26,7 @@ public class UserController {
     @Operation(summary = "Get user info")
     @GetMapping("/{userId}")
     UserDetailsResponse find(
-            @Parameter(description = "User identifier") @PathVariable(value = "userId") String userId
+            @Parameter(description = "Entity identifier") @PathVariable(value = "userId") String userId
     ) {
         throw new UnsupportedOperationException("Not implemented");
     }
@@ -34,7 +34,7 @@ public class UserController {
     @Operation(summary = "Get rooms linked with user")
     @GetMapping("/{userId}/rooms")
     LinkedRoomsWithUserResponse roomsOf(
-            @Parameter(description = "User identifier") @PathVariable(value = "userId") String userId
+            @Parameter(description = "Entity identifier") @PathVariable(value = "userId") String userId
     ) {
         throw new UnsupportedOperationException("Not implemented");
     }

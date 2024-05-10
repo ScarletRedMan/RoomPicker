@@ -4,23 +4,23 @@ import ru.dragonestia.picker.api.repository.response.ErrorResponse;
 
 import java.util.Map;
 
-public final class NodeNotFoundException extends ApiException {
+public final class InstanceNotFoundException extends ApiException {
 
-    public static final String ERROR_ID = "err.node.not_found";
+    public static final String ERROR_ID = "err.instance.not_found";
 
     private final String nodeId;
 
-    public NodeNotFoundException(String nodeId) {
+    public InstanceNotFoundException(String nodeId) {
         this.nodeId = nodeId;
     }
 
-    public NodeNotFoundException(ErrorResponse errorResponse) {
-        this(errorResponse.details().get("node"));
+    public InstanceNotFoundException(ErrorResponse errorResponse) {
+        this(errorResponse.details().get("instance"));
     }
 
     @Override
     public String getMessage() {
-        return "Node '" + nodeId + "' does not found";
+        return "Instance '" + nodeId + "' does not found";
     }
 
     public String getNodeId() {
@@ -34,6 +34,6 @@ public final class NodeNotFoundException extends ApiException {
 
     @Override
     public void appendDetailsToErrorResponse(Map<String, String> details) {
-        details.put("node", getNodeId());
+        details.put("instance", getNodeId());
     }
 }

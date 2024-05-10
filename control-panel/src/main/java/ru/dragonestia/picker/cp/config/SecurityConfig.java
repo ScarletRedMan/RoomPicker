@@ -48,8 +48,8 @@ public class SecurityConfig extends VaadinWebSecurity {
         super.configure(http);
 
         http.formLogin(login -> {
-            login.successForwardUrl("/nodes");
-            login.defaultSuccessUrl("/nodes");
+            login.successForwardUrl("/instances");
+            login.defaultSuccessUrl("/instances");
         });
         setLoginView(http, LoginPage.class);
     }

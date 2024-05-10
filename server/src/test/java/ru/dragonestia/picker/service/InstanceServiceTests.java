@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
+import ru.dragonestia.picker.api.exception.InstanceAlreadyExistException;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.model.instance.Instance;
@@ -25,7 +25,7 @@ public class InstanceServiceTests {
 
         Assertions.assertDoesNotThrow(() -> instanceService.create(node));
         Assertions.assertTrue(instanceService.find(node.getIdentifier()).isPresent());
-        Assertions.assertThrows(NodeAlreadyExistException.class, () -> instanceService.create(node));
+        Assertions.assertThrows(InstanceAlreadyExistException.class, () -> instanceService.create(node));
 
         instanceService.remove(node);
 

@@ -5,12 +5,12 @@ import org.jetbrains.annotations.NotNull;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.room.Room;
-import ru.dragonestia.picker.model.user.User;
+import ru.dragonestia.picker.model.entity.Entity;
 import ru.dragonestia.picker.repository.impl.picker.LeastPickedPicker;
 import ru.dragonestia.picker.repository.impl.picker.RoomPicker;
 import ru.dragonestia.picker.repository.impl.picker.RoundRobinPicker;
 import ru.dragonestia.picker.repository.impl.picker.SequentialFillingPicker;
-import ru.dragonestia.picker.repository.impl.type.UserTransaction;
+import ru.dragonestia.picker.repository.impl.type.EntityTransaction;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,13 +21,13 @@ public class InstanceContainer {
 
     @Getter
     private final Instance instance;
-    private final UserTransaction.Listener transactionListener;
+    private final EntityTransaction.Listener transactionListener;
     private final RoomPicker picker;
 
     private final ReadWriteLock roomLock = new ReentrantReadWriteLock();
     private final Map<String, RoomContainer> rooms = new ConcurrentHashMap<>();
 
-    public InstanceContainer(@NotNull Instance instance, @NotNull UserTransaction.Listener transactionListener) {
+    public InstanceContainer(@NotNull Instance instance, @NotNull EntityTransaction.Listener transactionListener) {
         this.instance = instance;
         this.transactionListener = transactionListener;
         this.picker = initPicker();
@@ -92,11 +92,11 @@ public class InstanceContainer {
         }
     }
 
-    public @NotNull Room pick(@NotNull Set<User> users) {
+    public @NotNull Room pick(@NotNull Set<Entity> entities) {
         synchronized (picker) {
-            var room = picker.pick(users);
-            room.addUsers(users, false);
-            transactionListener.accept(new UserTransaction(room.getRoom(), users));
+            var room = picker.pick(entities);
+            room.addEntities(entities, false);
+            transactionListener.accept(new EntityTransaction(room.getRoom(), entities));
             return room.getRoom();
         }
     }

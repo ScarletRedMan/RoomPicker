@@ -2,13 +2,13 @@ package ru.dragonestia.picker.api.model.user;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
+import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 
 public class UserDefinition implements IUser {
 
     private final String id;
 
-    public UserDefinition(@NotNull UserIdentifier identifier) {
+    public UserDefinition(@NotNull EntityIdentifier identifier) {
         id = identifier.getValue();
     }
 

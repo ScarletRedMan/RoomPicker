@@ -74,7 +74,7 @@ public class AccountServiceImpl implements AccountService {
             return accounts.get(lowerUsername);
         }
 
-        throw new UsernameNotFoundException("User '" + username + "' does not exists");
+        throw new UsernameNotFoundException("Entity '" + username + "' does not exists");
     }
 
     private void checkAdmin(String accountId) {

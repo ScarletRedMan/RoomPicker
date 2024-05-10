@@ -6,17 +6,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
-import ru.dragonestia.picker.api.exception.NodeNotFoundException;
+import ru.dragonestia.picker.api.exception.InstanceAlreadyExistException;
+import ru.dragonestia.picker.api.exception.InstanceNotFoundException;
 import ru.dragonestia.picker.api.exception.NotPersistedNodeException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.model.room.IRoom;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
+import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 import ru.dragonestia.picker.model.instance.Instance;
-import ru.dragonestia.picker.model.user.User;
+import ru.dragonestia.picker.model.entity.Entity;
 import ru.dragonestia.picker.model.factory.RoomFactory;
 
 import java.util.List;
@@ -42,7 +42,7 @@ public class RoomServiceTests {
 
         try {
             instanceService.create(instance);
-        } catch (NodeAlreadyExistException ignore) {}
+        } catch (InstanceAlreadyExistException ignore) {}
     }
 
     @WithMockUser(roles = {"NODE_MANAGEMENT"})
@@ -98,12 +98,12 @@ public class RoomServiceTests {
         rooms.forEach(room -> roomService.create(room));
 
         var users = Set.of(
-                new User(UserIdentifier.of("1")),
-                new User(UserIdentifier.of("2")),
-                new User(UserIdentifier.of("3")),
-                new User(UserIdentifier.of("4")),
-                new User(UserIdentifier.of("5")),
-                new User(UserIdentifier.of("6"))
+                new Entity(EntityIdentifier.of("1")),
+                new Entity(EntityIdentifier.of("2")),
+                new Entity(EntityIdentifier.of("3")),
+                new Entity(EntityIdentifier.of("4")),
+                new Entity(EntityIdentifier.of("5")),
+                new Entity(EntityIdentifier.of("6"))
         );
 
 
@@ -115,7 +115,7 @@ public class RoomServiceTests {
     void test_removeNode() {
         instanceService.remove(instance);
 
-        Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.all(instance));
+        Assertions.assertThrows(InstanceNotFoundException.class, () -> roomService.all(instance));
     }
 
     @WithMockUser(roles = {"NODE_MANAGEMENT"})
@@ -124,9 +124,9 @@ public class RoomServiceTests {
         var node = new Instance(NodeIdentifier.of("bruh"), PickingMethod.ROUND_ROBIN, false);
         var room = roomFactory.create(RoomIdentifier.of("test"), node, IRoom.UNLIMITED_SLOTS, "", false);
 
-        Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.create(room));
-        Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.remove(room));
-        Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.find(node, "Bruh"));
-        Assertions.assertThrows(NodeNotFoundException.class, () -> roomService.pickAvailable(node, Set.of(new User(UserIdentifier.of("1")))));
+        Assertions.assertThrows(InstanceNotFoundException.class, () -> roomService.create(room));
+        Assertions.assertThrows(InstanceNotFoundException.class, () -> roomService.remove(room));
+        Assertions.assertThrows(InstanceNotFoundException.class, () -> roomService.find(node, "Bruh"));
+        Assertions.assertThrows(InstanceNotFoundException.class, () -> roomService.pickAvailable(node, Set.of(new Entity(EntityIdentifier.of("1")))));
     }
 }

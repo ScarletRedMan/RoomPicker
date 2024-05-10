@@ -14,7 +14,7 @@ import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.config.FillingNodesConfig;
 import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.repository.RoomRepository;
-import ru.dragonestia.picker.repository.UserRepository;
+import ru.dragonestia.picker.repository.EntityRepository;
 import ru.dragonestia.picker.util.UserFiller;
 
 import java.util.stream.Stream;
@@ -28,7 +28,7 @@ public class LeastPickedTests {
     private RoomRepository roomRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private EntityRepository entityRepository;
 
     @Autowired
     private UserFiller userFiller;
@@ -41,11 +41,11 @@ public class LeastPickedTests {
     @ParameterizedTest
     @ArgumentsSource(PickingArgumentProvider.class)
     void testPicking(String expectedRoomId, int usersAmount) {
-        var expectedRoomUsers = userRepository.usersOf(roomRepository.find(instance, expectedRoomId).orElseThrow()).size();
+        var expectedRoomUsers = entityRepository.entitiesOf(roomRepository.find(instance, expectedRoomId).orElseThrow()).size();
 
         var room = roomRepository.pick(instance, userFiller.createRandomUsers(usersAmount));
         var slots = room.getMaxSlots();
-        var users = userRepository.usersOf(room);
+        var users = entityRepository.entitiesOf(room);
         Assertions.assertTrue(slots == -1 || slots >= users.size()); // check slots limitation
 
         System.out.printf("Room(%s) has %s/%s users. Expected: %s(%s), added: %s%n", room.getIdentifier(), users.size(), slots, expectedRoomId, expectedRoomUsers, usersAmount);

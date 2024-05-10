@@ -3,7 +3,7 @@ package ru.dragonestia.picker.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dragonestia.picker.api.exception.InvalidInstanceIdentifierException;
-import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
+import ru.dragonestia.picker.api.exception.InstanceAlreadyExistException;
 import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.repository.InstanceRepository;
 import ru.dragonestia.picker.repository.RoomRepository;
@@ -22,7 +22,7 @@ public class InstanceServiceImpl implements InstanceService {
     private final InstanceAndRoomStorage storage;
 
     @Override
-    public void create(Instance instance) throws InvalidInstanceIdentifierException, NodeAlreadyExistException {
+    public void create(Instance instance) throws InvalidInstanceIdentifierException, InstanceAlreadyExistException {
         instanceRepository.create(instance);
         storage.saveInstance(instance);
     }

@@ -22,7 +22,7 @@ After that, you can connect to the server using `RoomPicker Client`.
 Example of using the RoomPicker Client
 ----------
 
-Create a Node and a Room, after that, system pick up a room for 5 users.
+Create a Node and a Room, after that, system pick up a room for 5 entities.
 ```java
 class Example {
     public static void main(String[] args) {
@@ -45,14 +45,14 @@ class Example {
                 .setPayload("Hello world!");
         client.getRoomRepository().saveRoom(roomDefinition);
 
-        // Picking room for 5 users
-        var users = new HashSet<UserIdentifier>();
+        // Picking room for 5 entities
+        var entities = new HashSet<UserIdentifier>();
         for (int i = 0 ; i < 5; i++) {
-            var user = UserIdentifier.of("test-user-" + i);
-            users.add(user);
+            var entity = UserIdentifier.of("test-entity-" + i);
+            entities.add(entity);
         }
         try {
-            var response = client.getNodeRepository().pickRoom(nodeId, users);
+            var response = client.getNodeRepository().pickRoom(nodeId, entities);
             // TODO...
         } catch (NoRoomsAvailableException ex) {
             // Cannot pick room

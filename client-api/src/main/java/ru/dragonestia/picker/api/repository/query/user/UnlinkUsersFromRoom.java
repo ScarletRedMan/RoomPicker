@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
+import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,7 +42,7 @@ public class UnlinkUsersFromRoom {
 
         private String nodeId = null;
         private String roomId = null;
-        private Set<UserIdentifier> users = new HashSet<>();
+        private Set<EntityIdentifier> users = new HashSet<>();
 
         private Builder() {}
 
@@ -59,13 +59,13 @@ public class UnlinkUsersFromRoom {
         }
 
         @Contract("_ -> this")
-        public @NotNull Builder setUsers(@NotNull Set<UserIdentifier> users) {
+        public @NotNull Builder setUsers(@NotNull Set<EntityIdentifier> users) {
             this.users = users;
             return this;
         }
 
         @Contract("_ -> this")
-        public @NotNull Builder appendUser(@NotNull UserIdentifier user) {
+        public @NotNull Builder appendUser(@NotNull EntityIdentifier user) {
             users.add(user);
             return this;
         }

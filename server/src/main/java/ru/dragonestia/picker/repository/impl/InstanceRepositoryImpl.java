@@ -2,7 +2,7 @@ package ru.dragonestia.picker.repository.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
+import ru.dragonestia.picker.api.exception.InstanceAlreadyExistException;
 import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.repository.InstanceRepository;
 import ru.dragonestia.picker.repository.impl.container.InstanceContainer;
@@ -17,7 +17,7 @@ public class InstanceRepositoryImpl implements InstanceRepository {
     private final ContainerRepository containerRepository;
 
     @Override
-    public void create(Instance instance) throws NodeAlreadyExistException {
+    public void create(Instance instance) throws InstanceAlreadyExistException {
         containerRepository.create(instance);
     }
 

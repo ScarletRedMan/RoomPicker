@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RolesAllowed("USER")
 @PageTitle("Room details")
-@Route(value = "/nodes/:nodeId/rooms/:roomId", layout = MainLayout.class)
+@Route(value = "/instances/:nodeId/rooms/:roomId", layout = MainLayout.class)
 public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
     private final SecurityService securityService;
