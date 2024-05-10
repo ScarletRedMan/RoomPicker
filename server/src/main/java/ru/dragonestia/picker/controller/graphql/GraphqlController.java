@@ -9,7 +9,7 @@ import ru.dragonestia.picker.controller.graphql.entity.EntityNode;
 import ru.dragonestia.picker.controller.graphql.entity.EntityRoom;
 import ru.dragonestia.picker.controller.graphql.entity.EntityUser;
 import ru.dragonestia.picker.controller.graphql.entity.type.DataProvider;
-import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.user.User;
 import ru.dragonestia.picker.service.NodeService;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.service.UserService;

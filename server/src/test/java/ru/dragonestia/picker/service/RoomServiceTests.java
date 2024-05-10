@@ -15,11 +15,9 @@ import ru.dragonestia.picker.api.model.room.IRoom;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 import ru.dragonestia.picker.api.repository.type.UserIdentifier;
-import ru.dragonestia.picker.model.Node;
-import ru.dragonestia.picker.model.Room;
-import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.user.User;
 import ru.dragonestia.picker.model.factory.RoomFactory;
-import ru.dragonestia.picker.model.type.SlotLimit;
 
 import java.util.List;
 import java.util.Set;

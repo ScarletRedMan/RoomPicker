@@ -2,7 +2,7 @@ package ru.dragonestia.picker.controller.graphql.entity;
 
 import lombok.RequiredArgsConstructor;
 import ru.dragonestia.picker.controller.graphql.entity.type.DataProvider;
-import ru.dragonestia.picker.model.Room;
+import ru.dragonestia.picker.model.room.Room;
 
 import java.util.List;
 

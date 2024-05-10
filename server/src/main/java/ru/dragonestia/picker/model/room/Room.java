@@ -1,4 +1,4 @@
-package ru.dragonestia.picker.model;
+package ru.dragonestia.picker.model.room;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -7,7 +7,7 @@ import ru.dragonestia.picker.api.model.room.ResponseRoom;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
-import ru.dragonestia.picker.event.UpdateRoomLockStateEvent;
+import ru.dragonestia.picker.model.node.Node;
 
 import java.util.Objects;
 

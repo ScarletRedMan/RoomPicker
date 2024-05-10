@@ -8,7 +8,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
-import ru.dragonestia.picker.model.Node;
+import ru.dragonestia.picker.model.node.Node;
 
 import java.util.List;
 

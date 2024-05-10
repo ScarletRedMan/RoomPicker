@@ -5,11 +5,10 @@ import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
-import ru.dragonestia.picker.model.Node;
-import ru.dragonestia.picker.model.Room;
-import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.room.Room;
+import ru.dragonestia.picker.model.user.User;
 import ru.dragonestia.picker.repository.RoomRepository;
-import ru.dragonestia.picker.repository.impl.container.NodeContainer;
 import ru.dragonestia.picker.repository.impl.container.RoomContainer;
 
 import java.util.Collection;

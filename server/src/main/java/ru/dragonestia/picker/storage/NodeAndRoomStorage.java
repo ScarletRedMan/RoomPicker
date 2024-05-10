@@ -1,7 +1,7 @@
 package ru.dragonestia.picker.storage;
 
-import ru.dragonestia.picker.model.Node;
-import ru.dragonestia.picker.model.Room;
+import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.room.Room;
 
 public interface NodeAndRoomStorage {
 

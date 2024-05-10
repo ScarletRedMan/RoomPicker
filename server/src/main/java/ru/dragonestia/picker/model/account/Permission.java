@@ -1,4 +1,4 @@
-package ru.dragonestia.picker.model;
+package ru.dragonestia.picker.model.account;
 
 import org.springframework.security.core.GrantedAuthority;
 

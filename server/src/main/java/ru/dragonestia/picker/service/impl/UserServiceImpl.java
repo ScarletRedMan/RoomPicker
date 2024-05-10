@@ -3,8 +3,8 @@ package ru.dragonestia.picker.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dragonestia.picker.api.model.user.ResponseUser;
-import ru.dragonestia.picker.model.Room;
-import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.room.Room;
+import ru.dragonestia.picker.model.user.User;
 import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.service.UserService;
 

@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.config.FillingNodesConfig;
-import ru.dragonestia.picker.model.Node;
+import ru.dragonestia.picker.model.node.Node;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.util.UserFiller;

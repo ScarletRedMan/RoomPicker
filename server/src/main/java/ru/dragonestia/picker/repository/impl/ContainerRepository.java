@@ -1,10 +1,9 @@
 package ru.dragonestia.picker.repository.impl;
 
-import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.api.exception.NodeAlreadyExistException;
-import ru.dragonestia.picker.model.Node;
+import ru.dragonestia.picker.model.node.Node;
 import ru.dragonestia.picker.repository.impl.container.NodeContainer;
 import ru.dragonestia.picker.repository.impl.type.UserTransaction;
 

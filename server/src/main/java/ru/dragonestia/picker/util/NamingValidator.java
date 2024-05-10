@@ -6,11 +6,10 @@ import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
 import ru.dragonestia.picker.api.exception.InvalidUsernamesException;
 import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.api.util.IdentifierValidator;
-import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.user.User;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 @Component
 public class NamingValidator {

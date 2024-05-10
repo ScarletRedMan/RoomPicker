@@ -3,7 +3,7 @@ package ru.dragonestia.picker.controller.graphql.entity;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import ru.dragonestia.picker.controller.graphql.entity.type.DataProvider;
-import ru.dragonestia.picker.model.User;
+import ru.dragonestia.picker.model.user.User;
 
 import java.util.List;
 

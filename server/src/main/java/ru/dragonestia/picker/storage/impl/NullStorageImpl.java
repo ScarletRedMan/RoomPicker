@@ -2,8 +2,8 @@ package ru.dragonestia.picker.storage.impl;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import ru.dragonestia.picker.model.Node;
-import ru.dragonestia.picker.model.Room;
+import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.storage.NodeAndRoomStorage;
 
 @Profile("test")

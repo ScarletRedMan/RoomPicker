@@ -1,4 +1,4 @@
-package ru.dragonestia.picker.model;
+package ru.dragonestia.picker.model.user;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

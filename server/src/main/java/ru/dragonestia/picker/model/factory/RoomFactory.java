@@ -3,11 +3,10 @@ package ru.dragonestia.picker.model.factory;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
-import ru.dragonestia.picker.model.Node;
-import ru.dragonestia.picker.model.Room;
+import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.room.Room;
 
 @Component
 @RequiredArgsConstructor
