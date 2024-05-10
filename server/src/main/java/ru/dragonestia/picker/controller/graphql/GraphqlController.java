@@ -15,7 +15,6 @@ import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.service.UserService;
 
 import java.util.List;
-import java.util.Set;
 
 @Controller
 public class GraphqlController {
@@ -73,7 +72,7 @@ public class GraphqlController {
 
     @QueryMapping
     List<EntityUser> searchUser(@Argument String input) {
-        return userService.searchUsers(input, Set.of()).stream()
+        return userService.searchUsers(input).stream()
                 .map(user -> new EntityUser(new User(user.getIdentifierObject()), dataProvider))
                 .toList();
     }

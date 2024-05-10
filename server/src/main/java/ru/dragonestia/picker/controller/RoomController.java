@@ -7,17 +7,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.dragonestia.picker.api.exception.NodeNotFoundException;
-import ru.dragonestia.picker.api.exception.RoomNotFoundException;
 import ru.dragonestia.picker.api.repository.response.RoomInfoResponse;
 import ru.dragonestia.picker.api.repository.response.RoomListResponse;
-import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
-import ru.dragonestia.picker.model.Room;
-import ru.dragonestia.picker.model.factory.RoomFactory;
-import ru.dragonestia.picker.service.RoomService;
-import ru.dragonestia.picker.service.NodeService;
-import ru.dragonestia.picker.util.DetailsParser;
-import ru.dragonestia.picker.util.NamingValidator;
 
 @Tag(name = "Rooms", description = "Room management")
 @RestController
@@ -25,24 +16,12 @@ import ru.dragonestia.picker.util.NamingValidator;
 @RequiredArgsConstructor
 public class RoomController {
 
-    private final NodeService nodeService;
-    private final RoomService roomService;
-    private final NamingValidator namingValidator;
-    private final DetailsParser detailsParser;
-    private final RoomFactory roomFactory;
-
     @Operation(summary = "Get all rooms from node")
     @GetMapping
     ResponseEntity<RoomListResponse> all(
-            @Parameter(description = "Node identifier") @PathVariable(name = "nodeId") String nodeId,
-            @Parameter(description = "Required addition data", example = "COUNT_USERS") @RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq
+            @Parameter(description = "Node identifier") @PathVariable(name = "nodeId") String nodeId
     ) {
-        return nodeService.find(nodeId)
-                .map(node -> {
-                    var details = detailsParser.parseRoomDetails(detailsSeq);
-                    var response = new RoomListResponse(nodeId, roomService.getAllRoomsWithDetailsResponse(node, details));
-                    return ResponseEntity.ok(response);
-                }).orElseThrow(() -> new NodeNotFoundException(nodeId));
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Operation(summary = "Register new room")
@@ -55,12 +34,7 @@ public class RoomController {
             @Parameter(description = "Lock for picking") @RequestParam(name = "locked", required = false, defaultValue = "false") boolean locked,
             @Parameter(description = "Save room") @RequestParam(name = "persist", required = false, defaultValue = "false") boolean persist
     ) {
-        var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
-        var room = roomFactory.create(RoomIdentifier.of(roomId), node, slots, payload, persist);
-        roomService.create(room);
-        room.setLocked(locked);
-
-        return ResponseEntity.ok().build();
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Operation(summary = "Unregister room")
@@ -69,14 +43,7 @@ public class RoomController {
             @Parameter(description = "Node identifier") @PathVariable("nodeId") String nodeId,
             @Parameter(description = "Room identifier") @PathVariable("roomId") String roomId
     ) {
-        namingValidator.validateNodeId(nodeId);
-        namingValidator.validateRoomId(nodeId, roomId);
-
-        var nodeOpt = nodeService.find(nodeId);
-        nodeOpt.flatMap(node -> roomService.find(node, roomId))
-                .ifPresent(roomService::remove);
-
-        return ResponseEntity.ok().build();
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Operation(summary = "Get room details")
@@ -85,13 +52,7 @@ public class RoomController {
             @Parameter(description = "Node identifier") @PathVariable("nodeId") String nodeId,
             @Parameter(description = "Room identifier") @PathVariable("roomId") String roomId
     ) {
-        namingValidator.validateNodeId(nodeId);
-        namingValidator.validateRoomId(nodeId, roomId);
-
-        var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
-        return roomService.find(node, roomId)
-                .map(room -> ResponseEntity.ok(new RoomInfoResponse(room.toResponseObject())))
-                .orElseThrow(() -> new RoomNotFoundException(nodeId, roomId));
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Operation(summary = "Lock/unlock room")
@@ -102,13 +63,6 @@ public class RoomController {
             @Parameter(description = "Room identifier") @PathVariable("roomId") String roomId,
             @Parameter(description = "New state for Lock property") @RequestParam(name = "newState") boolean value
     ) {
-        namingValidator.validateNodeId(nodeId);
-        namingValidator.validateRoomId(nodeId, roomId);
-
-        var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
-        var room = roomService.find(node, roomId).orElseThrow(() -> new RoomNotFoundException(nodeId, roomId));
-        room.setLocked(value);
-        roomService.updateState(room);
-        return ResponseEntity.ok(true);
+        throw new UnsupportedOperationException("Not implemented");
     }
 }

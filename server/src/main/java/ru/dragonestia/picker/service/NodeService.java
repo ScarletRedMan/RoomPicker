@@ -21,7 +21,5 @@ public interface NodeService {
 
     List<Node> all();
 
-    List<ResponseNode> getAllNodesWithDetailsResponse(Set<NodeDetails> details);
-
     Optional<Node> find(String nodeId);
 }
