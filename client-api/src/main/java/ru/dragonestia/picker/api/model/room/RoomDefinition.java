@@ -28,7 +28,7 @@ public class RoomDefinition implements IRoom {
     }
 
     @Override
-    public @NotNull String getNodeIdentifier() {
+    public @NotNull String getInstanceIdentifier() {
         return nodeId;
     }
 

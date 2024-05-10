@@ -141,7 +141,7 @@ public class DynamicSortedMap<ITEM extends DynamicSortedMap.Item> {
 
         @Override
         public String toString() {
-            return "{Node id=%s, score=%s, removed=%s }".formatted(
+            return "{Instance id=%s, score=%s, removed=%s }".formatted(
                     object.getId(),
                     getScore(),
                     removed

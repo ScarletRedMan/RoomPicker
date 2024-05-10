@@ -4,13 +4,13 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.ErrorParameter;
 import com.vaadin.flow.router.HasErrorParameter;
 import jakarta.servlet.http.HttpServletResponse;
-import ru.dragonestia.picker.api.exception.InvalidNodeIdentifierException;
+import ru.dragonestia.picker.api.exception.InvalidInstanceIdentifierException;
 import ru.dragonestia.picker.cp.component.NavPath;
 
-public class InvalidNodeIdentifierPlug extends ErrorPlug implements HasErrorParameter<InvalidNodeIdentifierException> {
+public class InvalidNodeIdentifierPlug extends ErrorPlug implements HasErrorParameter<InvalidInstanceIdentifierException> {
 
     @Override
-    public int setErrorParameter(BeforeEnterEvent beforeEnterEvent, ErrorParameter<InvalidNodeIdentifierException> errorParameter) {
+    public int setErrorParameter(BeforeEnterEvent beforeEnterEvent, ErrorParameter<InvalidInstanceIdentifierException> errorParameter) {
         var ex = errorParameter.getException();
         var nodeId = ex.getNodeId();
 

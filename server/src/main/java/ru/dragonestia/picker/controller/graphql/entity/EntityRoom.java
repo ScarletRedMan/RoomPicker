@@ -17,13 +17,13 @@ public class EntityRoom {
         return room.getIdentifier();
     }
 
-    public String getNodeId() {
-        return room.getNodeIdentifier();
+    public String getInstanceId() {
+        return room.getInstanceIdentifier();
     }
 
-    public EntityNode getNode() {
-        return dataProvider.nodeService().find(room.getNodeIdentifier())
-                .map(node -> new EntityNode(node, dataProvider))
+    public EntityInstance getInstance() {
+        return dataProvider.instanceService().find(room.getInstanceIdentifier())
+                .map(node -> new EntityInstance(node, dataProvider))
                 .orElseThrow();
     }
 

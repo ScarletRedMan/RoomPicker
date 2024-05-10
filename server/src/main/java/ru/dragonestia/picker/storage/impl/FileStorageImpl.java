@@ -8,11 +8,11 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.room.Room;
-import ru.dragonestia.picker.repository.NodeRepository;
+import ru.dragonestia.picker.repository.InstanceRepository;
 import ru.dragonestia.picker.repository.RoomRepository;
-import ru.dragonestia.picker.storage.NodeAndRoomStorage;
+import ru.dragonestia.picker.storage.InstanceAndRoomStorage;
 
 import java.io.File;
 import java.util.Objects;
@@ -21,12 +21,12 @@ import java.util.Objects;
 @Profile("!test")
 @Component
 @RequiredArgsConstructor
-public class FileStorageImpl implements NodeAndRoomStorage {
+public class FileStorageImpl implements InstanceAndRoomStorage {
 
     @Value("${ROOMPICKER_DATA_PATH:./appdata}")
     private String path;
 
-    private final NodeRepository nodeRepository;
+    private final InstanceRepository instanceRepository;
     private final RoomRepository roomRepository;
     private final ObjectMapper objectMapper;
 
@@ -38,14 +38,14 @@ public class FileStorageImpl implements NodeAndRoomStorage {
 
         if (!dir.exists()) dir.mkdirs();
 
-        var nodeDir = new File(path + "/nodes");
+        var nodeDir = new File(path + "/instances");
         if (!nodeDir.exists()) nodeDir.mkdir();
         for (var file: Objects.requireNonNull(nodeDir.listFiles(File::isFile))) {
             try {
-                var node = reader.readValue(file, Node.class);
-                nodeRepository.create(node);
+                var instance = reader.readValue(file, Instance.class);
+                instanceRepository.create(instance);
             } catch (Exception ex) {
-                log.error("Cannot read node file '%s'".formatted(file.getName()));
+                log.error("Cannot read instance file '%s'".formatted(file.getName()));
                 log.throwing(ex);
             }
         }
@@ -64,31 +64,31 @@ public class FileStorageImpl implements NodeAndRoomStorage {
     }
 
     @Override
-    public void saveNode(Node node) {
-        if (!node.isPersist()) return;
-        var nodeFile = new File(path + "/nodes/" + node.getIdentifier() + ".json");
+    public void saveInstance(Instance instance) {
+        if (!instance.isPersist()) return;
+        var instanceFile = new File(path + "/instances/" + instance.getIdentifier() + ".json");
         var writer = objectMapper.writer();
 
         try {
-            writer.writeValue(nodeFile, node);
+            writer.writeValue(instanceFile, instance);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
 
     @Override
-    public void removeNode(Node node) {
-        if (!node.isPersist()) return;
-        new File(path + "/nodes/" + node.getIdentifier() + ".json").delete();
+    public void removeInstance(Instance instance) {
+        if (!instance.isPersist()) return;
+        new File(path + "/nodes/" + instance.getIdentifier() + ".json").delete();
 
-        log.info("Removed node '%s' from disk storage".formatted(node.getIdentifier()));
+        log.info("Removed instance '%s' from disk storage".formatted(instance.getIdentifier()));
     }
 
     @SneakyThrows
     @Override
     public void saveRoom(Room room) {
         if (!room.isPersist()) return;
-        var roomFile = new File("%s/rooms/%s.%s.json".formatted(path, room.getNodeIdentifier(), room.getIdentifier()));
+        var roomFile = new File("%s/rooms/%s.%s.json".formatted(path, room.getInstanceIdentifier(), room.getIdentifier()));
         var writer = objectMapper.writer();
 
         try {
@@ -101,8 +101,8 @@ public class FileStorageImpl implements NodeAndRoomStorage {
     @Override
     public void removeRoom(Room room) {
         if (!room.isPersist()) return;
-        new File("%s/rooms/%s.%s.json".formatted(path, room.getNodeIdentifier(), room.getIdentifier())).delete();
+        new File("%s/rooms/%s.%s.json".formatted(path, room.getInstanceIdentifier(), room.getIdentifier())).delete();
 
-        log.info("Removed room '%s/%s' from disk storage".formatted(room.getNodeIdentifier(), room.getIdentifier()));
+        log.info("Removed room '%s/%s' from disk storage".formatted(room.getInstanceIdentifier(), room.getIdentifier()));
     }
 }

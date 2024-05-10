@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.config.FillingNodesConfig;
-import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.util.UserFiller;
@@ -35,15 +35,15 @@ public class LeastPickedTests {
 
     @Qualifier("leastNode")
     @Autowired
-    private Node node;
+    private Instance instance;
 
     @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     @ParameterizedTest
     @ArgumentsSource(PickingArgumentProvider.class)
     void testPicking(String expectedRoomId, int usersAmount) {
-        var expectedRoomUsers = userRepository.usersOf(roomRepository.find(node, expectedRoomId).orElseThrow()).size();
+        var expectedRoomUsers = userRepository.usersOf(roomRepository.find(instance, expectedRoomId).orElseThrow()).size();
 
-        var room = roomRepository.pick(node, userFiller.createRandomUsers(usersAmount));
+        var room = roomRepository.pick(instance, userFiller.createRandomUsers(usersAmount));
         var slots = room.getMaxSlots();
         var users = userRepository.usersOf(room);
         Assertions.assertTrue(slots == -1 || slots >= users.size()); // check slots limitation
@@ -74,6 +74,6 @@ public class LeastPickedTests {
     @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     @Test
     void testNoOneRoomExpected() { // Take 9 users. expected none result
-        Assertions.assertThrows(NoRoomsAvailableException.class, () -> roomRepository.pick(node, userFiller.createRandomUsers(9)));
+        Assertions.assertThrows(NoRoomsAvailableException.class, () -> roomRepository.pick(instance, userFiller.createRandomUsers(9)));
     }
 }

@@ -86,7 +86,7 @@ public class UserRepositoryImpl implements UserRepository {
         var result = new HashMap<String, Integer>();
 
         containerRepository.all().forEach(nodeContainer -> {
-            var nodeId = nodeContainer.getNode().getIdentifier();
+            var nodeId = nodeContainer.getInstance().getIdentifier();
 
             nodeContainer.allRooms().forEach(roomContainer -> {
                 result.put(nodeId, result.getOrDefault(nodeId, 0) + roomContainer.countUsers());
@@ -97,9 +97,9 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     private RoomContainer getRoomContainer(Room room) {
-        return containerRepository.findById(room.getNodeIdentifier())
-                .orElseThrow(() -> new NodeNotFoundException(room.getNodeIdentifier()))
+        return containerRepository.findById(room.getInstanceIdentifier())
+                .orElseThrow(() -> new NodeNotFoundException(room.getInstanceIdentifier()))
                 .findRoomById(room.getIdentifier())
-                .orElseThrow(() -> new RoomNotFoundException(room.getNodeIdentifier(), room.getIdentifier()));
+                .orElseThrow(() -> new RoomNotFoundException(room.getInstanceIdentifier(), room.getIdentifier()));
     }
 }

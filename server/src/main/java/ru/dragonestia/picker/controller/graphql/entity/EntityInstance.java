@@ -2,23 +2,23 @@ package ru.dragonestia.picker.controller.graphql.entity;
 
 import lombok.RequiredArgsConstructor;
 import ru.dragonestia.picker.controller.graphql.entity.type.DataProvider;
-import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.instance.Instance;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-public class EntityNode {
+public class EntityInstance {
 
-    private final Node node;
+    private final Instance instance;
     private final DataProvider dataProvider;
     private List<EntityRoom> cachedRooms = null;
 
     public String getId() {
-        return node.getIdentifier();
+        return instance.getIdentifier();
     }
 
     public String getMethod() {
-        return node.getPickingMethod().name();
+        return instance.getPickingMethod().name();
     }
 
     public List<EntityRoom> getRooms() {
@@ -26,7 +26,7 @@ public class EntityNode {
             return cachedRooms;
         }
 
-        cachedRooms = dataProvider.roomService().all(node).stream()
+        cachedRooms = dataProvider.roomService().all(instance).stream()
                 .map(room -> new EntityRoom(room, dataProvider))
                 .toList();
 
@@ -38,6 +38,6 @@ public class EntityNode {
     }
 
     public boolean isPersist() {
-        return node.isPersist();
+        return instance.isPersist();
     }
 }

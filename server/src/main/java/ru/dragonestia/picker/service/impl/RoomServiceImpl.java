@@ -9,13 +9,13 @@ import ru.dragonestia.picker.api.exception.NotPersistedNodeException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
 import ru.dragonestia.picker.model.room.Room;
-import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.user.User;
-import ru.dragonestia.picker.repository.NodeRepository;
+import ru.dragonestia.picker.repository.InstanceRepository;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.service.RoomService;
-import ru.dragonestia.picker.storage.NodeAndRoomStorage;
+import ru.dragonestia.picker.storage.InstanceAndRoomStorage;
 import ru.dragonestia.picker.util.NamingValidator;
 
 import java.util.*;
@@ -27,16 +27,16 @@ import java.util.stream.Collectors;
 public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
-    private final NodeRepository nodeRepository;
+    private final InstanceRepository instanceRepository;
     private final UserRepository userRepository;
     private final NamingValidator namingValidator;
-    private final NodeAndRoomStorage storage;
+    private final InstanceAndRoomStorage storage;
 
     @Override
     public void create(Room room) throws InvalidRoomIdentifierException, RoomAlreadyExistException, NotPersistedNodeException {
-        namingValidator.validateRoomId(room.getNodeIdentifier(), room.getIdentifier());
+        namingValidator.validateRoomId(room.getInstanceIdentifier(), room.getIdentifier());
 
-        var node = nodeRepository.findById(room.getNodeIdentifier()).orElseThrow(() -> new NodeNotFoundException(room.getNodeIdentifier()));
+        var node = instanceRepository.findById(room.getInstanceIdentifier()).orElseThrow(() -> new NodeNotFoundException(room.getInstanceIdentifier()));
         if (!node.isPersist() && room.isPersist()) {
             throw new NotPersistedNodeException(node.getIdentifier(), room.getIdentifier());
         }
@@ -52,22 +52,22 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public Optional<Room> find(Node node, String roomId) {
-        return roomRepository.find(node, roomId);
+    public Optional<Room> find(Instance instance, String roomId) {
+        return roomRepository.find(instance, roomId);
     }
 
     @Override
-    public Collection<Room> all(Node node) {
-        return roomRepository.all(node);
+    public Collection<Room> all(Instance instance) {
+        return roomRepository.all(instance);
     }
 
     @Override
-    public PickedRoomResponse pickAvailable(Node node, Set<User> users) {
-        var room = roomRepository.pick(node, users);
+    public PickedRoomResponse pickAvailable(Instance instance, Set<User> users) {
+        var room = roomRepository.pick(instance, users);
         var roomUsers = userRepository.usersOf(room);
 
         return new PickedRoomResponse(
-                room.getNodeIdentifier(),
+                room.getInstanceIdentifier(),
                 room.getIdentifier(),
                 room.getPayload(),
                 room.getMaxSlots(),

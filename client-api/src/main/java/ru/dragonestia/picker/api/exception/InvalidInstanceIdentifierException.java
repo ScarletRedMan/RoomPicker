@@ -4,17 +4,17 @@ import ru.dragonestia.picker.api.repository.response.ErrorResponse;
 
 import java.util.Map;
 
-public final class InvalidNodeIdentifierException extends ApiException {
+public final class InvalidInstanceIdentifierException extends ApiException {
 
     public static final String ERROR_ID = "err.node.invalid_identifier";
 
     private final String nodeId;
 
-    public InvalidNodeIdentifierException(String nodeId) {
+    public InvalidInstanceIdentifierException(String nodeId) {
         this.nodeId = nodeId;
     }
 
-    public InvalidNodeIdentifierException(ErrorResponse errorResponse) {
+    public InvalidInstanceIdentifierException(ErrorResponse errorResponse) {
         this(errorResponse.details().get("identifier"));
     }
 

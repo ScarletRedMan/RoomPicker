@@ -64,7 +64,7 @@ public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserv
 
         grid.addColumn(ShortResponseRoom::getIdentifier).setHeader("Room identifier").setSortable(true);
 
-        grid.addColumn(ShortResponseRoom::getNodeIdentifier).setHeader("Node identifier").setSortable(true);
+        grid.addColumn(ShortResponseRoom::getInstanceIdentifier).setHeader("Node identifier").setSortable(true);
 
         grid.addColumn(room -> room.getDetail(RoomDetails.COUNT_USERS)).setHeader("Users")
                 .setComparator((room1, room2) -> {
@@ -78,7 +78,7 @@ public class UserDetailsPage extends VerticalLayout implements BeforeEnterObserv
             var button = new Button("Details");
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             button.addClickListener(event -> {
-                getUI().ifPresent(ui -> ui.navigate("/nodes/%s/rooms/%s".formatted(room.getNodeIdentifier(), room.getIdentifier())));
+                getUI().ifPresent(ui -> ui.navigate("/nodes/%s/rooms/%s".formatted(room.getInstanceIdentifier(), room.getIdentifier())));
             });
             return button;
         }).setTextAlign(ColumnTextAlign.END).setFrozenToEnd(true).setHeader(createRefreshButton());

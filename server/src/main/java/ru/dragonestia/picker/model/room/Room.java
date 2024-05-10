@@ -7,22 +7,22 @@ import ru.dragonestia.picker.api.model.room.ResponseRoom;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
 import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
-import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.instance.Instance;
 
 import java.util.Objects;
 
 public class Room implements IRoom {
 
     private final String identifier;
-    private final String nodeIdentifier;
+    private final String instanceIdentifier;
     private final int slots;
     private final String payload;
     private final boolean persist;
     private boolean locked = false;
 
-    public Room(@NotNull RoomIdentifier identifier, @NotNull Node node, int slots, @NotNull String payload, boolean persist) {
+    public Room(@NotNull RoomIdentifier identifier, @NotNull Instance instance, int slots, @NotNull String payload, boolean persist) {
         this.identifier = identifier.getValue();
-        this.nodeIdentifier = node.getIdentifier();
+        this.instanceIdentifier = instance.getIdentifier();
         this.slots = slots;
         this.payload = payload;
         this.persist = persist;
@@ -34,8 +34,8 @@ public class Room implements IRoom {
     }
 
     @Override
-    public @NotNull String getNodeIdentifier() {
-        return nodeIdentifier;
+    public @NotNull String getInstanceIdentifier() {
+        return instanceIdentifier;
     }
 
     @Override
@@ -74,16 +74,16 @@ public class Room implements IRoom {
     }
 
     public @NotNull ResponseRoom toResponseObject() {
-        return new ResponseRoom(identifier, nodeIdentifier, slots, locked, payload);
+        return new ResponseRoom(identifier, instanceIdentifier, slots, locked, payload);
     }
 
     public @NotNull ShortResponseRoom toShortResponseObject() {
-        return new ShortResponseRoom(identifier, nodeIdentifier, slots, locked);
+        return new ShortResponseRoom(identifier, instanceIdentifier, slots, locked);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(identifier, nodeIdentifier);
+        return Objects.hash(identifier, instanceIdentifier);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class Room implements IRoom {
         if (object == this) return true;
         if (object == null) return false;
         if (object instanceof Room other) {
-            return identifier.equals(other.identifier) && nodeIdentifier.equals(other.nodeIdentifier);
+            return identifier.equals(other.identifier) && instanceIdentifier.equals(other.instanceIdentifier);
         }
         return false;
     }

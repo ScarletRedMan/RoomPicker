@@ -32,8 +32,8 @@ class Example {
                 "qwerty123"
         );
 
-        // Creating node
-        var nodeId = NodeIdentifier.of("test-node");
+        // Creating instance
+        var nodeId = NodeIdentifier.of("test-instance");
         var nodeDefinition = new NodeDefinition(nodeId)
                 .setPickingMethod(PickingMethod.LEAST_PICKED);
         client.getNodeRepository().saveNode(nodeDefinition);

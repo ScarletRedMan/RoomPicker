@@ -19,15 +19,15 @@ public interface IRoom {
         return RoomIdentifier.of(getIdentifier());
     }
 
-    @NotNull String getNodeIdentifier();
+    @NotNull String getInstanceIdentifier();
 
     @Transient
     default @NotNull NodeIdentifier getNodeIdentifierObject() {
-        return NodeIdentifier.of(getNodeIdentifier());
+        return NodeIdentifier.of(getInstanceIdentifier());
     }
 
     default @NotNull RoomPath getPath() {
-        return new RoomPath(NodeIdentifier.of(getNodeIdentifier()), RoomIdentifier.of(getIdentifier()));
+        return new RoomPath(NodeIdentifier.of(getInstanceIdentifier()), RoomIdentifier.of(getIdentifier()));
     }
 
     int getMaxSlots();

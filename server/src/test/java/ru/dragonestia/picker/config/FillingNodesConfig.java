@@ -7,10 +7,10 @@ import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 import ru.dragonestia.picker.api.repository.type.UserIdentifier;
-import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.user.User;
 import ru.dragonestia.picker.model.factory.RoomFactory;
-import ru.dragonestia.picker.repository.NodeRepository;
+import ru.dragonestia.picker.repository.InstanceRepository;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.UserRepository;
 
@@ -39,7 +39,7 @@ public class FillingNodesConfig {
     */
 
     @Autowired
-    private NodeRepository nodeRepository;
+    private InstanceRepository instanceRepository;
 
     @Autowired
     private RoomRepository roomRepository;
@@ -50,45 +50,45 @@ public class FillingNodesConfig {
     @Autowired
     private RoomFactory roomFactory;
 
-    private Node seqNode;
-    private Node roundNode;
-    private Node leastNode;
+    private Instance seqInstance;
+    private Instance roundInstance;
+    private Instance leastInstance;
 
     @Bean
     void createSequentialFillingNode() {
-        var node = new Node(NodeIdentifier.of("seq"), PickingMethod.SEQUENTIAL_FILLING, false);
-        nodeRepository.create(node);
+        var node = new Instance(NodeIdentifier.of("seq"), PickingMethod.SEQUENTIAL_FILLING, false);
+        instanceRepository.create(node);
 
         fillNode(node);
 
-        seqNode = node;
+        seqInstance = node;
     }
 
     @Bean
     void createRoundRobinNode() {
-        var node = new Node(NodeIdentifier.of("round"), PickingMethod.ROUND_ROBIN, false);
-        nodeRepository.create(node);
+        var node = new Instance(NodeIdentifier.of("round"), PickingMethod.ROUND_ROBIN, false);
+        instanceRepository.create(node);
 
         fillNode(node);
 
-        roundNode = node;
+        roundInstance = node;
     }
 
     @Bean
     void createLeastPickerNode() {
-        var node = new Node(NodeIdentifier.of("least"), PickingMethod.LEAST_PICKED, false);
-        nodeRepository.create(node);
+        var node = new Instance(NodeIdentifier.of("least"), PickingMethod.LEAST_PICKED, false);
+        instanceRepository.create(node);
 
         fillNode(node);
 
-        leastNode = node;
+        leastInstance = node;
     }
 
-    private void fillNode(Node node) {
+    private void fillNode(Instance instance) {
         for (int i = 0, n = 5; i < n; i++) {
             for (int j = 0; j < 3; j++) {
                 var roomId = "room-" + i + "-" + j;
-                var room = roomFactory.create(RoomIdentifier.of(roomId), node, n, "", false);
+                var room = roomFactory.create(RoomIdentifier.of(roomId), instance, n, "", false);
                 roomRepository.create(room);
 
                 var users = n - i;
@@ -103,17 +103,17 @@ public class FillingNodesConfig {
     }
 
     @Bean
-    Node seqNode() {
-        return seqNode;
+    Instance seqNode() {
+        return seqInstance;
     }
 
     @Bean
-    Node roundNode() {
-        return roundNode;
+    Instance roundNode() {
+        return roundInstance;
     }
 
     @Bean
-    Node leastNode() {
-        return leastNode;
+    Instance leastNode() {
+        return leastInstance;
     }
 }

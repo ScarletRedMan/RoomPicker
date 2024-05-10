@@ -3,7 +3,7 @@ package ru.dragonestia.picker.repository.impl.container;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
-import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.model.user.User;
 import ru.dragonestia.picker.repository.impl.picker.LeastPickedPicker;
@@ -17,24 +17,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class NodeContainer {
+public class InstanceContainer {
 
     @Getter
-    private final Node node;
+    private final Instance instance;
     private final UserTransaction.Listener transactionListener;
     private final RoomPicker picker;
 
     private final ReadWriteLock roomLock = new ReentrantReadWriteLock();
     private final Map<String, RoomContainer> rooms = new ConcurrentHashMap<>();
 
-    public NodeContainer(@NotNull Node node, @NotNull UserTransaction.Listener transactionListener) {
-        this.node = node;
+    public InstanceContainer(@NotNull Instance instance, @NotNull UserTransaction.Listener transactionListener) {
+        this.instance = instance;
         this.transactionListener = transactionListener;
         this.picker = initPicker();
     }
 
     private @NotNull RoomPicker initPicker() {
-        return switch (node.getPickingMethod()) {
+        return switch (instance.getPickingMethod()) {
             case SEQUENTIAL_FILLING -> new SequentialFillingPicker(this);
             case ROUND_ROBIN -> new RoundRobinPicker(this);
             case LEAST_PICKED -> new LeastPickedPicker(this);
@@ -45,7 +45,7 @@ public class NodeContainer {
         roomLock.writeLock().lock();
         try {
             if (rooms.containsKey(room.getIdentifier())) {
-                throw new RoomAlreadyExistException(node.getIdentifier(), room.getIdentifier());
+                throw new RoomAlreadyExistException(instance.getIdentifier(), room.getIdentifier());
             }
 
             var container = new RoomContainer(room, this);

@@ -26,8 +26,8 @@ public class ExceptionHandlerController {
         return create(400, ex);
     }
 
-    @ExceptionHandler(InvalidNodeIdentifierException.class)
-    ResponseEntity<?> invalidNodeIdentifier(InvalidNodeIdentifierException ex) {
+    @ExceptionHandler(InvalidInstanceIdentifierException.class)
+    ResponseEntity<?> invalidNodeIdentifier(InvalidInstanceIdentifierException ex) {
         return create(400, ex);
     }
 

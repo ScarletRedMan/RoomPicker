@@ -3,8 +3,8 @@ package ru.dragonestia.picker.service;
 import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
+import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.room.Room;
-import ru.dragonestia.picker.model.node.Node;
 import ru.dragonestia.picker.model.user.User;
 
 import java.util.Collection;
@@ -17,11 +17,11 @@ public interface RoomService {
 
     void remove(Room room);
 
-    Optional<Room> find(Node node, String roomId);
+    Optional<Room> find(Instance instance, String roomId);
 
-    Collection<Room> all(Node node);
+    Collection<Room> all(Instance instance);
 
-    PickedRoomResponse pickAvailable(Node node, Set<User> users);
+    PickedRoomResponse pickAvailable(Instance instance, Set<User> users);
 
     void updateState(Room room);
 }
