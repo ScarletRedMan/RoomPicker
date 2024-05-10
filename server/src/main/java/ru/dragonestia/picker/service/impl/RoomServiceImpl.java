@@ -7,8 +7,6 @@ import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.NotPersistedNodeException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
-import ru.dragonestia.picker.api.model.room.RoomDetails;
-import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.Node;
@@ -18,7 +16,6 @@ import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.storage.NodeAndRoomStorage;
-import ru.dragonestia.picker.util.DetailsExtractor;
 import ru.dragonestia.picker.util.NamingValidator;
 
 import java.util.*;
@@ -32,7 +29,6 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
     private final NodeRepository nodeRepository;
     private final UserRepository userRepository;
-    private final DetailsExtractor detailsExtractor;
     private final NamingValidator namingValidator;
     private final NodeAndRoomStorage storage;
 
@@ -63,15 +59,6 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public Collection<Room> all(Node node) {
         return roomRepository.all(node);
-    }
-
-    @Override
-    public List<ShortResponseRoom> getAllRoomsWithDetailsResponse(Node node, Set<RoomDetails> details) {
-        var response = new LinkedList<ShortResponseRoom>();
-        for (var room: all(node)) {
-            response.add(detailsExtractor.extract(room, details));
-        }
-        return response;
     }
 
     @Override

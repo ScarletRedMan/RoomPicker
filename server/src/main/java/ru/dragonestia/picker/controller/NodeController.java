@@ -6,23 +6,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
-import ru.dragonestia.picker.api.model.user.UserDefinition;
 import ru.dragonestia.picker.api.repository.response.NodeDetailsResponse;
 import ru.dragonestia.picker.api.repository.response.NodeListResponse;
 import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
-import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
-import ru.dragonestia.picker.model.Node;
-import ru.dragonestia.picker.model.User;
-import ru.dragonestia.picker.service.NodeService;
-import ru.dragonestia.picker.service.RoomService;
-import ru.dragonestia.picker.util.DetailsParser;
-import ru.dragonestia.picker.util.NamingValidator;
-
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 @Tag(name = "Nodes", description = "Node management")
 @RestController
@@ -30,17 +17,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NodeController {
 
-    private final NodeService nodeService;
-    private final RoomService roomService;
-    private final DetailsParser detailsParser;
-    private final NamingValidator namingValidator;
-
     @Operation(summary = "Get all nodes")
     @GetMapping
-    NodeListResponse allNodes(
-            @RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq
-    ) {
-        return new NodeListResponse(nodeService.getAllNodesWithDetailsResponse(detailsParser.parseNodeDetails(detailsSeq)));
+    NodeListResponse allNodes() {
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Operation(summary = "Register new node")
@@ -50,8 +30,7 @@ public class NodeController {
             @Parameter(description = "Picking method method") @RequestParam(name = "method") PickingMethod method,
             @Parameter(description = "Save node") @RequestParam(name = "persist", required = false, defaultValue = "false") boolean persist
     ) {
-        nodeService.create(new Node(NodeIdentifier.of(nodeId), method, persist));
-        return ResponseEntity.ok().build();
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Operation(summary = "Get node details")
@@ -59,11 +38,7 @@ public class NodeController {
     ResponseEntity<NodeDetailsResponse> nodeDetails(
             @Parameter(description = "Node identifier") @PathVariable("nodeId") String nodeId
     ) {
-        namingValidator.validateNodeId(nodeId);
-
-        return nodeService.find(nodeId)
-                .map(node -> ResponseEntity.ok(new NodeDetailsResponse(node.toResponseObject())))
-                .orElseThrow(() -> new NodeNotFoundException(nodeId));
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Operation(summary = "Unregister node")
@@ -71,10 +46,7 @@ public class NodeController {
     ResponseEntity<?> removeNode(
             @Parameter(description = "Node identifier") @PathVariable("nodeId") String nodeId
     ) {
-        namingValidator.validateNodeId(nodeId);
-
-        nodeService.find(nodeId).ifPresent(nodeService::remove);
-        return ResponseEntity.ok().build();
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Operation(summary = "Pick node for users")
@@ -83,14 +55,6 @@ public class NodeController {
             @Parameter(description = "Node identifier") @PathVariable("nodeId") String nodeId,
             @RequestBody String userIds
     ) {
-        namingValidator.validateNodeId(nodeId);
-
-        var node = nodeService.find(nodeId).orElseThrow(() -> new NodeNotFoundException(nodeId));
-        var users = Arrays.stream(userIds.split(","))
-                .map(userId -> new User(UserIdentifier.of(userId)))
-                .collect(Collectors.toSet());
-        var response = roomService.pickAvailable(node, users);
-
-        return ResponseEntity.ok(response);
+        throw new UnsupportedOperationException("Not implemented");
     }
 }

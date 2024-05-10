@@ -24,8 +24,6 @@ public interface RoomService {
 
     Collection<Room> all(Node node);
 
-    List<ShortResponseRoom> getAllRoomsWithDetailsResponse(Node node, Set<RoomDetails> details);
-
     PickedRoomResponse pickAvailable(Node node, Set<User> users);
 
     void updateState(Room room);

@@ -2,16 +2,11 @@ package ru.dragonestia.picker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dragonestia.picker.api.model.room.RoomDetails;
-import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
 import ru.dragonestia.picker.api.model.user.ResponseUser;
-import ru.dragonestia.picker.api.model.user.UserDetails;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.model.Room;
 import ru.dragonestia.picker.model.User;
 import ru.dragonestia.picker.repository.UserRepository;
 import ru.dragonestia.picker.service.UserService;
-import ru.dragonestia.picker.util.DetailsExtractor;
 
 import java.util.*;
 
@@ -20,20 +15,10 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final DetailsExtractor detailsExtractor;
 
     @Override
     public Collection<Room> getUserRooms(User user) {
         return userRepository.findAllLinkedUserRooms(user);
-    }
-
-    @Override
-    public List<ShortResponseRoom> getUserRoomsWithDetails(User user, Set<RoomDetails> details) {
-        var result = new LinkedList<ShortResponseRoom>();
-        for (var room: getUserRooms(user)) {
-            result.add(detailsExtractor.extract(room, details));
-        }
-        return result;
     }
 
     @Override
@@ -52,21 +37,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<ResponseUser> getRoomUsersWithDetailsResponse(Room room, Set<UserDetails> details) {
-        var users = new LinkedList<ResponseUser>();
-        for (var user: getRoomUsers(room)) {
-            users.add(detailsExtractor.extract(user, details));
-        }
-        return users;
+    public List<ResponseUser> searchUsers(String input) {
+        return userRepository.search(input).stream().map(User::toResponseObject).toList();
     }
 
     @Override
-    public List<ResponseUser> searchUsers(String input, Set<UserDetails> details) {
-        return userRepository.search(input).stream().map(user -> detailsExtractor.extract(user, details)).toList();
-    }
-
-    @Override
-    public ResponseUser getUserDetails(String userId, Set<UserDetails> details) {
-        return detailsExtractor.extract(new User(UserIdentifier.of(userId)), details);
+    public ResponseUser getUserDetails(String userId) {
+        throw new UnsupportedOperationException("Not implemented");
     }
 }
