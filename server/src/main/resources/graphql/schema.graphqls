@@ -1,13 +1,13 @@
 type Query {
-    allNodes: [Node]
-    nodeById(id: String!): Node
+    allInstances: [Instance]
+    instanceById(id: String!): Instance
     allRooms(nodeId: String!): [Room]
     roomById(nodeId: String!, roomId: String!): Room
     userById(id: String!): User!
     searchUser(input: String!): [User]
 }
 
-type Node {
+type Instance {
     id: String!
     method: String!
     rooms: [Room]
@@ -17,8 +17,8 @@ type Node {
 
 type Room {
     id: String!
-    nodeId: String!
-    node: Node!
+    instanceId: String!
+    instance: Instance!
     slots: Int!
     payload: String!
     locked: Boolean!

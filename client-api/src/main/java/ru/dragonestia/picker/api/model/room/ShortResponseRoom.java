@@ -18,7 +18,7 @@ public class ShortResponseRoom implements IRoom {
     private String id;
 
     @Schema(description = "Node identifier", example = "test-node")
-    private String nodeId;
+    private String instanceId;
 
     @Schema(description = "Slots for users. -1 - unlimited slots", example = "25")
     private int slots;
@@ -32,9 +32,9 @@ public class ShortResponseRoom implements IRoom {
     @Internal
     public ShortResponseRoom() {}
 
-    public ShortResponseRoom(String id, String nodeId, int slots, boolean locked) {
+    public ShortResponseRoom(String id, String instanceId, int slots, boolean locked) {
         this.id = id;
-        this.nodeId = nodeId;
+        this.instanceId = instanceId;
         this.slots = slots;
         this.locked = locked;
         this.details = new HashMap<>();
@@ -46,8 +46,8 @@ public class ShortResponseRoom implements IRoom {
     }
 
     @Override
-    public @NotNull String getNodeIdentifier() {
-        return nodeId;
+    public @NotNull String getInstanceIdentifier() {
+        return instanceId;
     }
 
     @Transient
@@ -93,7 +93,7 @@ public class ShortResponseRoom implements IRoom {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nodeId);
+        return Objects.hash(id, instanceId);
     }
 
     @Override
@@ -101,13 +101,13 @@ public class ShortResponseRoom implements IRoom {
         if (object == this) return true;
         if (object == null) return false;
         if (object instanceof ShortResponseRoom other) {
-            return id.equals(other.id) && nodeId.equals(other.nodeId);
+            return id.equals(other.id) && instanceId.equals(other.instanceId);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "[ShortResponseRoom id='%s' nodeId='%s' slots=%s]".formatted(id, nodeId, slots);
+        return "[ShortResponseRoom id='%s' nodeId='%s' slots=%s]".formatted(id, instanceId, slots);
     }
 }

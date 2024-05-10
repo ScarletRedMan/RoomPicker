@@ -15,7 +15,7 @@ public class ExceptionFactory {
     private static Map<String, Constructor> init() {
         var factory = new HashMap<String, Constructor>();
 
-        factory.put(InvalidNodeIdentifierException.ERROR_ID, InvalidNodeIdentifierException::new);
+        factory.put(InvalidInstanceIdentifierException.ERROR_ID, InvalidInstanceIdentifierException::new);
         factory.put(InvalidRoomIdentifierException.ERROR_ID, InvalidRoomIdentifierException::new);
         factory.put(InvalidUsernamesException.ERROR_ID, InvalidUsernamesException::new);
         factory.put(NodeAlreadyExistException.ERROR_ID, NodeAlreadyExistException::new);

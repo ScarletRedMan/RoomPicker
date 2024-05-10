@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.api.exception.NodeNotFoundException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
-import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.model.user.User;
 import ru.dragonestia.picker.repository.RoomRepository;
@@ -23,38 +23,38 @@ public class RoomRepositoryImpl implements RoomRepository {
 
     @Override
     public void create(Room room) throws RoomAlreadyExistException {
-        containerRepository.findById(room.getNodeIdentifier())
-                .orElseThrow(() -> new NodeNotFoundException(room.getNodeIdentifier()))
+        containerRepository.findById(room.getInstanceIdentifier())
+                .orElseThrow(() -> new NodeNotFoundException(room.getInstanceIdentifier()))
                 .addRoom(room);
     }
 
     @Override
     public void remove(Room room) {
-        containerRepository.findById(room.getNodeIdentifier())
-                .orElseThrow(() -> new NodeNotFoundException(room.getNodeIdentifier()))
+        containerRepository.findById(room.getInstanceIdentifier())
+                .orElseThrow(() -> new NodeNotFoundException(room.getInstanceIdentifier()))
                 .removeRoom(room);
     }
 
     @Override
-    public Optional<Room> find(Node node, String identifier) {
-        return containerRepository.findById(node.getIdentifier())
-                .orElseThrow(() -> new NodeNotFoundException(node.getIdentifier()))
+    public Optional<Room> find(Instance instance, String identifier) {
+        return containerRepository.findById(instance.getIdentifier())
+                .orElseThrow(() -> new NodeNotFoundException(instance.getIdentifier()))
                 .findRoomById(identifier)
                 .map(RoomContainer::getRoom);
     }
 
     @Override
-    public Collection<Room> all(Node node) {
-        return containerRepository.findById(node.getIdentifier())
-                .orElseThrow(() -> new NodeNotFoundException(node.getIdentifier()))
+    public Collection<Room> all(Instance instance) {
+        return containerRepository.findById(instance.getIdentifier())
+                .orElseThrow(() -> new NodeNotFoundException(instance.getIdentifier()))
                 .allRooms()
                 .stream().map(RoomContainer::getRoom).toList();
     }
 
     @Override
-    public Room pick(Node node, Set<User> users) throws NoRoomsAvailableException {
-        return containerRepository.findById(node.getIdentifier())
-                .orElseThrow(() -> new NodeNotFoundException(node.getIdentifier()))
+    public Room pick(Instance instance, Set<User> users) throws NoRoomsAvailableException {
+        return containerRepository.findById(instance.getIdentifier())
+                .orElseThrow(() -> new NodeNotFoundException(instance.getIdentifier()))
                 .pick(users);
     }
 }

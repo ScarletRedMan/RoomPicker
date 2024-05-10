@@ -75,7 +75,7 @@ public class RoomDetailsPage extends VerticalLayout implements BeforeEnterObserv
 
     private void updateRoomInfo() {
         roomInfo.removeAll();
-        roomInfo.add(new Html("<span>Node identifier: <b>" + room.getNodeIdentifier() + "</b></span>"));
+        roomInfo.add(new Html("<span>Node identifier: <b>" + room.getInstanceIdentifier() + "</b></span>"));
         roomInfo.add(new Html("<span>Room identifier: <b>" + room.getIdentifier() + "</b></span>"));
         roomInfo.add(new Html("<span>Slots: <b>" + (room.hasUnlimitedSlots()? "Unlimited" : room.getMaxSlots()) + "</b></span>"));
         roomInfo.add(new Html("<span>Locked: <b>" + (room.isLocked()? "Yes" : "No") + "</b></span>"));

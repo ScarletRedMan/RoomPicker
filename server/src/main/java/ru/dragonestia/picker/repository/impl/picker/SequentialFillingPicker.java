@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.model.user.User;
-import ru.dragonestia.picker.repository.impl.container.NodeContainer;
+import ru.dragonestia.picker.repository.impl.container.InstanceContainer;
 import ru.dragonestia.picker.repository.impl.container.RoomContainer;
 
 import java.util.Collection;
@@ -14,7 +14,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SequentialFillingPicker implements RoomPicker {
 
-    private final NodeContainer container;
+    private final InstanceContainer container;
     private final Map<String, RoomWrapper> wrappers = new LinkedHashMap<>();
 
     @Override
@@ -43,7 +43,7 @@ public class SequentialFillingPicker implements RoomPicker {
             }
         }
 
-        throw new NoRoomsAvailableException(container.getNode().getIdentifier());
+        throw new NoRoomsAvailableException(container.getInstance().getIdentifier());
     }
 
     @Override

@@ -126,7 +126,7 @@ public class QueuedLinkedList<ITEM extends QueuedLinkedList.Item> {
 
         @Override
         public String toString() {
-            return "{Node id=%s, prev=%s, next=%s, removed=%s }".formatted(
+            return "{Instance id=%s, prev=%s, next=%s, removed=%s }".formatted(
                     object.getId(),
                     prev == null? null : prev.object.getId(),
                     next == null? null : next.object.getId(),

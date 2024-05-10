@@ -33,7 +33,7 @@ public class RoomRepositoryImpl implements RoomRepository {
 
     @Override
     public void saveRoom(@NotNull RoomDefinition definition) {
-        rest.query("/nodes/" + definition.getNodeIdentifier() + "/rooms", HttpMethod.POST, params -> {
+        rest.query("/nodes/" + definition.getInstanceIdentifier() + "/rooms", HttpMethod.POST, params -> {
             params.put("roomId", definition.getIdentifier());
             params.put("slots", Integer.toString(definition.getMaxSlots()));
             params.put("payload", definition.getPayload());
@@ -54,7 +54,7 @@ public class RoomRepositoryImpl implements RoomRepository {
     @Override
     public void removeRoom(@NotNull IRoom room) {
         rest.query(
-                "/nodes/%s/rooms/%s".formatted(room.getNodeIdentifier(), room.getIdentifier()),
+                "/nodes/%s/rooms/%s".formatted(room.getInstanceIdentifier(), room.getIdentifier()),
                 HttpMethod.DELETE,
                 params -> {}
         );

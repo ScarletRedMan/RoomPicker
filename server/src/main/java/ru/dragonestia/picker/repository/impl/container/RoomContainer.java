@@ -15,12 +15,12 @@ public class RoomContainer {
 
     @Getter
     private final Room room;
-    private final NodeContainer container;
+    private final InstanceContainer container;
 
     private final ReadWriteLock usersLock = new ReentrantReadWriteLock(true);
     private final Set<User> users = new HashSet<>();
 
-    public RoomContainer(@NotNull Room room, @NotNull NodeContainer container) {
+    public RoomContainer(@NotNull Room room, @NotNull InstanceContainer container) {
         this.room = room;
         this.container = container;
     }
@@ -32,7 +32,7 @@ public class RoomContainer {
                 users.addAll(toAdd);
                 noticePickersAboutUserNumberUpdate();
             } else {
-                throw new RoomAreFullException(room.getNodeIdentifier(), room.getIdentifier());
+                throw new RoomAreFullException(room.getInstanceIdentifier(), room.getIdentifier());
             }
         } finally {
             usersLock.writeLock().unlock();

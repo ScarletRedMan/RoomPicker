@@ -16,11 +16,11 @@ import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
 import ru.dragonestia.picker.api.repository.type.UserIdentifier;
 import ru.dragonestia.picker.interceptor.DebugInterceptor;
-import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.user.User;
 import ru.dragonestia.picker.model.factory.RoomFactory;
 import ru.dragonestia.picker.repository.RoomRepository;
-import ru.dragonestia.picker.repository.NodeRepository;
+import ru.dragonestia.picker.repository.InstanceRepository;
 import ru.dragonestia.picker.repository.UserRepository;
 
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TestConfig implements WebMvcConfigurer {
 
-    private final NodeRepository nodeRepository;
+    private final InstanceRepository instanceRepository;
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final RoomFactory roomFactory;
@@ -45,20 +45,20 @@ public class TestConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    void createNodes() {
-        createNodeWithContent(new Node(NodeIdentifier.of("game-servers"), PickingMethod.ROUND_ROBIN, false));
-        createNodeWithContent(new Node(NodeIdentifier.of("game-lobbies"), PickingMethod.LEAST_PICKED, false));
-        createNodeWithContent(new Node(NodeIdentifier.of("hub"), PickingMethod.SEQUENTIAL_FILLING, false));
+    void createInstances() {
+        createInstanceWithContent(new Instance(NodeIdentifier.of("game-servers"), PickingMethod.ROUND_ROBIN, false));
+        createInstanceWithContent(new Instance(NodeIdentifier.of("game-lobbies"), PickingMethod.LEAST_PICKED, false));
+        createInstanceWithContent(new Instance(NodeIdentifier.of("hub"), PickingMethod.SEQUENTIAL_FILLING, false));
     }
 
     @SneakyThrows
-    private void createNodeWithContent(Node node) {
-        nodeRepository.create(node);
+    private void createInstanceWithContent(Instance instance) {
+        instanceRepository.create(instance);
         var json = new ObjectMapper().writer().withDefaultPrettyPrinter();
 
         for (int i = 1; i <= 5; i++) {
             var slots = 5 * i;
-            var room = roomFactory.create(RoomIdentifier.of("test-" + i), node, slots, json.writeValueAsString(generatePayload()), false);
+            var room = roomFactory.create(RoomIdentifier.of("test-" + i), instance, slots, json.writeValueAsString(generatePayload()), false);
             roomRepository.create(room);
 
             for (int j = 0, n = rand.nextInt(slots + 1); j < n; j++) {
@@ -68,7 +68,7 @@ public class TestConfig implements WebMvcConfigurer {
         }
 
         for (int i = 0; i < 5; i++) {
-            var room = roomFactory.create(RoomIdentifier.of(randomUUID().toString()), node, IRoom.UNLIMITED_SLOTS, json.writeValueAsString(generatePayload()), false);
+            var room = roomFactory.create(RoomIdentifier.of(randomUUID().toString()), instance, IRoom.UNLIMITED_SLOTS, json.writeValueAsString(generatePayload()), false);
             room.setLocked((i & 1) == 0);
             roomRepository.create(room);
         }

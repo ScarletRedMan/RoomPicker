@@ -18,7 +18,7 @@ public class UserRoomController {
     @Operation(summary = "Get users inside room")
     @GetMapping
     ResponseEntity<RoomUserListResponse> usersInsideRoom(
-            @Parameter(description = "Node identifier") @PathVariable(name = "nodeId") String nodeId,
+            @Parameter(description = "Instance identifier") @PathVariable(name = "nodeId") String nodeId,
             @Parameter(description = "Room identifier") @PathVariable(name = "roomId") String roomId,
             @Parameter(description = "Required addition user data", example = "COUNT_ROOMS") @RequestParam(name = "requiredDetails", required = false, defaultValue = "") String detailsSeq
     ) {
@@ -28,7 +28,7 @@ public class UserRoomController {
     @Operation(summary = "Link users with room")
     @PostMapping
     ResponseEntity<LinkUsersWithRoomResponse> linkUserWithRoom(
-            @Parameter(description = "Node identifier") @PathVariable(name = "nodeId") String nodeId,
+            @Parameter(description = "Instance identifier") @PathVariable(name = "nodeId") String nodeId,
             @Parameter(description = "Room identifier") @PathVariable(name = "roomId") String roomId,
             @Parameter(description = "User identifiers", example = "user1,user2,user3") @RequestParam(name = "userIds") String userIds,
             @Parameter(description = "Ignore slot limitation") @RequestParam(name = "force") boolean force
@@ -39,7 +39,7 @@ public class UserRoomController {
     @Operation(summary = "Unlink users from room")
     @DeleteMapping
     ResponseEntity<?> unlinkUsersForBucket(
-            @Parameter(description = "Node identifier") @PathVariable(name = "nodeId") String nodeId,
+            @Parameter(description = "Instance identifier") @PathVariable(name = "nodeId") String nodeId,
             @Parameter(description = "Room identifier") @PathVariable(name = "roomId") String roomId,
             @Parameter(description = "User identifiers", example = "user1,user2,user3") @RequestParam(name = "userIds") String userIds
     ) {

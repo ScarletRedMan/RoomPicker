@@ -19,7 +19,7 @@ public class ResponseRoom implements IRoom {
     private String id;
 
     @Schema(description = "Node identifier", example = "test-node")
-    private String nodeId;
+    private String instanceId;
 
     @Schema(description = "Slots for users. -1 - unlimited slots", example = "25")
     private int slots;
@@ -36,9 +36,9 @@ public class ResponseRoom implements IRoom {
     @Internal
     public ResponseRoom() {}
 
-    public ResponseRoom(@NotNull String id, @NotNull String nodeId, int slots, boolean locked, @NotNull String payload) {
+    public ResponseRoom(@NotNull String id, @NotNull String instanceId, int slots, boolean locked, @NotNull String payload) {
         this.id = id;
-        this.nodeId = nodeId;
+        this.instanceId = instanceId;
         this.slots = slots;
         this.locked = locked;
         this.payload = payload;
@@ -51,8 +51,8 @@ public class ResponseRoom implements IRoom {
     }
 
     @Override
-    public @NotNull String getNodeIdentifier() {
-        return nodeId;
+    public @NotNull String getInstanceIdentifier() {
+        return instanceId;
     }
 
     @Transient
@@ -117,7 +117,7 @@ public class ResponseRoom implements IRoom {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nodeId);
+        return Objects.hash(id, instanceId);
     }
 
     @Override
@@ -125,13 +125,13 @@ public class ResponseRoom implements IRoom {
         if (object == this) return true;
         if (object == null) return false;
         if (object instanceof ResponseRoom other) {
-            return id.equals(other.id) && nodeId.equals(other.nodeId);
+            return id.equals(other.id) && instanceId.equals(other.instanceId);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return "[ResponseRoom id='%s' nodeId='%s' slots=%s payload.len=%s]".formatted(id, nodeId, slots, payload.length());
+        return "[ResponseRoom id='%s' nodeId='%s' slots=%s payload.len=%s]".formatted(id, instanceId, slots, payload.length());
     }
 }

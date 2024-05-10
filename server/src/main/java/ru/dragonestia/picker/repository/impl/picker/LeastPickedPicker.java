@@ -6,7 +6,7 @@ import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.model.user.User;
 import ru.dragonestia.picker.repository.impl.collection.DynamicSortedMap;
-import ru.dragonestia.picker.repository.impl.container.NodeContainer;
+import ru.dragonestia.picker.repository.impl.container.InstanceContainer;
 import ru.dragonestia.picker.repository.impl.container.RoomContainer;
 
 import java.util.Collection;
@@ -14,7 +14,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class LeastPickedPicker implements RoomPicker {
 
-    private final NodeContainer container;
+    private final InstanceContainer container;
     private final DynamicSortedMap<RoomWrapper> map = new DynamicSortedMap<>();
 
     @Override
@@ -41,7 +41,7 @@ public class LeastPickedPicker implements RoomPicker {
 
                 if (!wrapper.canAddUnits(users.size())) throw new RuntimeException();
             } catch (RuntimeException ex) {
-                throw new NoRoomsAvailableException(container.getNode().getIdentifier());
+                throw new NoRoomsAvailableException(container.getInstance().getIdentifier());
             }
         }
 

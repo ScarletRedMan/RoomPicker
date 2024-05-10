@@ -5,7 +5,7 @@ import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.model.user.User;
 import ru.dragonestia.picker.repository.impl.collection.QueuedLinkedList;
-import ru.dragonestia.picker.repository.impl.container.NodeContainer;
+import ru.dragonestia.picker.repository.impl.container.InstanceContainer;
 import ru.dragonestia.picker.repository.impl.container.RoomContainer;
 
 import java.util.Collection;
@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 public class RoundRobinPicker implements RoomPicker {
 
-    private final NodeContainer container;
+    private final InstanceContainer container;
     private final AtomicInteger addition = new AtomicInteger(0);
     private final QueuedLinkedList<RoomWrapper> list = new QueuedLinkedList<>(wrapper -> wrapper.canAddUnits(addition.get()));
 
@@ -42,7 +42,7 @@ public class RoundRobinPicker implements RoomPicker {
                 addition.set(amount);
                 wrapper = list.pick();
             } catch (RuntimeException ex) {
-                throw new NoRoomsAvailableException(container.getNode().getIdentifier());
+                throw new NoRoomsAvailableException(container.getInstance().getIdentifier());
             }
         }
 

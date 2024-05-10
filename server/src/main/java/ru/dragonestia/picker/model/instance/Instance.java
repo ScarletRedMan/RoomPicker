@@ -1,4 +1,4 @@
-package ru.dragonestia.picker.model.node;
+package ru.dragonestia.picker.model.instance;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -8,13 +8,13 @@ import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.model.node.ResponseNode;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 
-public class Node implements INode {
+public class Instance implements INode {
 
     private final String identifier;
     private final PickingMethod pickingMethod;
     private final boolean persist;
 
-    public Node(@NotNull NodeIdentifier identifier, @NotNull PickingMethod pickingMethod, boolean persist) {
+    public Instance(@NotNull NodeIdentifier identifier, @NotNull PickingMethod pickingMethod, boolean persist) {
         this.identifier = identifier.getValue();
         this.pickingMethod = pickingMethod;
         this.persist = persist;
@@ -53,7 +53,7 @@ public class Node implements INode {
     public boolean equals(Object object) {
         if (object == this) return true;
         if (object == null) return false;
-        if (object instanceof Node other) {
+        if (object instanceof Instance other) {
             return identifier.equals(other.identifier);
         }
         return false;
@@ -61,6 +61,6 @@ public class Node implements INode {
 
     @Override
     public String toString() {
-        return "{Node id='%s'}".formatted(identifier);
+        return "{Instance id='%s'}".formatted(identifier);
     }
 }

@@ -2,22 +2,22 @@ package ru.dragonestia.picker.storage.impl;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import ru.dragonestia.picker.model.node.Node;
+import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.room.Room;
-import ru.dragonestia.picker.storage.NodeAndRoomStorage;
+import ru.dragonestia.picker.storage.InstanceAndRoomStorage;
 
 @Profile("test")
 @Component
-public class NullStorageImpl implements NodeAndRoomStorage {
+public class NullStorageImpl implements InstanceAndRoomStorage {
 
     @Override
     public void loadAll() {}
 
     @Override
-    public void saveNode(Node node) {}
+    public void saveInstance(Instance instance) {}
 
     @Override
-    public void removeNode(Node node) {}
+    public void removeInstance(Instance instance) {}
 
     @Override
     public void saveRoom(Room room) {}
