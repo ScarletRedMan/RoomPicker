@@ -4,17 +4,17 @@ import ru.dragonestia.picker.api.repository.response.ErrorResponse;
 
 import java.util.Map;
 
-public final class NodeAlreadyExistException extends ApiException {
+public final class InstanceAlreadyExistException extends ApiException {
 
     public static final String ERROR_ID = "err.node.already_exists";
 
     private final String nodeId;
 
-    public NodeAlreadyExistException(String nodeId) {
+    public InstanceAlreadyExistException(String nodeId) {
         this.nodeId = nodeId;
     }
 
-    public NodeAlreadyExistException(ErrorResponse errorResponse) {
+    public InstanceAlreadyExistException(ErrorResponse errorResponse) {
         this(errorResponse.details().get("nodeId"));
     }
 

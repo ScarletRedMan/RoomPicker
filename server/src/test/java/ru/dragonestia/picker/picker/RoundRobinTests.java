@@ -12,7 +12,7 @@ import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.config.FillingNodesConfig;
 import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.repository.RoomRepository;
-import ru.dragonestia.picker.repository.UserRepository;
+import ru.dragonestia.picker.repository.EntityRepository;
 import ru.dragonestia.picker.util.UserFiller;
 
 import java.util.stream.Stream;
@@ -26,7 +26,7 @@ public class RoundRobinTests {
     private RoomRepository roomRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private EntityRepository entityRepository;
 
     @Autowired
     private UserFiller userFiller;
@@ -41,7 +41,7 @@ public class RoundRobinTests {
     void testPicking(String expectedRoomId, int usersAmount) {
         var room = roomRepository.pick(instance, userFiller.createRandomUsers(usersAmount));
         var slots = room.getMaxSlots();
-        var users = userRepository.usersOf(room);
+        var users = entityRepository.entitiesOf(room);
         Assertions.assertTrue(slots == -1 || slots >= users.size()); // check slots limitation
 
         Assertions.assertEquals(expectedRoomId, room.getIdentifier());

@@ -3,7 +3,7 @@ package ru.dragonestia.picker.api.repository.query.user;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import ru.dragonestia.picker.api.model.room.RoomDetails;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
+import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,14 +29,14 @@ public class FindRoomsLinkedWithUser {
     }
 
     @Contract("_ -> new")
-    public static @NotNull FindRoomsLinkedWithUser just(@NotNull UserIdentifier identifier) {
+    public static @NotNull FindRoomsLinkedWithUser just(@NotNull EntityIdentifier identifier) {
         return FindRoomsLinkedWithUser.builder()
                 .setUserId(identifier)
                 .build();
     }
 
     @Contract("_ -> new")
-    public static @NotNull FindRoomsLinkedWithUser withAllDetails(@NotNull UserIdentifier identifier) {
+    public static @NotNull FindRoomsLinkedWithUser withAllDetails(@NotNull EntityIdentifier identifier) {
         return FindRoomsLinkedWithUser.builder()
                 .setUserId(identifier)
                 .setDetails(Arrays.stream(RoomDetails.values()).collect(Collectors.toSet()))
@@ -55,7 +55,7 @@ public class FindRoomsLinkedWithUser {
         private Builder() {}
 
         @Contract("_ -> this")
-        public @NotNull Builder setUserId(@NotNull UserIdentifier identifier) {
+        public @NotNull Builder setUserId(@NotNull EntityIdentifier identifier) {
             userId = identifier.getValue();
             return this;
         }

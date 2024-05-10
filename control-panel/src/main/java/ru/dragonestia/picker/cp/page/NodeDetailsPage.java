@@ -24,7 +24,7 @@ import ru.dragonestia.picker.cp.util.RouteParamsExtractor;
 @RequiredArgsConstructor
 @RolesAllowed("USER")
 @PageTitle("Rooms")
-@Route(value = "/nodes/:nodeId", layout = MainLayout.class)
+@Route(value = "/instances/:nodeId", layout = MainLayout.class)
 public class NodeDetailsPage extends VerticalLayout implements BeforeEnterObserver {
 
     private final SecurityService securityService;

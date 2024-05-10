@@ -6,13 +6,13 @@ import org.springframework.context.annotation.Bean;
 import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
+import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 import ru.dragonestia.picker.model.instance.Instance;
-import ru.dragonestia.picker.model.user.User;
+import ru.dragonestia.picker.model.entity.Entity;
 import ru.dragonestia.picker.model.factory.RoomFactory;
 import ru.dragonestia.picker.repository.InstanceRepository;
 import ru.dragonestia.picker.repository.RoomRepository;
-import ru.dragonestia.picker.repository.UserRepository;
+import ru.dragonestia.picker.repository.EntityRepository;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public class FillingNodesConfig {
     private RoomRepository roomRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private EntityRepository entityRepository;
 
     @Autowired
     private RoomFactory roomFactory;
@@ -93,8 +93,8 @@ public class FillingNodesConfig {
 
                 var users = n - i;
                 for (int k = users - 1; k >= 0; k--) {
-                    var user = new User(UserIdentifier.of("user-" + k));
-                    userRepository.linkWithRoom(room, List.of(user), false);
+                    var user = new Entity(EntityIdentifier.of("user-" + k));
+                    entityRepository.linkWithRoom(room, List.of(user), false);
                 }
 
                 //System.out.printf("Room '%s' has %s/%s users%n", roomId, users, n);

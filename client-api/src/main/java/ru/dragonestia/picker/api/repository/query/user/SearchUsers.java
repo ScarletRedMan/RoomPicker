@@ -3,7 +3,7 @@ package ru.dragonestia.picker.api.repository.query.user;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import ru.dragonestia.picker.api.model.user.UserDetails;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
+import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,14 +30,14 @@ public class SearchUsers {
     }
 
     @Contract("_ -> new")
-    public static @NotNull SearchUsers just(@NotNull UserIdentifier searchInput) {
+    public static @NotNull SearchUsers just(@NotNull EntityIdentifier searchInput) {
         return SearchUsers.builder()
                 .setSearchInput(searchInput)
                 .build();
     }
 
     @Contract("_ -> new")
-    public static @NotNull SearchUsers withAllDetails(@NotNull UserIdentifier searchInput) {
+    public static @NotNull SearchUsers withAllDetails(@NotNull EntityIdentifier searchInput) {
         return SearchUsers.builder()
                 .setSearchInput(searchInput)
                 .setDetails(Arrays.stream(UserDetails.values()).collect(Collectors.toSet()))
@@ -56,7 +56,7 @@ public class SearchUsers {
         private Builder() {}
 
         @Contract("_ -> this")
-        public @NotNull Builder setSearchInput(@NotNull UserIdentifier input) {
+        public @NotNull Builder setSearchInput(@NotNull EntityIdentifier input) {
             searchInput = input.getValue();
             return this;
         }

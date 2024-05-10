@@ -4,19 +4,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import ru.dragonestia.picker.api.exception.InvalidRoomIdentifierException;
-import ru.dragonestia.picker.api.exception.NodeNotFoundException;
+import ru.dragonestia.picker.api.exception.InstanceNotFoundException;
 import ru.dragonestia.picker.api.exception.NotPersistedNodeException;
 import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
 import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.model.instance.Instance;
-import ru.dragonestia.picker.model.user.User;
+import ru.dragonestia.picker.model.entity.Entity;
 import ru.dragonestia.picker.repository.InstanceRepository;
 import ru.dragonestia.picker.repository.RoomRepository;
-import ru.dragonestia.picker.repository.UserRepository;
+import ru.dragonestia.picker.repository.EntityRepository;
 import ru.dragonestia.picker.service.RoomService;
 import ru.dragonestia.picker.storage.InstanceAndRoomStorage;
-import ru.dragonestia.picker.util.NamingValidator;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,15 +27,12 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
     private final InstanceRepository instanceRepository;
-    private final UserRepository userRepository;
-    private final NamingValidator namingValidator;
+    private final EntityRepository entityRepository;
     private final InstanceAndRoomStorage storage;
 
     @Override
     public void create(Room room) throws InvalidRoomIdentifierException, RoomAlreadyExistException, NotPersistedNodeException {
-        namingValidator.validateRoomId(room.getInstanceIdentifier(), room.getIdentifier());
-
-        var node = instanceRepository.findById(room.getInstanceIdentifier()).orElseThrow(() -> new NodeNotFoundException(room.getInstanceIdentifier()));
+        var node = instanceRepository.findById(room.getInstanceIdentifier()).orElseThrow(() -> new InstanceNotFoundException(room.getInstanceIdentifier()));
         if (!node.isPersist() && room.isPersist()) {
             throw new NotPersistedNodeException(node.getIdentifier(), room.getIdentifier());
         }
@@ -62,9 +58,9 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public PickedRoomResponse pickAvailable(Instance instance, Set<User> users) {
-        var room = roomRepository.pick(instance, users);
-        var roomUsers = userRepository.usersOf(room);
+    public PickedRoomResponse pickAvailable(Instance instance, Set<Entity> entities) {
+        var room = roomRepository.pick(instance, entities);
+        var roomUsers = entityRepository.entitiesOf(room);
 
         return new PickedRoomResponse(
                 room.getInstanceIdentifier(),
@@ -73,7 +69,7 @@ public class RoomServiceImpl implements RoomService {
                 room.getMaxSlots(),
                 roomUsers.size(),
                 room.isLocked(),
-                roomUsers.stream().map(User::getIdentifier).collect(Collectors.toSet())
+                roomUsers.stream().map(Entity::getIdentifier).collect(Collectors.toSet())
         );
     }
 

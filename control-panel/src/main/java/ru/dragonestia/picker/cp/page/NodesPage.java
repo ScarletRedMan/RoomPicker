@@ -17,7 +17,7 @@ import ru.dragonestia.picker.cp.service.SecurityService;
 @RolesAllowed("USER")
 @PageTitle("Nodes")
 @RouteAlias(value = "/", layout = MainLayout.class)
-@Route(value = "/nodes", layout = MainLayout.class)
+@Route(value = "/instances", layout = MainLayout.class)
 public class NodesPage extends VerticalLayout {
 
     private final NodeRepository nodeRepository;

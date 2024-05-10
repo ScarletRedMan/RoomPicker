@@ -11,8 +11,8 @@ import java.util.HashMap;
 @RestControllerAdvice
 public class ExceptionHandlerController {
 
-    @ExceptionHandler(NodeNotFoundException.class)
-    ResponseEntity<?> nodeNotFound(NodeNotFoundException ex) {
+    @ExceptionHandler(InstanceNotFoundException.class)
+    ResponseEntity<?> nodeNotFound(InstanceNotFoundException ex) {
         return create(404, ex);
     }
 
@@ -36,8 +36,8 @@ public class ExceptionHandlerController {
         return create(400, ex);
     }
 
-    @ExceptionHandler(NodeAlreadyExistException.class)
-    ResponseEntity<?> nodeAlreadyExists(NodeAlreadyExistException ex) {
+    @ExceptionHandler(InstanceAlreadyExistException.class)
+    ResponseEntity<?> nodeAlreadyExists(InstanceAlreadyExistException ex) {
         return create(400, ex);
     }
 

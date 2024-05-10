@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.repository.RoomRepository;
-import ru.dragonestia.picker.repository.UserRepository;
+import ru.dragonestia.picker.repository.EntityRepository;
 import ru.dragonestia.picker.repository.impl.ContainerRepository;
 
 import java.util.Map;
@@ -30,7 +30,7 @@ public class UserMetricsAspect {
 
     private final ContainerRepository containerRepository;
     private final RoomRepository roomRepository;
-    private final UserRepository userRepository;
+    private final EntityRepository entityRepository;
     private final MeterRegistry meterRegistry;
 
     private final AtomicInteger totalUsers = new AtomicInteger(0);
@@ -41,18 +41,18 @@ public class UserMetricsAspect {
         meterRegistry.gauge("roompicker_total_users", totalUsers);
     }
 
-    @After(value = "execution(* ru.dragonestia.picker.repository.UserRepository.linkWithRoom(ru.dragonestia.picker.model.room.Room, ..)) && args(room, ..)", argNames = "room")
+    @After(value = "execution(* ru.dragonestia.picker.repository.EntityRepository.linkWithRoom(ru.dragonestia.picker.model.room.Room, ..)) && args(room, ..)", argNames = "room")
     void onLinkUsers(Room room) {
         countAllUsers(room);
     }
 
-    @After(value = "execution(void ru.dragonestia.picker.repository.UserRepository.unlinkWithRoom(ru.dragonestia.picker.model.room.Room, ..)) && args(room, ..)", argNames = "room")
+    @After(value = "execution(void ru.dragonestia.picker.repository.EntityRepository.unlinkWithRoom(ru.dragonestia.picker.model.room.Room, ..)) && args(room, ..)", argNames = "room")
     void onUnlinkUsers(Room room) {
         countAllUsers(room);
     }
 
     private void countAllUsers(Room room) {
-        totalUsers.set(userRepository.countAllUsers());
+        totalUsers.set(entityRepository.countAllEntities());
     }
 
     @After(value = "execution(void ru.dragonestia.picker.repository.InstanceRepository.create(ru.dragonestia.picker.model.instance.Instance)) && args(instance)", argNames = "instance")
@@ -95,7 +95,7 @@ public class UserMetricsAspect {
 
     @Scheduled(fixedDelay = 3_000)
     void updateUserMetrics() {
-        userRepository.countUsersForNodes().forEach((nodeId, users) -> {
+        entityRepository.countEntitiesForNodes().forEach((nodeId, users) -> {
             Optional.ofNullable(data.get(nodeId)).ifPresent(node -> node.users().set(users));
         });
 

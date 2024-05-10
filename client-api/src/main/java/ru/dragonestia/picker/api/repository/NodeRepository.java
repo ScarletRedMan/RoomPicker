@@ -8,7 +8,7 @@ import ru.dragonestia.picker.api.repository.query.node.GetAllNodes;
 import ru.dragonestia.picker.api.repository.query.node.RemoveNodesByIds;
 import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
+import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,5 +26,5 @@ public interface NodeRepository {
 
     void saveNode(@NotNull NodeDefinition definition);
 
-    @NotNull PickedRoomResponse pickRoom(@NotNull NodeIdentifier identifier, @NotNull Set<UserIdentifier> users);
+    @NotNull PickedRoomResponse pickRoom(@NotNull NodeIdentifier identifier, @NotNull Set<EntityIdentifier> users);
 }

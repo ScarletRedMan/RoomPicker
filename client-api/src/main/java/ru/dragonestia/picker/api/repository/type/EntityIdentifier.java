@@ -5,9 +5,9 @@ import ru.dragonestia.picker.api.util.IdentifierValidator;
 
 import java.security.InvalidParameterException;
 
-public class UserIdentifier extends ValueObject<String> {
+public class EntityIdentifier extends ValueObject<String> {
 
-    private UserIdentifier(String value) {
+    private EntityIdentifier(String value) {
         super(value);
     }
 
@@ -18,7 +18,7 @@ public class UserIdentifier extends ValueObject<String> {
         throw new InvalidParameterException("Invalid user identifier");
     }
 
-    public static @NotNull UserIdentifier of(@NotNull String identifier) {
-        return new UserIdentifier(identifier);
+    public static @NotNull EntityIdentifier of(@NotNull String identifier) {
+        return new EntityIdentifier(identifier);
     }
 }

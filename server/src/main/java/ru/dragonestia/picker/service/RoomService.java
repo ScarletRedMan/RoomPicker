@@ -5,7 +5,7 @@ import ru.dragonestia.picker.api.exception.RoomAlreadyExistException;
 import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
 import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.room.Room;
-import ru.dragonestia.picker.model.user.User;
+import ru.dragonestia.picker.model.entity.Entity;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -21,7 +21,7 @@ public interface RoomService {
 
     Collection<Room> all(Instance instance);
 
-    PickedRoomResponse pickAvailable(Instance instance, Set<User> users);
+    PickedRoomResponse pickAvailable(Instance instance, Set<Entity> entities);
 
     void updateState(Room room);
 }

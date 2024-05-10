@@ -13,20 +13,20 @@ import ru.dragonestia.picker.api.repository.response.PickedRoomResponse;
 
 @Tag(name = "Nodes", description = "Instance management")
 @RestController
-@RequestMapping("/nodes")
+@RequestMapping("/instances")
 @RequiredArgsConstructor
-public class NodeController {
+public class InstanceController {
 
     @Operation(summary = "Get all nodes")
     @GetMapping
-    NodeListResponse allNodes() {
+    NodeListResponse allInstances() {
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Operation(summary = "Register new node")
     @PostMapping
-    ResponseEntity<?> registerNode(
-            @Parameter(description = "Instance identifier") @RequestParam(name = "nodeId") String nodeId,
+    ResponseEntity<?> registerInstance(
+            @Parameter(description = "Instance identifier") @RequestParam(name = "instanceId") String instanceId,
             @Parameter(description = "Picking method method") @RequestParam(name = "method") PickingMethod method,
             @Parameter(description = "Save node") @RequestParam(name = "persist", required = false, defaultValue = "false") boolean persist
     ) {
@@ -34,25 +34,25 @@ public class NodeController {
     }
 
     @Operation(summary = "Get node details")
-    @GetMapping("/{nodeId}")
-    ResponseEntity<NodeDetailsResponse> nodeDetails(
-            @Parameter(description = "Instance identifier") @PathVariable("nodeId") String nodeId
+    @GetMapping("/{instanceId}")
+    ResponseEntity<NodeDetailsResponse> instanceDetails(
+            @Parameter(description = "Instance identifier") @PathVariable("instanceId") String instanceId
     ) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Operation(summary = "Unregister node")
-    @DeleteMapping("/{nodeId}")
-    ResponseEntity<?> removeNode(
-            @Parameter(description = "Instance identifier") @PathVariable("nodeId") String nodeId
+    @DeleteMapping("/{instanceId}")
+    ResponseEntity<?> removeInstance(
+            @Parameter(description = "Instance identifier") @PathVariable("instanceId") String instanceId
     ) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Operation(summary = "Pick node for users")
-    @PostMapping("/{nodeId}/pick")
+    @PostMapping("/{instanceId}/pick")
     ResponseEntity<PickedRoomResponse> pickRoom(
-            @Parameter(description = "Instance identifier") @PathVariable("nodeId") String nodeId,
+            @Parameter(description = "Instance identifier") @PathVariable("instanceId") String instanceId,
             @RequestBody String userIds
     ) {
         throw new UnsupportedOperationException("Not implemented");

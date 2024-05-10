@@ -19,7 +19,7 @@ import ru.dragonestia.picker.api.model.user.IUser;
 import ru.dragonestia.picker.api.model.user.UserDetails;
 import ru.dragonestia.picker.api.repository.UserRepository;
 import ru.dragonestia.picker.api.repository.query.user.SearchUsers;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
+import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 import ru.dragonestia.picker.cp.component.RefreshableTable;
 import ru.dragonestia.picker.cp.service.SecurityService;
 
@@ -98,7 +98,7 @@ public class UserSearchPage extends VerticalLayout implements RefreshableTable {
             userGrid.setItems();
         }
 
-        userGrid.setItems(cachedUsers = userRepository.searchUsers(SearchUsers.withAllDetails(UserIdentifier.of(input)))
+        userGrid.setItems(cachedUsers = userRepository.searchUsers(SearchUsers.withAllDetails(EntityIdentifier.of(input)))
                 .stream().map(user -> (IUser) user).toList());
     }
 

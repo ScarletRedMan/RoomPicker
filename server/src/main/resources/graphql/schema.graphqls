@@ -3,8 +3,8 @@ type Query {
     instanceById(id: String!): Instance
     allRooms(nodeId: String!): [Room]
     roomById(nodeId: String!, roomId: String!): Room
-    userById(id: String!): User!
-    searchUser(input: String!): [User]
+    entityById(id: String!): Entity!
+    searchEntity(input: String!): [Entity]
 }
 
 type Instance {
@@ -22,12 +22,12 @@ type Room {
     slots: Int!
     payload: String!
     locked: Boolean!
-    users: [User]
-    countUsers: Int!
+    entities: [Entity]
+    countEntities: Int!
     persist: Boolean!
 }
 
-type User {
+type Entity {
     id: String!
     rooms: [Room]
     countRooms: Int!

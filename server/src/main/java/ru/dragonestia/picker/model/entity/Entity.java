@@ -1,17 +1,17 @@
-package ru.dragonestia.picker.model.user;
+package ru.dragonestia.picker.model.entity;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.dragonestia.picker.api.model.user.IUser;
 import ru.dragonestia.picker.api.model.user.ResponseUser;
 import ru.dragonestia.picker.api.model.user.UserDetails;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
+import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 
-public class User implements IUser {
+public class Entity implements IUser {
 
     private final String identifier;
 
-    public User(@NotNull UserIdentifier identifier) {
+    public Entity(@NotNull EntityIdentifier identifier) {
         this.identifier = identifier.getValue();
     }
 
@@ -43,7 +43,7 @@ public class User implements IUser {
     public boolean equals(Object object) {
         if (object == this) return true;
         if (object == null) return false;
-        if (object instanceof User other) {
+        if (object instanceof Entity other) {
             return identifier.equals(other.identifier);
         }
         return false;

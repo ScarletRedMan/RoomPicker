@@ -14,14 +14,14 @@ import ru.dragonestia.picker.api.model.node.PickingMethod;
 import ru.dragonestia.picker.api.model.room.IRoom;
 import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
 import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
+import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 import ru.dragonestia.picker.interceptor.DebugInterceptor;
 import ru.dragonestia.picker.model.instance.Instance;
-import ru.dragonestia.picker.model.user.User;
+import ru.dragonestia.picker.model.entity.Entity;
 import ru.dragonestia.picker.model.factory.RoomFactory;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.InstanceRepository;
-import ru.dragonestia.picker.repository.UserRepository;
+import ru.dragonestia.picker.repository.EntityRepository;
 
 import java.util.List;
 import java.util.Random;
@@ -34,7 +34,7 @@ public class TestConfig implements WebMvcConfigurer {
 
     private final InstanceRepository instanceRepository;
     private final RoomRepository roomRepository;
-    private final UserRepository userRepository;
+    private final EntityRepository entityRepository;
     private final RoomFactory roomFactory;
 
     private final Random rand = new Random(0);
@@ -62,8 +62,8 @@ public class TestConfig implements WebMvcConfigurer {
             roomRepository.create(room);
 
             for (int j = 0, n = rand.nextInt(slots + 1); j < n; j++) {
-                var user = new User(UserIdentifier.of("test-user-" + rand.nextInt(20)));
-                userRepository.linkWithRoom(room, List.of(user), false);
+                var user = new Entity(EntityIdentifier.of("test-user-" + rand.nextInt(20)));
+                entityRepository.linkWithRoom(room, List.of(user), false);
             }
         }
 

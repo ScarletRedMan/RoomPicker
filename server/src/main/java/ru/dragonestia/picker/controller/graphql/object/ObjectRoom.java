@@ -1,17 +1,17 @@
-package ru.dragonestia.picker.controller.graphql.entity;
+package ru.dragonestia.picker.controller.graphql.object;
 
 import lombok.RequiredArgsConstructor;
-import ru.dragonestia.picker.controller.graphql.entity.type.DataProvider;
+import ru.dragonestia.picker.controller.graphql.object.type.DataProvider;
 import ru.dragonestia.picker.model.room.Room;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-public class EntityRoom {
+public class ObjectRoom {
 
     private final Room room;
     private final DataProvider dataProvider;
-    private List<EntityUser> cachedUsers = null;
+    private List<ObjectEntity> cachedUsers = null;
 
     public String getId() {
         return room.getIdentifier();
@@ -21,9 +21,9 @@ public class EntityRoom {
         return room.getInstanceIdentifier();
     }
 
-    public EntityInstance getInstance() {
+    public ObjectInstance getInstance() {
         return dataProvider.instanceService().find(room.getInstanceIdentifier())
-                .map(node -> new EntityInstance(node, dataProvider))
+                .map(node -> new ObjectInstance(node, dataProvider))
                 .orElseThrow();
     }
 
@@ -39,20 +39,20 @@ public class EntityRoom {
         return room.isLocked();
     }
 
-    public List<EntityUser> getUsers() {
+    public List<ObjectEntity> getEntities() {
         if (cachedUsers != null) {
             return cachedUsers;
         }
 
-        cachedUsers = dataProvider.userService().getRoomUsers(room).stream()
-                .map(user -> new EntityUser(user, dataProvider))
+        cachedUsers = dataProvider.entityService().getRoomEntities(room).stream()
+                .map(user -> new ObjectEntity(user, dataProvider))
                 .toList();
 
         return cachedUsers;
     }
 
-    public int getCountUsers() {
-        return getUsers().size();
+    public int getCountEntities() {
+        return getEntities().size();
     }
 
     public boolean isPersist() {

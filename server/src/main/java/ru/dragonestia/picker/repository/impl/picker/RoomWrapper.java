@@ -22,7 +22,7 @@ public class RoomWrapper implements ItemWrapper<RoomContainer>, QueuedLinkedList
 
     @Override
     public int countUnits() {
-        return container.countUsers();
+        return container.countEntities();
     }
 
     @Override

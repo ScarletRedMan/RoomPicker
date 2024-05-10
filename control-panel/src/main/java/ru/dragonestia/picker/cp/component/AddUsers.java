@@ -15,7 +15,7 @@ import lombok.Getter;
 import ru.dragonestia.picker.api.model.room.IRoom;
 import ru.dragonestia.picker.api.model.user.IUser;
 import ru.dragonestia.picker.api.model.user.UserDefinition;
-import ru.dragonestia.picker.api.repository.type.UserIdentifier;
+import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
 
 import java.util.Collection;
 import java.util.List;
@@ -56,7 +56,7 @@ public class AddUsers extends Details {
                 .map(user -> user.getUserIdentifierField().getValue())
                 .map(String::trim)
                 .filter(user -> !user.isEmpty())
-                .map(id -> (IUser) new UserDefinition(UserIdentifier.of(id)))
+                .map(id -> (IUser) new UserDefinition(EntityIdentifier.of(id)))
                 .toList();
     }
 

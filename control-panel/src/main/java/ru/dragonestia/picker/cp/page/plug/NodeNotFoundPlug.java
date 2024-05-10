@@ -4,13 +4,13 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.ErrorParameter;
 import com.vaadin.flow.router.HasErrorParameter;
 import jakarta.servlet.http.HttpServletResponse;
-import ru.dragonestia.picker.api.exception.NodeNotFoundException;
+import ru.dragonestia.picker.api.exception.InstanceNotFoundException;
 import ru.dragonestia.picker.cp.component.NavPath;
 
-public class NodeNotFoundPlug extends ErrorPlug implements HasErrorParameter<NodeNotFoundException> {
+public class NodeNotFoundPlug extends ErrorPlug implements HasErrorParameter<InstanceNotFoundException> {
 
     @Override
-    public int setErrorParameter(BeforeEnterEvent beforeEnterEvent, ErrorParameter<NodeNotFoundException> errorParameter) {
+    public int setErrorParameter(BeforeEnterEvent beforeEnterEvent, ErrorParameter<InstanceNotFoundException> errorParameter) {
         var ex = errorParameter.getException();
         var nodeId = ex.getNodeId();
 
