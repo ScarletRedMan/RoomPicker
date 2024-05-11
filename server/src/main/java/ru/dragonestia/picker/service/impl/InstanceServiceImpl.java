@@ -29,13 +29,13 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public void remove(Instance instance) {
-        for (var room: roomRepository.all(instance.getId())) {
+    public void remove(InstanceId id) {
+        for (var room: roomRepository.all(id)) {
             storage.removeRoom(room);
         }
 
-        instanceRepository.delete(instance.getId());
-        storage.removeInstance(instance);
+        instanceRepository.delete(id);
+        storage.removeInstance(id);
     }
 
     @Override

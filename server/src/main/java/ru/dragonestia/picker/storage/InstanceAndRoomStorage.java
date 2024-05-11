@@ -1,6 +1,7 @@
 package ru.dragonestia.picker.storage;
 
 import ru.dragonestia.picker.model.instance.Instance;
+import ru.dragonestia.picker.model.instance.InstanceId;
 import ru.dragonestia.picker.model.room.Room;
 
 public interface InstanceAndRoomStorage {
@@ -9,7 +10,7 @@ public interface InstanceAndRoomStorage {
 
     void saveInstance(Instance instance);
 
-    void removeInstance(Instance instance);
+    void removeInstance(InstanceId id);
 
     void saveRoom(Room room);
 
