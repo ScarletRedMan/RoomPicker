@@ -3,6 +3,7 @@ package ru.dragonestia.picker.storage.impl;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.model.instance.Instance;
+import ru.dragonestia.picker.model.instance.InstanceId;
 import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.storage.InstanceAndRoomStorage;
 
@@ -17,7 +18,7 @@ public class NullStorageImpl implements InstanceAndRoomStorage {
     public void saveInstance(Instance instance) {}
 
     @Override
-    public void removeInstance(Instance instance) {}
+    public void removeInstance(InstanceId id) {}
 
     @Override
     public void saveRoom(Room room) {}

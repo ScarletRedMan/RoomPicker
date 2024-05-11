@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import ru.dragonestia.picker.model.instance.Instance;
+import ru.dragonestia.picker.model.instance.InstanceId;
 import ru.dragonestia.picker.model.room.Room;
 import ru.dragonestia.picker.repository.InstanceRepository;
 import ru.dragonestia.picker.repository.RoomRepository;
@@ -77,11 +78,12 @@ public class FileStorageImpl implements InstanceAndRoomStorage {
     }
 
     @Override
-    public void removeInstance(Instance instance) {
-        if (!instance.isPersist()) return;
-        new File(path + "/nodes/" + instance.getId() + ".json").delete();
+    public void removeInstance(InstanceId id) {
+        var file = new File(path + "/nodes/" + id + ".json");
+        if (!file.exists()) return;
+        file.delete();
 
-        log.info("Removed instance '%s' from disk storage".formatted(instance.getId()));
+        log.info("Removed instance '%s' from disk storage".formatted(id));
     }
 
     @SneakyThrows

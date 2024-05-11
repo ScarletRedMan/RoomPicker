@@ -15,7 +15,7 @@ public interface InstanceService {
     void create(Instance instance) throws InvalidIdentifierException, AlreadyExistsException;
 
     @PreAuthorize("hasRole('NODE_MANAGEMENT')")
-    void remove(Instance instance);
+    void remove(InstanceId id);
 
     List<Instance> all();
 
