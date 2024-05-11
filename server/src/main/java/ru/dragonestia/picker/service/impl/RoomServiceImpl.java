@@ -26,7 +26,6 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
     private final InstanceRepository instanceRepository;
-    private final EntityRepository entityRepository;
     private final InstanceAndRoomStorage storage;
 
     @Override
