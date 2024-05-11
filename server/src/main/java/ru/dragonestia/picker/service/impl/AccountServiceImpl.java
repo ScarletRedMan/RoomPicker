@@ -43,8 +43,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Optional<Account> findAccount(String accountId) {
-        return Optional.ofNullable(accounts.getOrDefault(accountId, null));
+    public Optional<Account> findAccount(AccountId id) {
+        return Optional.ofNullable(accounts.getOrDefault(id.getValue(), null));
     }
 
     @Override

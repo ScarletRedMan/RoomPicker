@@ -1,6 +1,5 @@
 package ru.dragonestia.picker.controller.response;
 
-import ru.dragonestia.picker.model.entity.EntityId;
 import ru.dragonestia.picker.model.instance.type.PickingMethod;
 
 import java.util.List;
@@ -30,5 +29,10 @@ public final class ResponseObject {
 
     public record PickedRoom(Room room, List<String> entities) {}
 
-    public record Account(String id, List<String> permissions, boolean locked) {}
+    public record Account(String id, List<String> permissions, boolean locked) {
+
+        public static Account of(ru.dragonestia.picker.model.account.Account account) {
+            return new Account(account.getUsername(), account.getAuthorities().stream().map(Enum::name).toList(), account.isLocked());
+        }
+    }
 }
