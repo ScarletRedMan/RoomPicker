@@ -11,6 +11,12 @@ import ru.dragonestia.picker.model.room.RoomId;
 public class RoomFactory {
 
     public Room create(RoomId identifier, Instance instance, int slots, String payload, boolean persist) {
-        return new Room(identifier, instance, slots, payload, persist);
+        return create(identifier, instance, slots, payload, persist, false);
+    }
+
+    public Room create(RoomId identifier, Instance instance, int slots, String payload, boolean persist, boolean locked) {
+        var room = new Room(identifier, instance, slots, payload, persist);
+        room.setLocked(locked);
+        return room;
     }
 }
