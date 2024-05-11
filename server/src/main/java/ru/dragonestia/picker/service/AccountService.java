@@ -14,7 +14,7 @@ public interface AccountService extends UserDetailsService {
     @PreAuthorize("hasRole('ADMIN')")
     Account createNewAccount(AccountId id, String password);
 
-    Optional<Account> findAccount(String accountId);
+    Optional<Account> findAccount(AccountId id);
 
     @PreAuthorize("hasRole('ADMIN')")
     Collection<Account> allAccounts();
