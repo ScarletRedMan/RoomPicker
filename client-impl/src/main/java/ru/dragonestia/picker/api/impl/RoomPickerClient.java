@@ -5,6 +5,10 @@ import okhttp3.Request;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import ru.dragonestia.picker.api.impl.exception.ExceptionService;
+import ru.dragonestia.picker.api.impl.repository.AccountRepositoryImpl;
+import ru.dragonestia.picker.api.impl.repository.EntityRepositoryImpl;
+import ru.dragonestia.picker.api.impl.repository.InstanceRepositoryImpl;
+import ru.dragonestia.picker.api.impl.repository.RoomRepositoryImpl;
 import ru.dragonestia.picker.api.impl.util.RestTemplate;
 import ru.dragonestia.picker.api.impl.util.type.HttpMethod;
 import ru.dragonestia.picker.api.model.account.Account;
@@ -31,10 +35,10 @@ public class RoomPickerClient {
         this.username = username;
         this.password = password;
         this.restTemplate = new RestTemplate(this, this::updateAccountData);
-        this.instanceRepository = null; //new InstanceRepositoryImpl(this);
-        this.roomRepository = null; //new RoomRepositoryImpl(this);
-        this.entityRepository = null; //new EntityRepositoryImpl(this);
-        this.accountRepository = null; //new AccountRepositoryImpl(this);
+        this.instanceRepository = new InstanceRepositoryImpl(getRestTemplate());
+        this.roomRepository = new RoomRepositoryImpl(getRestTemplate());
+        this.entityRepository = new EntityRepositoryImpl(getRestTemplate());
+        this.accountRepository = new AccountRepositoryImpl(getRestTemplate());
 
         ExceptionService.init();
     }
