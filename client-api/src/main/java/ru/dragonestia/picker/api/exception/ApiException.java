@@ -1,10 +1,11 @@
 package ru.dragonestia.picker.api.exception;
 
-import java.util.Map;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public abstract class ApiException extends RuntimeException {
 
-    public abstract String getErrorId();
-
-    public abstract void appendDetailsToErrorResponse(Map<String, String> details);
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE })
+public @interface ApiException {}
