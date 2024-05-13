@@ -2,15 +2,12 @@ package ru.dragonestia.picker.api.impl;
 
 import okhttp3.Credentials;
 import okhttp3.Request;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import ru.dragonestia.picker.api.impl.repository.AccountRepositoryImpl;
-import ru.dragonestia.picker.api.impl.repository.InstanceRepositoryImpl;
-import ru.dragonestia.picker.api.impl.repository.RoomRepositoryImpl;
-import ru.dragonestia.picker.api.impl.repository.EntityRepositoryImpl;
+import ru.dragonestia.picker.api.impl.exception.ExceptionService;
 import ru.dragonestia.picker.api.impl.util.RestTemplate;
 import ru.dragonestia.picker.api.impl.util.type.HttpMethod;
+import ru.dragonestia.picker.api.model.account.Account;
 import ru.dragonestia.picker.api.repository.AccountRepository;
 import ru.dragonestia.picker.api.repository.InstanceRepository;
 import ru.dragonestia.picker.api.repository.RoomRepository;
@@ -27,47 +24,63 @@ public class RoomPickerClient {
     private final RoomRepository roomRepository;
     private final EntityRepository entityRepository;
     private final AccountRepository accountRepository;
+    private Account account;
 
-    public RoomPickerClient(@NotNull String url, @NotNull String username, @NotNull String password) {
+    public RoomPickerClient(String url, String username, String password) {
         this.url = url;
         this.username = username;
         this.password = password;
-        this.restTemplate = new RestTemplate(this);
-        this.instanceRepository = new InstanceRepositoryImpl(this);
-        this.roomRepository = new RoomRepositoryImpl(this);
-        this.entityRepository = new EntityRepositoryImpl(this);
-        this.accountRepository = new AccountRepositoryImpl(this);
+        this.restTemplate = new RestTemplate(this, this::updateAccountData);
+        this.instanceRepository = null; //new InstanceRepositoryImpl(this);
+        this.roomRepository = null; //new RoomRepositoryImpl(this);
+        this.entityRepository = null; //new EntityRepositoryImpl(this);
+        this.accountRepository = null; //new AccountRepositoryImpl(this);
+
+        ExceptionService.init();
     }
 
     @Internal
-    public @NotNull RestTemplate getRestTemplate() {
+    public RestTemplate getRestTemplate() {
         return restTemplate;
     }
 
     @Internal
-    public @NotNull Request.Builder prepareRequestBuilder(@NotNull String uri) {
+    public Request.Builder prepareRequestBuilder(String uri) {
         return new Request.Builder()
                 .url(url + uri)
                 .addHeader("Authorization", Credentials.basic(username, password));
     }
 
-    public @NotNull InstanceRepository getNodeRepository() {
+    public InstanceRepository getNodeRepository() {
         return instanceRepository;
     }
 
-    public @NotNull RoomRepository getRoomRepository() {
+    public RoomRepository getRoomRepository() {
         return roomRepository;
     }
 
-    public @NotNull EntityRepository getUserRepository() {
+    public EntityRepository getUserRepository() {
         return entityRepository;
     }
 
-    public @NotNull AccountRepository getAccountRepository() {
+    public AccountRepository getAccountRepository() {
         return accountRepository;
     }
 
-    public @NotNull RoomPickerInfoResponse getServerInfo() {
+    public RoomPickerInfoResponse getServerInfo() {
         return restTemplate.query("/info", HttpMethod.GET, RoomPickerInfoResponse.class, params -> {});
+    }
+
+    public Account getAccount() {
+        if (account == null) {
+            getServerInfo();
+            assert account != null;
+        }
+        
+        return account;
+    }
+    
+    private void updateAccountData(Account account) {
+        this.account = account;
     }
 }
