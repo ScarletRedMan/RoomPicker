@@ -8,7 +8,7 @@ import com.vaadin.flow.router.RouteAlias;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.dragonestia.picker.api.exception.ApiException;
-import ru.dragonestia.picker.api.repository.NodeRepository;
+import ru.dragonestia.picker.api.repository.InstanceRepository;
 import ru.dragonestia.picker.cp.component.NavPath;
 import ru.dragonestia.picker.cp.component.NodeList;
 import ru.dragonestia.picker.cp.component.RegisterNode;
@@ -20,12 +20,12 @@ import ru.dragonestia.picker.cp.service.SecurityService;
 @Route(value = "/instances", layout = MainLayout.class)
 public class NodesPage extends VerticalLayout {
 
-    private final NodeRepository nodeRepository;
+    private final InstanceRepository instanceRepository;
     private final NodeList nodeList;
 
     @Autowired
     public NodesPage(SecurityService securityService) {
-        this.nodeRepository = securityService.getAuthenticatedAccount().getClient().getNodeRepository();
+        this.instanceRepository = securityService.getAuthenticatedAccount().getClient().getNodeRepository();
 
         add(NavPath.rootNodes());
 
@@ -40,7 +40,7 @@ public class NodesPage extends VerticalLayout {
     protected RegisterNode createRegisterNodeElement() {
         return new RegisterNode(nodeDefinition -> {
             try {
-                nodeRepository.saveNode(nodeDefinition);
+                instanceRepository.saveNode(nodeDefinition);
                 return new RegisterNode.Response(false, "");
             } catch (ApiException ex) {
                 return new RegisterNode.Response(true, ex.getMessage());
@@ -51,6 +51,6 @@ public class NodesPage extends VerticalLayout {
     }
 
     protected NodeList createNodeListElement() {
-        return new NodeList(nodeRepository);
+        return new NodeList(instanceRepository);
     }
 }

@@ -12,7 +12,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import ru.dragonestia.picker.api.model.room.IRoom;
 import ru.dragonestia.picker.api.model.user.IUser;
 import ru.dragonestia.picker.api.model.user.UserDetails;
-import ru.dragonestia.picker.api.repository.UserRepository;
+import ru.dragonestia.picker.api.repository.EntityRepository;
 import ru.dragonestia.picker.api.repository.query.user.GetAllUsersFromRoom;
 import ru.dragonestia.picker.api.repository.query.user.UnlinkUsersFromRoom;
 
@@ -24,16 +24,16 @@ import java.util.stream.Collectors;
 public class UserList extends VerticalLayout implements RefreshableTable {
 
     private final IRoom room;
-    private final UserRepository userRepository;
+    private final EntityRepository entityRepository;
     private final Button buttonRemove;
     private final Grid<IUser> usersGrid;
     private final Span totalUsers = new Span();
     private final Span occupancy = new Span();
     private List<IUser> cachedUsers = new ArrayList<>();
 
-    public UserList(IRoom room, UserRepository userRepository) {
+    public UserList(IRoom room, EntityRepository entityRepository) {
         this.room = room;
-        this.userRepository = userRepository;
+        this.entityRepository = entityRepository;
 
         buttonRemove = createButtonRemove();
         add(usersGrid = createUsersGrid());
@@ -49,7 +49,7 @@ public class UserList extends VerticalLayout implements RefreshableTable {
         button.addClickListener(event -> {
             var users = usersGrid.getSelectedItems();
             if (users.isEmpty()) return;
-            userRepository.unlinkUsersFromRoom(UnlinkUsersFromRoom.builder()
+            entityRepository.unlinkUsersFromRoom(UnlinkUsersFromRoom.builder()
                     .setNodeId(room.getNodeIdentifierObject())
                     .setRoomId(room.getIdentifierObject())
                     .setUsers(users.stream().map(IUser::getIdentifierObject).collect(Collectors.toSet()))
@@ -121,7 +121,7 @@ public class UserList extends VerticalLayout implements RefreshableTable {
 
     @Override
     public void refresh() {
-        cachedUsers = userRepository.getAllUsersFormRoom(GetAllUsersFromRoom.withAllDetails(room.getNodeIdentifierObject(), room.getIdentifierObject()))
+        cachedUsers = entityRepository.getAllUsersFormRoom(GetAllUsersFromRoom.withAllDetails(room.getNodeIdentifierObject(), room.getIdentifierObject()))
                 .stream().map(user -> (IUser) user).toList();
         usersGrid.setItems(cachedUsers);
         totalUsers.setText("Total users: " + cachedUsers.size());

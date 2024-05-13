@@ -6,15 +6,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import ru.dragonestia.picker.api.impl.repository.AccountRepositoryImpl;
-import ru.dragonestia.picker.api.impl.repository.NodeRepositoryImpl;
+import ru.dragonestia.picker.api.impl.repository.InstanceRepositoryImpl;
 import ru.dragonestia.picker.api.impl.repository.RoomRepositoryImpl;
-import ru.dragonestia.picker.api.impl.repository.UserRepositoryImpl;
+import ru.dragonestia.picker.api.impl.repository.EntityRepositoryImpl;
 import ru.dragonestia.picker.api.impl.util.RestTemplate;
 import ru.dragonestia.picker.api.impl.util.type.HttpMethod;
 import ru.dragonestia.picker.api.repository.AccountRepository;
-import ru.dragonestia.picker.api.repository.NodeRepository;
+import ru.dragonestia.picker.api.repository.InstanceRepository;
 import ru.dragonestia.picker.api.repository.RoomRepository;
-import ru.dragonestia.picker.api.repository.UserRepository;
+import ru.dragonestia.picker.api.repository.EntityRepository;
 import ru.dragonestia.picker.api.repository.response.RoomPickerInfoResponse;
 
 public class RoomPickerClient {
@@ -23,9 +23,9 @@ public class RoomPickerClient {
     private final String username;
     private final String password;
     private final RestTemplate restTemplate;
-    private final NodeRepository nodeRepository;
+    private final InstanceRepository instanceRepository;
     private final RoomRepository roomRepository;
-    private final UserRepository userRepository;
+    private final EntityRepository entityRepository;
     private final AccountRepository accountRepository;
 
     public RoomPickerClient(@NotNull String url, @NotNull String username, @NotNull String password) {
@@ -33,9 +33,9 @@ public class RoomPickerClient {
         this.username = username;
         this.password = password;
         this.restTemplate = new RestTemplate(this);
-        this.nodeRepository = new NodeRepositoryImpl(this);
+        this.instanceRepository = new InstanceRepositoryImpl(this);
         this.roomRepository = new RoomRepositoryImpl(this);
-        this.userRepository = new UserRepositoryImpl(this);
+        this.entityRepository = new EntityRepositoryImpl(this);
         this.accountRepository = new AccountRepositoryImpl(this);
     }
 
@@ -51,16 +51,16 @@ public class RoomPickerClient {
                 .addHeader("Authorization", Credentials.basic(username, password));
     }
 
-    public @NotNull NodeRepository getNodeRepository() {
-        return nodeRepository;
+    public @NotNull InstanceRepository getNodeRepository() {
+        return instanceRepository;
     }
 
     public @NotNull RoomRepository getRoomRepository() {
         return roomRepository;
     }
 
-    public @NotNull UserRepository getUserRepository() {
-        return userRepository;
+    public @NotNull EntityRepository getUserRepository() {
+        return entityRepository;
     }
 
     public @NotNull AccountRepository getAccountRepository() {

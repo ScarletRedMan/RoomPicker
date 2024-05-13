@@ -2,9 +2,9 @@ package ru.dragonestia.picker.cp.util;
 
 import org.jetbrains.annotations.NotNull;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
-import ru.dragonestia.picker.api.repository.NodeRepository;
+import ru.dragonestia.picker.api.repository.InstanceRepository;
 import ru.dragonestia.picker.api.repository.RoomRepository;
-import ru.dragonestia.picker.api.repository.UserRepository;
+import ru.dragonestia.picker.api.repository.EntityRepository;
 
 public class AdminRoomPickerClient extends RoomPickerClient {
 
@@ -13,7 +13,7 @@ public class AdminRoomPickerClient extends RoomPickerClient {
     }
 
     @Override
-    public @NotNull NodeRepository getNodeRepository() {
+    public @NotNull InstanceRepository getNodeRepository() {
         throw new UnsupportedOperationException();
     }
 
@@ -23,7 +23,7 @@ public class AdminRoomPickerClient extends RoomPickerClient {
     }
 
     @Override
-    public @NotNull UserRepository getUserRepository() {
+    public @NotNull EntityRepository getUserRepository() {
         throw new UnsupportedOperationException();
     }
 }

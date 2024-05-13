@@ -16,7 +16,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import ru.dragonestia.picker.api.model.node.INode;
 import ru.dragonestia.picker.api.model.node.NodeDetails;
-import ru.dragonestia.picker.api.repository.NodeRepository;
+import ru.dragonestia.picker.api.repository.InstanceRepository;
 import ru.dragonestia.picker.api.repository.query.node.GetAllNodes;
 
 import java.util.Comparator;
@@ -24,14 +24,14 @@ import java.util.List;
 
 public class NodeList extends VerticalLayout implements RefreshableTable {
 
-    private final NodeRepository nodeRepository;
+    private final InstanceRepository instanceRepository;
     private final Grid<INode> nodesGrid;
     private final TextField searchField;
     private List<INode> cachedNodes;
 
-    public NodeList(NodeRepository nodeRepository) {
+    public NodeList(InstanceRepository instanceRepository) {
         super();
-        this.nodeRepository = nodeRepository;
+        this.instanceRepository = instanceRepository;
 
         add(new H2("Nodes"));
         add(searchField = createSearchField());
@@ -139,13 +139,13 @@ public class NodeList extends VerticalLayout implements RefreshableTable {
     }
 
     private void removeNode(INode node) {
-        nodeRepository.removeNode(node);
+        instanceRepository.removeNode(node);
         refresh();
     }
 
     @Override
     public void refresh() {
-        cachedNodes = nodeRepository.allNodes(GetAllNodes.WITH_ALL_DETAILS);
+        cachedNodes = instanceRepository.allNodes(GetAllNodes.WITH_ALL_DETAILS);
         applySearch(searchField.getValue());
     }
 

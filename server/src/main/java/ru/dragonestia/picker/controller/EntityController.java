@@ -2,6 +2,7 @@ package ru.dragonestia.picker.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.dragonestia.picker.controller.response.ResponseObject;
 import ru.dragonestia.picker.model.entity.EntityId;
 import ru.dragonestia.picker.service.EntityService;
 
@@ -22,15 +23,15 @@ public class EntityController {
     }
 
     @GetMapping("/target/rooms")
-    List<String> find(@RequestParam String id) {
+    List<ResponseObject.Room> find(@RequestParam String id) {
         return entityService.getEntityRooms(EntityId.of(id)).stream()
-                .map(room -> room.getId().getValue())
+                .map(ResponseObject.Room::of)
                 .toList();
     }
 
     @GetMapping("/list/rooms")
-    Map<String, List<String>> roomsOf(@RequestParam List<String> id) {
-        var map = new HashMap<String, List<String>>();
+    Map<String, List<ResponseObject.Room>> roomsOf(@RequestParam List<String> id) {
+        var map = new HashMap<String, List<ResponseObject.Room>>();
         for (var userId: id) {
             map.put(userId, find(userId));
         }
