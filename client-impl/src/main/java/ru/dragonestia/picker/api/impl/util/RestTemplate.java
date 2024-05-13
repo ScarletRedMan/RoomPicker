@@ -5,12 +5,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import ru.dragonestia.picker.api.impl.exception.ExceptionService;
 import ru.dragonestia.picker.api.impl.exception.NotEnoughPermissions;
 import ru.dragonestia.picker.api.impl.exception.AuthException;
-import ru.dragonestia.picker.api.exception.ExceptionFactory;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
 import ru.dragonestia.picker.api.impl.util.type.HttpMethod;
-import ru.dragonestia.picker.api.repository.response.ErrorResponse;
+import ru.dragonestia.picker.api.model.account.Account;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -22,11 +22,14 @@ import java.util.function.Consumer;
 public class RestTemplate {
 
     private final RoomPickerClient client;
+    private final Consumer<Account> accountConsumer;
     private final OkHttpClient httpClient;
     private final ObjectMapper json;
 
-    public RestTemplate(RoomPickerClient client) {
+    public RestTemplate(RoomPickerClient client, Consumer<Account> accountConsumer) {
         this.client = client;
+        this.accountConsumer = accountConsumer;
+
         httpClient = new OkHttpClient();
         json = configureJackson();
     }
@@ -119,8 +122,12 @@ public class RestTemplate {
                 throw new NotEnoughPermissions("Not enough permissions");
             }
 
+            var accountData = json.readValue(response.header("X-Account"), Account.class);
+            accountConsumer.accept(accountData);
+
+            var exceptionClass = response.header("X-Server-Exception");
             var body = new String(Objects.requireNonNull(response.body()).bytes(), StandardCharsets.UTF_8);
-            throw ExceptionFactory.of(json.readValue(body, ErrorResponse.class));
+            throw ExceptionService.prepare(exceptionClass, body);
         }
 
         if (statusCode == 5) {
