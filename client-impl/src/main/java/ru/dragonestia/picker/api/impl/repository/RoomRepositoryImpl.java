@@ -1,5 +1,6 @@
 package ru.dragonestia.picker.api.impl.repository;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import ru.dragonestia.picker.api.impl.util.RestTemplate;
 import ru.dragonestia.picker.api.impl.util.type.HttpMethod;
 import ru.dragonestia.picker.api.model.instance.InstanceId;
@@ -20,22 +21,22 @@ public class RoomRepositoryImpl implements RoomRepository {
 
     @Override
     public List<RoomId> allRoomsIds(InstanceId instanceId) {
-        return Arrays.stream(rest.query("/instances/target/%s/rooms".formatted(instanceId.getValue()), HttpMethod.GET, String[].class))
-                .map(RoomId::of)
-                .toList();
+        List<String> id = rest.queryWithRequest("/instances/target/%s/rooms".formatted(instanceId.getValue()), HttpMethod.GET);
+        return id.stream().map(RoomId::of).toList();
     }
 
     @Override
     public Room getRoom(InstanceId instanceId, RoomId roomId) {
-        return rest.query("/instances/target/%s/rooms/target/%s".formatted(instanceId.getValue(), roomId.getValue()), HttpMethod.GET, ResponseObject.RRoom.class).covert();
+        ResponseObject.RRoom room = rest.queryWithRequest("/instances/target/%s/rooms/target/%s".formatted(instanceId.getValue(), roomId.getValue()), HttpMethod.GET);
+        return room.covert();
     }
 
     @Override
     public Map<RoomId, Room> getRooms(InstanceId instanceId, Collection<RoomId> rooms) {
         var map = new HashMap<RoomId, Room>();
-        Arrays.stream(rest.query("/instances/target/%s/rooms/list".formatted(instanceId.getValue()), HttpMethod.GET, ResponseObject.RRoom[].class, params -> {
+        rest.queryWithRequest("/instances/target/%s/rooms/list".formatted(instanceId.getValue()), HttpMethod.GET, new TypeReference<List<ResponseObject.RRoom>>() {}, params -> {
             params.put("id", String.join(",", rooms.stream().map(RoomId::getValue).toList()));
-        })).map(ResponseObject.RRoom::covert).forEach(room -> map.put(room.id(), room));
+        }).stream().map(ResponseObject.RRoom::covert).forEach(room -> map.put(room.id(), room));
         return map;
     }
 

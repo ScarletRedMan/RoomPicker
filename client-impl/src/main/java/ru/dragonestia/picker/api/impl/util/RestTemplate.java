@@ -2,6 +2,7 @@ package ru.dragonestia.picker.api.impl.util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -48,67 +49,40 @@ public class RestTemplate {
     }
 
     public void query(String uri, HttpMethod method, ParamsConsumer paramsConsumer) {
-        var request = client.prepareRequestBuilder(uri + queryEncode(paramsConsumer))
+        execute(client.prepareRequestBuilder(uri + queryEncode(paramsConsumer))
                 .method(method.name(), method == HttpMethod.GET? null : new FormBody.Builder().build())
-                .build();
-
-        try (var response = httpClient.newCall(request).execute()) {
-            checkResponseForErrors(response);
-        } catch (JsonProcessingException ex) {
-            throw new RuntimeException("Json processing error", ex);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+                .build());
     }
 
-    public <T> T query(String uri, HttpMethod method, Class<T> clazz) {
-        return query(uri, method, clazz, ParamsConsumer.NONE);
+    public <T> T queryWithRequest(String uri, HttpMethod method) {
+        return queryWithRequest(uri, method, ParamsConsumer.NONE);
     }
 
-    public <T> T query(String uri, HttpMethod method, Class<T> clazz, ParamsConsumer paramsConsumer) {
-        var request = client.prepareRequestBuilder(uri + queryEncode(paramsConsumer))
+    public <T> T queryWithRequest(String uri, HttpMethod method, ParamsConsumer paramsConsumer) {
+        return queryWithRequest(uri, method, new TypeReference<>(){}, paramsConsumer);
+    }
+
+    public <T> T queryWithRequest(String uri, HttpMethod method, TypeReference<T> type, ParamsConsumer paramsConsumer) {
+        return execute(client.prepareRequestBuilder(uri + queryEncode(paramsConsumer))
                 .method(method.name(), method == HttpMethod.GET? null : new FormBody.Builder().build())
-                .build();
-
-        try (var response = httpClient.newCall(request).execute()) {
-            checkResponseForErrors(response);
-
-            return json.readValue(new String(Objects.requireNonNull(response.body()).bytes(), StandardCharsets.UTF_8), clazz);
-        } catch (JsonProcessingException ex) {
-            throw new RuntimeException("Json processing error", ex);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+                .build(),
+                type);
     }
 
-    public <T> T queryPostWithBody(String uri, Class<T> clazz, ParamsConsumer paramsConsumer, String body) {
-        var request = client.prepareRequestBuilder(uri + queryEncode(paramsConsumer))
-                .post(RequestBody.create(body, MediaType.get("text/plain")))
-                .build();
+    public <T> T queryPostWithBodyRequest(String uri, ParamsConsumer paramsConsumer, String body) {
+        return queryPostWithBodyRequest(uri, new TypeReference<>() {}, paramsConsumer, body);
+    }
 
-        try (var response = httpClient.newCall(request).execute()) {
-            checkResponseForErrors(response);
-
-            return json.readValue(new String(Objects.requireNonNull(response.body()).bytes(), StandardCharsets.UTF_8), clazz);
-        } catch (JsonProcessingException ex) {
-            throw new RuntimeException("Json processing error", ex);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+    public <T> T queryPostWithBodyRequest(String uri, TypeReference<T> type, ParamsConsumer paramsConsumer, String body) {
+        return execute(client.prepareRequestBuilder(uri + queryEncode(paramsConsumer))
+                        .post(RequestBody.create(body, MediaType.get("text/plain")))
+                        .build(), type);
     }
 
     public void queryPostWithBody(String uri, ParamsConsumer paramsConsumer, String body) {
-        var request = client.prepareRequestBuilder(uri + queryEncode(paramsConsumer))
+        execute(client.prepareRequestBuilder(uri + queryEncode(paramsConsumer))
                 .post(RequestBody.create(body, MediaType.get("text/plain")))
-                .build();
-
-        try (var response = httpClient.newCall(request).execute()) {
-            checkResponseForErrors(response);
-        } catch (JsonProcessingException ex) {
-            throw new RuntimeException("Json processing error", ex);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+                .build());
     }
 
     private String queryEncode(ParamsConsumer paramsConsumer) {
@@ -122,6 +96,28 @@ public class RestTemplate {
             pairs.add(entry.getKey() + "=" + URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
         }
         return "?" + String.join("&", pairs);
+    }
+
+    private void execute(Request request) {
+        try (var response = httpClient.newCall(request).execute()) {
+            checkResponseForErrors(response);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException("Json processing error", ex);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private <T> T execute(Request request, TypeReference<T> type) {
+        try (var response = httpClient.newCall(request).execute()) {
+            checkResponseForErrors(response);
+
+            return json.readValue(new String(Objects.requireNonNull(response.body()).bytes(), StandardCharsets.UTF_8), type);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException("Json processing error", ex);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private void checkResponseForErrors(Response response) throws IOException {
