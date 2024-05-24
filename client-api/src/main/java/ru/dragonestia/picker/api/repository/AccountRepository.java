@@ -13,7 +13,7 @@ public interface AccountRepository {
 
     Account getAccount(AccountId id);
 
-    List<Account> getAccounts(Collection<Account> ids);
+    List<Account> getAccounts(Collection<AccountId> ids);
 
     void createAccount(AccountId id, String password, List<Permission> permissions);
 
