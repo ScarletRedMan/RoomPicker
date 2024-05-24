@@ -97,6 +97,20 @@ public class RestTemplate {
         }
     }
 
+    public void queryPostWithBody(String uri, ParamsConsumer paramsConsumer, String body) {
+        var request = client.prepareRequestBuilder(uri + queryEncode(paramsConsumer))
+                .post(RequestBody.create(body, MediaType.get("text/plain")))
+                .build();
+
+        try (var response = httpClient.newCall(request).execute()) {
+            checkResponseForErrors(response);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException("Json processing error", ex);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     private String queryEncode(ParamsConsumer paramsConsumer) {
         var params = new HashMap<String, String>();
         paramsConsumer.accept(params);
