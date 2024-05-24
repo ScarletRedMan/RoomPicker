@@ -34,9 +34,9 @@ public class InstanceRepositoryImpl implements InstanceRepository {
     @Override
     public Map<InstanceId, Instance> getInstances(Collection<InstanceId> ids) {
         var map = new HashMap<InstanceId, Instance>();
-        rest.query("/instances/target/list", HttpMethod.GET, ResponseObject.RInstance[].class, params -> {
+        Arrays.stream(rest.query("/instances/target/list", HttpMethod.GET, ResponseObject.RInstance[].class, params -> {
             params.put("id", String.join(",", ids.stream().map(InstanceId::getValue).toList()));
-        });
+        })).map(ResponseObject.RInstance::convert).forEach(instance -> map.put(instance.id(), instance));
         return map;
     }
 
