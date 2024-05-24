@@ -3,10 +3,13 @@ package ru.dragonestia.picker.api.impl.util;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeCreator;
 import okhttp3.*;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import ru.dragonestia.picker.api.impl.exception.ExceptionService;
+import ru.dragonestia.picker.api.impl.exception.GraphqlException;
 import ru.dragonestia.picker.api.impl.exception.NotEnoughPermissions;
 import ru.dragonestia.picker.api.impl.exception.AuthException;
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
@@ -18,6 +21,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 @Internal
 public class RestTemplate {
@@ -85,6 +89,46 @@ public class RestTemplate {
                 .build());
     }
 
+    public <T> T executeGraphQL(GraphqlQuery<T> query) {
+        var map = new HashMap<String, String>();
+        query.paramProvider().accept(map::put);
+
+        String queryBody;
+        try {
+            queryBody = json.writeValueAsString(new GraphqlQuery.Request(query.query(), map));
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+
+        var request = client.prepareRequestBuilder("/graphql")
+                .post(RequestBody.create(queryBody, MediaType.get("application/json")))
+                .build();
+
+        var response = executeGraphql(request);
+        JsonNode node;
+        try {
+            node = json.readTree(response);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+
+        if (node.has("errors")) {
+            var details = new HashMap<String, String>();
+            for (Iterator<Map.Entry<String, JsonNode>> it = node.fields(); it.hasNext(); ) {
+                var entry = it.next();
+
+                details.put(entry.getKey(), entry.getValue().textValue());
+            }
+            throw new GraphqlException(details);
+        }
+
+        try {
+            return json.readValue(response, new TypeReference<GraphqlQuery.Response<T>>(){}).data();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     private String queryEncode(ParamsConsumer paramsConsumer) {
         var params = new HashMap<String, String>();
         paramsConsumer.accept(params);
@@ -113,6 +157,18 @@ public class RestTemplate {
             checkResponseForErrors(response);
 
             return json.readValue(new String(Objects.requireNonNull(response.body()).bytes(), StandardCharsets.UTF_8), type);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException("Json processing error", ex);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private String executeGraphql(Request request) {
+        try (var response = httpClient.newCall(request).execute()) {
+            checkResponseForErrors(response);
+
+            return new String(Objects.requireNonNull(response.body()).bytes(), StandardCharsets.UTF_8);
         } catch (JsonProcessingException ex) {
             throw new RuntimeException("Json processing error", ex);
         } catch (IOException ex) {
