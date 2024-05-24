@@ -14,7 +14,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/instances/{instanceId}/rooms/{roomId}/users")
+@RequestMapping("/instances/{instanceId}/rooms/target/{roomId}/users")
 public class EntityRoomController {
 
     private final RoomService roomService;
