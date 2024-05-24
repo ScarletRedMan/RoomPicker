@@ -1,5 +1,6 @@
 package ru.dragonestia.picker.api.impl.repository;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import ru.dragonestia.picker.api.impl.util.RestTemplate;
 import ru.dragonestia.picker.api.impl.util.type.HttpMethod;
 import ru.dragonestia.picker.api.model.entity.EntityId;
@@ -21,22 +22,22 @@ public class InstanceRepositoryImpl implements InstanceRepository {
 
     @Override
     public List<InstanceId> allInstancesIds() {
-        return Arrays.stream(rest.query("/instances", HttpMethod.GET, String[].class))
-                .map(InstanceId::of)
-                .toList();
+        List<String> id = rest.queryWithRequest("/instances", HttpMethod.GET);
+        return id.stream().map(InstanceId::of).toList();
     }
 
     @Override
     public Instance getInstance(InstanceId id) {
-        return rest.query("/instances/target/" + id.getValue(), HttpMethod.GET, ResponseObject.RInstance.class).convert();
+        ResponseObject.RInstance instance = rest.queryWithRequest("/instances/target/" + id.getValue(), HttpMethod.GET);
+        return instance.convert();
     }
 
     @Override
     public Map<InstanceId, Instance> getInstances(Collection<InstanceId> ids) {
         var map = new HashMap<InstanceId, Instance>();
-        Arrays.stream(rest.query("/instances/target/list", HttpMethod.GET, ResponseObject.RInstance[].class, params -> {
+        rest.queryWithRequest("/instances/target/list", HttpMethod.GET, new TypeReference<List<ResponseObject.RInstance>>() {}, params -> {
             params.put("id", String.join(",", ids.stream().map(InstanceId::getValue).toList()));
-        })).map(ResponseObject.RInstance::convert).forEach(instance -> map.put(instance.id(), instance));
+        }).stream().map(ResponseObject.RInstance::convert).forEach(instance -> map.put(instance.id(), instance));
         return map;
     }
 
@@ -64,7 +65,7 @@ public class InstanceRepositoryImpl implements InstanceRepository {
 
     @Override
     public ResponseObject.PickedRoom pickRoom(InstanceId id, Collection<EntityId> entities, boolean dontReturnEntities) {
-        return rest.queryPostWithBody("/instances/target/" + id.getValue() + "/pick", ResponseObject.PickedRoom.class, params -> {
+        return rest.queryPostWithBodyRequest("/instances/target/" + id.getValue() + "/pick", params -> {
             params.put("dontReturnEntities", Boolean.toString(dontReturnEntities));
         }, String.join(",", entities.stream().map(EntityId::getValue).toList()));
     }
