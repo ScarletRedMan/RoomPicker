@@ -188,7 +188,7 @@ public class RestTemplate {
                 throw new NotEnoughPermissions("Not enough permissions");
             }
 
-            var accountData = json.readValue(response.header("X-Account"), Account.class);
+            var accountData = json.readValue(response.header("X-RoomPicker-Account"), Account.class);
             accountConsumer.accept(accountData);
 
             var exceptionClass = response.header("X-Server-Exception");
