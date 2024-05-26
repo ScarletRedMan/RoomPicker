@@ -117,7 +117,7 @@ public class RestTemplate {
         }
 
         try {
-            return json.readValue(response, new TypeReference<GraphqlQuery.Response<T>>(){}).data();
+            return json.treeToValue(node.get("data"), query.responseClass());
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
