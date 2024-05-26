@@ -21,20 +21,18 @@ public class RoomRepositoryImpl implements RoomRepository {
 
     @Override
     public List<RoomId> allRoomsIds(InstanceId instanceId) {
-        List<String> id = rest.queryWithRequest("/instances/target/%s/rooms".formatted(instanceId.getValue()), HttpMethod.GET);
-        return id.stream().map(RoomId::of).toList();
+        return rest.query("/instances/target/%s/rooms".formatted(instanceId.getValue()), HttpMethod.GET, new TypeReference<List<String>>(){}).stream().map(RoomId::of).toList();
     }
 
     @Override
     public Room getRoom(InstanceId instanceId, RoomId roomId) {
-        ResponseObject.RRoom room = rest.queryWithRequest("/instances/target/%s/rooms/target/%s".formatted(instanceId.getValue(), roomId.getValue()), HttpMethod.GET);
-        return room.covert();
+        return rest.query("/instances/target/%s/rooms/target/%s".formatted(instanceId.getValue(), roomId.getValue()), HttpMethod.GET, new TypeReference<ResponseObject.RRoom>(){}).covert();
     }
 
     @Override
     public Map<RoomId, Room> getRooms(InstanceId instanceId, Collection<RoomId> rooms) {
         var map = new HashMap<RoomId, Room>();
-        rest.queryWithRequest("/instances/target/%s/rooms/list".formatted(instanceId.getValue()), HttpMethod.GET, new TypeReference<List<ResponseObject.RRoom>>() {}, params -> {
+        rest.query("/instances/target/%s/rooms/list".formatted(instanceId.getValue()), HttpMethod.GET, new TypeReference<List<ResponseObject.RRoom>>() {}, params -> {
             params.put("id", String.join(",", rooms.stream().map(RoomId::getValue).toList()));
         }).stream().map(ResponseObject.RRoom::covert).forEach(room -> map.put(room.id(), room));
         return map;

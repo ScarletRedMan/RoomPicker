@@ -22,14 +22,14 @@ public class EntityRepositoryImpl implements EntityRepository {
 
     @Override
     public List<EntityId> searchUsers(EntityId input) {
-        return rest.queryWithRequest("/entities/search", HttpMethod.GET, new TypeReference<List<String>>(){}, params -> {
+        return rest.query("/entities/search", HttpMethod.GET, new TypeReference<List<String>>(){}, params -> {
             params.put("input", input.getValue());
         }).stream().map(EntityId::of).toList();
     }
 
     @Override
     public List<Room> getRooms(EntityId entity) {
-        return rest.queryWithRequest("/entities/target/rooms",
+        return rest.query("/entities/target/rooms",
                 HttpMethod.GET,
                 new TypeReference<List<ResponseObject.RRoom>>() {},
                 params -> {
@@ -40,7 +40,7 @@ public class EntityRepositoryImpl implements EntityRepository {
     @Override
     public Map<EntityId, List<Room>> getRooms(Collection<EntityId> entities) {
         var map = new HashMap<EntityId, List<Room>>();
-        rest.queryWithRequest("/entities/list/rooms", HttpMethod.GET, new TypeReference<Map<String, List<ResponseObject.RRoom>>>() {}, params -> {
+        rest.query("/entities/list/rooms", HttpMethod.GET, new TypeReference<Map<String, List<ResponseObject.RRoom>>>() {}, params -> {
             params.put("id", String.join(",", entities.stream().map(EntityId::getValue).toList()));
         }).forEach((id, rooms) -> map.put(EntityId.of(id), rooms.stream().map(ResponseObject.RRoom::covert).toList()));
         return map;
@@ -48,7 +48,7 @@ public class EntityRepositoryImpl implements EntityRepository {
 
     @Override
     public List<EntityId> getRoomEntities(InstanceId instanceId, RoomId roomId) {
-        return rest.queryWithRequest("/instances/%s/rooms/target/%s/users".formatted(instanceId.getValue(), roomId.getValue()), HttpMethod.GET, new TypeReference<List<String>>(){}, params -> {
+        return rest.query("/instances/%s/rooms/target/%s/users".formatted(instanceId.getValue(), roomId.getValue()), HttpMethod.GET, new TypeReference<List<String>>(){}, params -> {
             params.put("instanceId", instanceId.getValue());
             params.put("roomId", roomId.getValue());
         }).stream().map(EntityId::of).toList();

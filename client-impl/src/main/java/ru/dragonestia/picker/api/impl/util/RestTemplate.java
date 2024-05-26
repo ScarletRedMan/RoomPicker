@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeCreator;
 import okhttp3.*;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import ru.dragonestia.picker.api.impl.exception.ExceptionService;
@@ -21,7 +20,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 @Internal
 public class RestTemplate {
@@ -58,15 +56,11 @@ public class RestTemplate {
                 .build());
     }
 
-    public <T> T queryWithRequest(String uri, HttpMethod method) {
-        return queryWithRequest(uri, method, ParamsConsumer.NONE);
+    public <T> T query(String uri, HttpMethod method, TypeReference<T> type) {
+        return query(uri, method, type, ParamsConsumer.NONE);
     }
 
-    public <T> T queryWithRequest(String uri, HttpMethod method, ParamsConsumer paramsConsumer) {
-        return queryWithRequest(uri, method, new TypeReference<>(){}, paramsConsumer);
-    }
-
-    public <T> T queryWithRequest(String uri, HttpMethod method, TypeReference<T> type, ParamsConsumer paramsConsumer) {
+    public <T> T query(String uri, HttpMethod method, TypeReference<T> type, ParamsConsumer paramsConsumer) {
         return execute(client.prepareRequestBuilder(uri + queryEncode(paramsConsumer))
                 .method(method.name(), method == HttpMethod.GET? null : new FormBody.Builder().build())
                 .build(),

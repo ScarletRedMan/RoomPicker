@@ -73,7 +73,7 @@ public class RoomPickerClient {
     }
 
     public RoomPickerInfoResponse getServerInfo() {
-        return restTemplate.queryWithRequest("/info", HttpMethod.GET, new TypeReference<>() {
+        return restTemplate.query("/info", HttpMethod.GET, new TypeReference<>() {
         }, params -> {});
     }
 
