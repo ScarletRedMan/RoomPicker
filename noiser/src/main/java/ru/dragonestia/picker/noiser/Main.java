@@ -34,8 +34,8 @@ public class Main {
     }
 
     private void removeAll() {
-        client.getNodeRepository().allNodes(GetAllNodes.JUST)
-                .forEach(node -> client.getNodeRepository().removeNode(node));
+        client.getInstanceRepository().allNodes(GetAllNodes.JUST)
+                .forEach(node -> client.getInstanceRepository().removeNode(node));
     }
 
     private List<NodeIdentifier> initNodes() {
@@ -47,7 +47,7 @@ public class Main {
             var node = new NodeDefinition(NodeIdentifier.of("test-node-" + i))
                     .setPickingMethod(PickingMethod.values()[i % PickingMethod.values().length]);
 
-            client.getNodeRepository().saveNode(node);
+            client.getInstanceRepository().saveNode(node);
 
             var nodeId = node.getIdentifierObject();
             totalUsers.put(nodeId, new AtomicInteger(0));
@@ -85,7 +85,7 @@ public class Main {
                         users.add(EntityIdentifier.of(UUID.randomUUID().toString()));
                     }
 
-                    var request = client.getNodeRepository().pickRoom(nodeId, users);
+                    var request = client.getInstanceRepository().pickRoom(nodeId, users);
                     usersInNode.addAndGet(add);
                     var roomId = RoomIdentifier.of(request.roomId());
 
@@ -93,7 +93,7 @@ public class Main {
 
                     scheduler.schedule(() -> {
                         try {
-                            client.getUserRepository().unlinkUsersFromRoom(UnlinkUsersFromRoom.builder()
+                            client.getEntityRepository().unlinkUsersFromRoom(UnlinkUsersFromRoom.builder()
                                     .setNodeId(nodeId)
                                     .setRoomId(roomId)
                                     .setUsers(users)

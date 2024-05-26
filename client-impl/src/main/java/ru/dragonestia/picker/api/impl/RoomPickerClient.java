@@ -1,5 +1,6 @@
 package ru.dragonestia.picker.api.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import okhttp3.Credentials;
 import okhttp3.Request;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -55,7 +56,7 @@ public class RoomPickerClient {
                 .addHeader("Authorization", Credentials.basic(username, password));
     }
 
-    public InstanceRepository getNodeRepository() {
+    public InstanceRepository getInstanceRepository() {
         return instanceRepository;
     }
 
@@ -63,7 +64,7 @@ public class RoomPickerClient {
         return roomRepository;
     }
 
-    public EntityRepository getUserRepository() {
+    public EntityRepository getEntityRepository() {
         return entityRepository;
     }
 
@@ -72,7 +73,8 @@ public class RoomPickerClient {
     }
 
     public RoomPickerInfoResponse getServerInfo() {
-        return restTemplate.queryWithRequest("/info", HttpMethod.GET, params -> {});
+        return restTemplate.queryWithRequest("/info", HttpMethod.GET, new TypeReference<>() {
+        }, params -> {});
     }
 
     public Account getAccount() {
