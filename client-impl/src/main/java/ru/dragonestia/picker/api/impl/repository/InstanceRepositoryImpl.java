@@ -22,20 +22,18 @@ public class InstanceRepositoryImpl implements InstanceRepository {
 
     @Override
     public List<InstanceId> allInstancesIds() {
-        List<String> id = rest.queryWithRequest("/instances", HttpMethod.GET);
-        return id.stream().map(InstanceId::of).toList();
+        return rest.query("/instances", HttpMethod.GET, new TypeReference<List<String>>(){}).stream().map(InstanceId::of).toList();
     }
 
     @Override
     public Instance getInstance(InstanceId id) {
-        ResponseObject.RInstance instance = rest.queryWithRequest("/instances/target/" + id.getValue(), HttpMethod.GET);
-        return instance.convert();
+        return rest.query("/instances/target/" + id.getValue(), HttpMethod.GET, new TypeReference<ResponseObject.RInstance>(){}).convert();
     }
 
     @Override
     public Map<InstanceId, Instance> getInstances(Collection<InstanceId> ids) {
         var map = new HashMap<InstanceId, Instance>();
-        rest.queryWithRequest("/instances/target/list", HttpMethod.GET, new TypeReference<List<ResponseObject.RInstance>>() {}, params -> {
+        rest.query("/instances/target/list", HttpMethod.GET, new TypeReference<List<ResponseObject.RInstance>>() {}, params -> {
             params.put("id", String.join(",", ids.stream().map(InstanceId::getValue).toList()));
         }).stream().map(ResponseObject.RInstance::convert).forEach(instance -> map.put(instance.id(), instance));
         return map;

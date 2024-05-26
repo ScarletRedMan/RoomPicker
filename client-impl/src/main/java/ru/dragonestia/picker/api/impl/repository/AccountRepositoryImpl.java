@@ -1,5 +1,6 @@
 package ru.dragonestia.picker.api.impl.repository;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import ru.dragonestia.picker.api.impl.util.RestTemplate;
 import ru.dragonestia.picker.api.impl.util.type.HttpMethod;
 import ru.dragonestia.picker.api.model.account.Account;
@@ -21,22 +22,20 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     @Override
     public List<AccountId> allAccountsIds() {
-        List<String> id = rest.queryWithRequest("/accounts", HttpMethod.GET);
-        return id.stream().map(AccountId::of).toList();
+        return rest.query("/accounts", HttpMethod.GET, new TypeReference<List<String>>(){}).stream().map(AccountId::of).toList();
     }
 
     @Override
     public Account getAccount(AccountId id) {
-        ResponseObject.RAccount account = rest.queryWithRequest("/accounts/target/" + id, HttpMethod.GET);
-        return account.convert();
+
+        return rest.query("/accounts/target/" + id, HttpMethod.GET, new TypeReference<ResponseObject.RAccount>(){}).convert();
     }
 
     @Override
     public List<Account> getAccounts(Collection<AccountId> id) {
-        List<ResponseObject.RAccount> accounts = rest.queryWithRequest("/accounts/list", HttpMethod.GET, params -> {
+        return rest.query("/accounts/list", HttpMethod.GET, new TypeReference<List<ResponseObject.RAccount>>(){}, params -> {
             params.put("id", String.join(",", id.stream().map(AccountId::getValue).toList()));
-        });
-        return accounts.stream().map(ResponseObject.RAccount::convert).toList();
+        }).stream().map(ResponseObject.RAccount::convert).toList();
     }
 
     @Override
