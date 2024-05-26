@@ -1,6 +1,5 @@
 package ru.dragonestia.picker.controller.graphql;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
@@ -48,7 +47,7 @@ public class GraphqlController {
     }
 
     @QueryMapping
-    List<ObjectRoom> allRooms(@NotNull String nodeId) {
+    List<ObjectRoom> allRooms(@Argument String nodeId) {
         var node = instanceService.find(InstanceId.of(nodeId)).orElse(null);
         if (node == null) return null;
 
@@ -58,7 +57,7 @@ public class GraphqlController {
     }
 
     @QueryMapping
-    ObjectRoom roomById(@Argument String nodeId, @NotNull String roomId) {
+    ObjectRoom roomById(@Argument String nodeId, @Argument String roomId) {
         var node = instanceService.find(InstanceId.of(nodeId)).orElse(null);
         if (node == null) return null;
 
