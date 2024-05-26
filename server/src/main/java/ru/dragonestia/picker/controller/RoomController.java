@@ -45,7 +45,7 @@ public class RoomController {
                                     @RequestParam int slots,
                                     @RequestParam(defaultValue = "false") boolean locked,
                                     @RequestParam(defaultValue = "false") boolean persist,
-                                    @RequestBody String payload) {
+                                    @RequestBody(required = false) String payload) {
         var instance = instanceService.find(InstanceId.of(instanceId))
                         .orElseThrow(() -> DoesNotExistsException.forInstance(InstanceId.of(instanceId)));
         roomService.create(roomFactory.create(RoomId.of(id), instance, slots, payload, persist, locked));
