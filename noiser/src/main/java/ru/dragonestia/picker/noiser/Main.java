@@ -1,14 +1,10 @@
 package ru.dragonestia.picker.noiser;
 
 import ru.dragonestia.picker.api.impl.RoomPickerClient;
-import ru.dragonestia.picker.api.model.node.NodeDefinition;
-import ru.dragonestia.picker.api.model.node.PickingMethod;
-import ru.dragonestia.picker.api.model.room.RoomDefinition;
-import ru.dragonestia.picker.api.repository.query.node.GetAllNodes;
-import ru.dragonestia.picker.api.repository.query.user.UnlinkUsersFromRoom;
-import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
-import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
-import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
+import ru.dragonestia.picker.api.model.entity.EntityId;
+import ru.dragonestia.picker.api.model.instance.InstanceId;
+import ru.dragonestia.picker.api.model.instance.type.PickingMethod;
+import ru.dragonestia.picker.api.model.room.RoomId;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,9 +19,9 @@ public class Main {
     private final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(8);
     private final Random random = new Random();
     private final RoomPickerClient client;
-    private final List<NodeIdentifier> nodes;
+    private final List<InstanceId> nodes;
 
-    private final Map<NodeIdentifier, AtomicInteger> totalUsers = new ConcurrentHashMap<>();
+    private final Map<InstanceId, AtomicInteger> totalUsers = new ConcurrentHashMap<>();
     private final int expectedUsers = 10000;
 
     public Main() {
@@ -34,22 +30,18 @@ public class Main {
     }
 
     private void removeAll() {
-        client.getInstanceRepository().allNodes(GetAllNodes.JUST)
-                .forEach(node -> client.getInstanceRepository().removeNode(node));
+        client.getInstanceRepository().allInstancesIds()
+                .forEach(node -> client.getInstanceRepository().deleteInstance(node));
     }
 
-    private List<NodeIdentifier> initNodes() {
+    private List<InstanceId> initNodes() {
         removeAll();
 
-        var list = new ArrayList<NodeIdentifier>();
+        var list = new ArrayList<InstanceId>();
 
         for (int i = 0; i < 5; i++) {
-            var node = new NodeDefinition(NodeIdentifier.of("test-node-" + i))
-                    .setPickingMethod(PickingMethod.values()[i % PickingMethod.values().length]);
-
-            client.getInstanceRepository().saveNode(node);
-
-            var nodeId = node.getIdentifierObject();
+            var nodeId = InstanceId.of("test-node-" + i);
+            client.getInstanceRepository().createInstance(nodeId, PickingMethod.values()[i % PickingMethod.values().length], false);
             totalUsers.put(nodeId, new AtomicInteger(0));
             list.add(nodeId);
         }
@@ -61,11 +53,9 @@ public class Main {
         final int perNode = expectedUsers / nodes.size();
         final int roomsPerNode = perNode / 10;
 
-        for (var nodeId: nodes) {
+        for (var instanceId: nodes) {
             for (int i = 0; i < roomsPerNode; i++) {
-                client.getRoomRepository().saveRoom(
-                        new RoomDefinition(nodeId, RoomIdentifier.of(UUID.randomUUID().toString())).setMaxSlots(50)
-                );
+                client.getRoomRepository().createRoom(instanceId, RoomId.of(UUID.randomUUID().toString()), 50, "", false, false);
             }
         }
     }
@@ -76,28 +66,24 @@ public class Main {
 
             try {
                 synchronized (usersInNode) {
-                    var users = new HashSet<EntityIdentifier>();
+                    var users = new HashSet<EntityId>();
                     var maxAdd = Math.min(10, (expectedUsers / nodes.size()) - usersInNode.get());
 
                     if (maxAdd == 0) return;
                     var add = maxAdd == 1 ? 1 : (random.nextInt(maxAdd - 1) + 1);
                     for (int i = 0; i < add; i++) {
-                        users.add(EntityIdentifier.of(UUID.randomUUID().toString()));
+                        users.add(EntityId.of(UUID.randomUUID().toString()));
                     }
 
                     var request = client.getInstanceRepository().pickRoom(nodeId, users);
                     usersInNode.addAndGet(add);
-                    var roomId = RoomIdentifier.of(request.roomId());
+                    var roomId = request.getRoom().id();
 
                     System.out.printf("Added %s(total %s) users to %s/%s%n", add, usersInNode.get(), nodeId.getValue(), roomId.getValue());
 
                     scheduler.schedule(() -> {
                         try {
-                            client.getEntityRepository().unlinkUsersFromRoom(UnlinkUsersFromRoom.builder()
-                                    .setNodeId(nodeId)
-                                    .setRoomId(roomId)
-                                    .setUsers(users)
-                                    .build());
+                            client.getEntityRepository().unlinkEntitiesFromRoom(nodeId, roomId, users);
 
                             usersInNode.addAndGet(-add);
                             System.out.printf("Reduced %s users from %s/%s%n", add, nodeId.getValue(), roomId.getValue());
