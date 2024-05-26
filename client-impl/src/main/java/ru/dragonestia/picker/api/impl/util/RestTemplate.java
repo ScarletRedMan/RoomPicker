@@ -184,6 +184,7 @@ public class RestTemplate {
 
             var exceptionClass = response.header("X-Server-Exception");
             var body = new String(Objects.requireNonNull(response.body()).bytes(), StandardCharsets.UTF_8);
+            System.out.println("EXCEPTION: " + exceptionClass + " " + body);
             throw ExceptionService.prepare(exceptionClass, body);
         }
 
