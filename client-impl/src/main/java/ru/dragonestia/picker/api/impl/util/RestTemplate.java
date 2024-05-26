@@ -188,9 +188,6 @@ public class RestTemplate {
                 throw new NotEnoughPermissions("Not enough permissions");
             }
 
-            var accountData = json.readValue(response.header("X-RoomPicker-Account"), Account.class);
-            accountConsumer.accept(accountData);
-
             var exceptionClass = response.header("X-Server-Exception");
             var body = new String(Objects.requireNonNull(response.body()).bytes(), StandardCharsets.UTF_8);
             throw ExceptionService.prepare(exceptionClass, body);
@@ -198,6 +195,11 @@ public class RestTemplate {
 
         if (statusCode == 5) {
             throw new RuntimeException("Internal server error");
+        }
+
+        if (statusCode == 2) {
+            var accountData = json.readValue(response.header("X-Roompicker-Account"), Account.class);
+            accountConsumer.accept(accountData);
         }
     }
 

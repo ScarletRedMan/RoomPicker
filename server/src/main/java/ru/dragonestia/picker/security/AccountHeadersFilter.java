@@ -27,7 +27,7 @@ public class AccountHeadersFilter implements Filter {
         var data = new AccountData(account.getId().getValue(), new ArrayList<>(account.getAuthorities()), account.isLocked());
 
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        httpServletResponse.setHeader("X-RoomPicker-Account", objectMapper.writeValueAsString(data));
+        httpServletResponse.setHeader("X-Roompicker-Account", objectMapper.writeValueAsString(data));
 
         chain.doFilter(request, response);
     }
