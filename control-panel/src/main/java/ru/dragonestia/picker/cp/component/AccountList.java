@@ -17,23 +17,25 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.theme.lumo.LumoIcon;
-import ru.dragonestia.picker.api.model.account.ResponseAccount;
-import ru.dragonestia.picker.api.repository.AccountRepository;
-import ru.dragonestia.picker.cp.model.Permission;
+import ru.dragonestia.picker.api.impl.RoomPickerClient;
+import ru.dragonestia.picker.api.model.account.Account;
+import ru.dragonestia.picker.api.model.account.AccountId;
+import ru.dragonestia.picker.api.model.account.Permission;
+import ru.dragonestia.picker.cp.util.PermissionDescription;
+import ru.dragonestia.picker.cp.util.Notifications;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class AccountList extends VerticalLayout implements RefreshableTable {
 
-    private final AccountRepository accountRepository;
+    private final RoomPickerClient client;
     private final TextField searchField;
-    private final Grid<ResponseAccount> grid;
+    private final Grid<Account> grid;
 
-    private List<ResponseAccount> cachedAccounts = new ArrayList<>();
+    private List<Account> cachedAccounts = new ArrayList<>();
 
-    public AccountList(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
+    public AccountList(RoomPickerClient client) {
+        this.client = client;
 
         add(searchField = createSearchField());
         add(grid = createGridAccounts());
@@ -42,7 +44,7 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
     }
 
     private TextField createSearchField() {
-        var field = new TextField("Search by account username");
+        var field = new TextField("Search by account entityname");
         field.setPrefixComponent(new Icon(VaadinIcon.SEARCH));
         field.setClearButtonVisible(true);
         field.setHelperText("Press Enter to search");
@@ -52,11 +54,11 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
         return field;
     }
 
-    private Grid<ResponseAccount> createGridAccounts() {
-        var grid = new Grid<>(ResponseAccount.class, false);
+    private Grid<Account> createGridAccounts() {
+        var grid = new Grid<>(Account.class, false);
 
-        grid.addColumn(ResponseAccount::getUsername).setHeader("Username")
-                .setComparator(Comparator.comparing(ResponseAccount::getUsername)).setSortable(true);
+        grid.addColumn(Account::id).setHeader("Username")
+                .setComparator(Comparator.comparing(account -> account.id().getValue())).setSortable(true);
 
         grid.addComponentColumn(this::createAccountManagementButtons).setFrozenToEnd(true)
                 .setTextAlign(ColumnTextAlign.END).setHeader(createToolItems());
@@ -66,7 +68,7 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
         return grid;
     }
 
-    private HorizontalLayout createAccountManagementButtons(ResponseAccount account) {
+    private HorizontalLayout createAccountManagementButtons(Account account) {
         var layout = new HorizontalLayout(JustifyContentMode.END);
 
         {
@@ -74,7 +76,7 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             button.addClickListener(event -> {
                 getUI().ifPresent(ui -> {
-                    ui.navigate("/admin/accounts/" + account.getUsername());
+                    ui.navigate("/admin/accounts/" + account.id());
                 });
             });
             layout.add(button);
@@ -101,7 +103,8 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
 
     @Override
     public void refresh() {
-        cachedAccounts = accountRepository.allAccounts();
+        var ids = client.getAccountRepository().allAccountsIds();
+        cachedAccounts = client.getAccountRepository().getAccounts(ids);
         applySearch(searchField.getValue());
     }
 
@@ -109,7 +112,7 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
         var temp = input.trim();
 
         grid.setItems(cachedAccounts.stream()
-                .filter(account -> account.getUsername().startsWith(temp))
+                .filter(account -> account.id().getValue().startsWith(temp))
                 .toList());
     }
 
@@ -123,9 +126,9 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
 
         var layout = new VerticalLayout();
 
-        var fieldUsername = new TextField("Account username");
-        fieldUsername.setWidth(70, Unit.PERCENTAGE);
-        layout.add(fieldUsername);
+        var fieldEntityname = new TextField("Username");
+        fieldEntityname.setWidth(70, Unit.PERCENTAGE);
+        layout.add(fieldEntityname);
 
         var fieldPassword = new PasswordField("Password");
         fieldPassword.setWidth(70, Unit.PERCENTAGE);
@@ -138,7 +141,9 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
         layout.add(new H3("Permissions"));
 
         var permissionsList = new ArrayList<PermissionCheckBox>();
-        for (var permission: Permission.Enum.values()) {
+        for (var permission: Permission.values()) {
+            if (permission == Permission.ADMIN) continue;
+
             var comp = new PermissionCheckBox(permission);
             permissionsList.add(comp);
             layout.add(comp);
@@ -149,7 +154,7 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             button.setWidth(100, Unit.PERCENTAGE);
             button.addClickListener(event -> {
-                validateAndRegister(dialog, fieldUsername, fieldPassword, fieldConfirmPassword, permissionsList);
+                validateAndRegister(dialog, fieldEntityname, fieldPassword, fieldConfirmPassword, permissionsList);
             });
             dialog.getFooter().add(button);
         }
@@ -162,13 +167,13 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
         dialog.open();
     }
 
-    private void validateAndRegister(Dialog dialog, TextField usernameField, PasswordField passwordField, PasswordField confirmPasswordField, List<PermissionCheckBox> permissionCheckBoxes) {
-        var username = usernameField.getValue().trim();
+    private void validateAndRegister(Dialog dialog, TextField entitynameField, PasswordField passwordField, PasswordField confirmPasswordField, List<PermissionCheckBox> permissionCheckBoxes) {
+        var entityname = entitynameField.getValue().trim();
         var password = passwordField.getValue();
         var confirmPassword = confirmPasswordField.getValue();
 
-        if (username.length() < 3 || username.length() > 32) {
-            Notifications.error("Invalid username length. Valid is 3-32");
+        if (entityname.length() < 3 || entityname.length() > 32) {
+            Notifications.error("Invalid entityname length. Valid is 3-32");
             return;
         }
 
@@ -185,10 +190,9 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
         var permissions = permissionCheckBoxes.stream()
                 .filter(AbstractField::getValue)
                 .map(PermissionCheckBox::getOption)
-                .map(Enum::name)
-                .collect(Collectors.toSet());
+                .toList();
 
-        accountRepository.createAccount(username, password, permissions);
+        client.getAccountRepository().createAccount(AccountId.of(entityname), password, permissions);
 
         dialog.close();
         refresh();
@@ -196,14 +200,14 @@ public class AccountList extends VerticalLayout implements RefreshableTable {
 
     public static class PermissionCheckBox extends Checkbox {
 
-        private final Permission.Enum option;
+        private final Permission option;
 
-        public PermissionCheckBox(Permission.Enum option) {
-            super(option.getDescription());
+        public PermissionCheckBox(Permission option) {
+            super(PermissionDescription.of(option));
             this.option = option;
         }
 
-        public Permission.Enum getOption() {
+        public Permission getOption() {
             return option;
         }
     }

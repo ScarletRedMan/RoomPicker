@@ -58,19 +58,19 @@ public class NavPath extends HorizontalLayout{
         return button;
     }
 
-    public static NavPath rootNodes() {
-        return new NavPath(new NavPath.Point("Nodes", "/nodes"));
+    public static NavPath rootInstances() {
+        return new NavPath(new NavPath.Point("Instances", "/instances"));
     }
 
-    public static NavPath toNode(String nodeId) {
-        return new NavPath(new NavPath.Point("Nodes", "/nodes"),
-                new NavPath.Point(nodeId, "/nodes/" + nodeId));
+    public static NavPath toInstance(String instanceId) {
+        return new NavPath(new NavPath.Point("Instances", "/instances"),
+                new NavPath.Point(instanceId, "/instances/" + instanceId));
     }
 
-    public static NavPath toRoom(String nodeId, String roomId) {
-        return new NavPath(new NavPath.Point("Nodes", "/nodes"),
-                new NavPath.Point(nodeId, "/nodes/" + nodeId),
-                new NavPath.Point(roomId, "/nodes/" + nodeId + "/rooms/" + roomId));
+    public static NavPath toRoom(String instanceId, String roomId) {
+        return new NavPath(new NavPath.Point("Instances", "/instances"),
+                new NavPath.Point(instanceId, "/instances/" + instanceId),
+                new NavPath.Point(roomId, "/instances/" + instanceId + "/rooms/" + roomId));
     }
 
     private record Point(String name, String uri) {}

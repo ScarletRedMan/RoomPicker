@@ -7,7 +7,7 @@ import com.vaadin.flow.server.ErrorHandler;
 import lombok.extern.log4j.Log4j2;
 import ru.dragonestia.picker.api.exception.ApiException;
 import ru.dragonestia.picker.api.impl.exception.NotEnoughPermissions;
-import ru.dragonestia.picker.cp.component.Notifications;
+import ru.dragonestia.picker.cp.util.Notifications;
 
 import java.security.InvalidParameterException;
 
@@ -21,30 +21,22 @@ public class ApplicationErrorHandler implements ErrorHandler {
             return;
         }
 
-        if (errorEvent.getThrowable() instanceof ApiException ex) {
-            execute(() -> {
-                Notifications.error(ex.getMessage());
-            });
+        if (errorEvent.getThrowable().getClass().getAnnotation(ApiException.class) != null) {
+            execute(() -> Notifications.error(errorEvent.getThrowable().getMessage()));
             return;
         }
 
         if (errorEvent.getThrowable() instanceof InvalidParameterException ex) {
-            execute(() -> {
-                Notifications.error(ex.getMessage());
-            });
+            execute(() -> Notifications.error(ex.getMessage()));
             return;
         }
 
         if (errorEvent.getThrowable() instanceof NotEnoughPermissions) {
-            execute(() -> {
-                Notifications.error("Not enough permissions to this action");
-            });
+            execute(() -> Notifications.error("Not enough permissions to this action"));
             return;
         }
 
-        execute(() -> {
-            Notifications.error("Internal server error");
-        });
+        execute(() -> Notifications.error("Internal server error"));
         log.throwing(errorEvent.getThrowable());
     }
 
