@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.dragonestia.picker.api.exception.InstanceAlreadyExistException;
-import ru.dragonestia.picker.api.model.node.PickingMethod;
-import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
+import ru.dragonestia.picker.exception.AlreadyExistsException;
 import ru.dragonestia.picker.model.instance.Instance;
+import ru.dragonestia.picker.model.instance.InstanceId;
+import ru.dragonestia.picker.model.instance.type.PickingMethod;
 
 import java.util.List;
 
@@ -21,13 +21,13 @@ public class InstanceServiceTests {
     @WithMockUser(roles = {"NODE_MANAGEMENT"})
     @Test
     void test_nodeCreateAndRemove() {
-        var node = new Instance(NodeIdentifier.of("test"), PickingMethod.SEQUENTIAL_FILLING, false);
+        var node = new Instance(InstanceId.of("test"), PickingMethod.SEQUENTIAL_FILLING, false);
 
         Assertions.assertDoesNotThrow(() -> instanceService.create(node));
         Assertions.assertTrue(instanceService.find(node.getId()).isPresent());
-        Assertions.assertThrows(InstanceAlreadyExistException.class, () -> instanceService.create(node));
+        Assertions.assertThrows(AlreadyExistsException.class, () -> instanceService.create(node));
 
-        instanceService.remove(node);
+        instanceService.remove(node.getId());
 
         Assertions.assertFalse(() -> instanceService.find(node.getId()).isPresent());
     }
@@ -35,12 +35,12 @@ public class InstanceServiceTests {
     @WithMockUser(roles = {"NODE_MANAGEMENT"})
     @Test
     void test_allNodes() {
-        instanceService.all().forEach(node -> instanceService.remove(node));
+        instanceService.all().forEach(node -> instanceService.remove(node.getId()));
 
         var nodes = List.of(
-                new Instance(NodeIdentifier.of("test1"), PickingMethod.SEQUENTIAL_FILLING, false),
-                new Instance(NodeIdentifier.of("test2"), PickingMethod.ROUND_ROBIN, false),
-                new Instance(NodeIdentifier.of("test3"), PickingMethod.ROUND_ROBIN, false)
+                new Instance(InstanceId.of("test1"), PickingMethod.SEQUENTIAL_FILLING, false),
+                new Instance(InstanceId.of("test2"), PickingMethod.ROUND_ROBIN, false),
+                new Instance(InstanceId.of("test3"), PickingMethod.ROUND_ROBIN, false)
         );
 
         nodes.forEach(node -> instanceService.create(node));
@@ -50,7 +50,7 @@ public class InstanceServiceTests {
         Assertions.assertEquals(nodes.size(), list.size());
         Assertions.assertTrue(list.containsAll(nodes));
 
-        nodes.forEach(node -> instanceService.remove(node));
+        nodes.forEach(node -> instanceService.remove(node.getId()));
 
         Assertions.assertEquals(0, instanceService.all().size());
     }
