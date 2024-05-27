@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import ru.dragonestia.picker.api.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.config.FillingNodesConfig;
+import ru.dragonestia.picker.exception.NoRoomsAvailableException;
 import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.repository.RoomRepository;
 import ru.dragonestia.picker.repository.EntityRepository;
@@ -39,12 +39,12 @@ public class RoundRobinTests {
     @ParameterizedTest
     @ArgumentsSource(PickingArgumentProvider.class)
     void testPicking(String expectedRoomId, int usersAmount) {
-        var room = roomRepository.pick(instance, userFiller.createRandomUsers(usersAmount));
-        var slots = room.getMaxSlots();
+        var room = roomRepository.pick(instance.getId(), userFiller.createRandomUsers(usersAmount));
+        var slots = room.getSlots();
         var users = entityRepository.entitiesOf(room);
         Assertions.assertTrue(slots == -1 || slots >= users.size()); // check slots limitation
 
-        Assertions.assertEquals(expectedRoomId, room.getId());
+        Assertions.assertEquals(expectedRoomId, room.getId().getValue());
     }
 
     public static class PickingArgumentProvider implements ArgumentsProvider {
@@ -66,6 +66,6 @@ public class RoundRobinTests {
     @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     @Test
     void testNoOneRoomExpected() { // Take 9 users. expected none result
-        Assertions.assertThrows(NoRoomsAvailableException.class, () -> roomRepository.pick(instance, userFiller.createRandomUsers(9)));
+        Assertions.assertThrows(NoRoomsAvailableException.class, () -> roomRepository.pick(instance.getId(), userFiller.createRandomUsers(9)));
     }
 }

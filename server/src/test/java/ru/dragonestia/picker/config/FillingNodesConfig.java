@@ -3,12 +3,12 @@ package ru.dragonestia.picker.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import ru.dragonestia.picker.api.model.node.PickingMethod;
-import ru.dragonestia.picker.api.repository.type.NodeIdentifier;
-import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
-import ru.dragonestia.picker.api.repository.type.EntityIdentifier;
+import ru.dragonestia.picker.model.entity.EntityId;
 import ru.dragonestia.picker.model.instance.Instance;
 import ru.dragonestia.picker.model.entity.Entity;
+import ru.dragonestia.picker.model.instance.InstanceId;
+import ru.dragonestia.picker.model.instance.type.PickingMethod;
+import ru.dragonestia.picker.model.room.RoomId;
 import ru.dragonestia.picker.model.room.factory.RoomFactory;
 import ru.dragonestia.picker.repository.InstanceRepository;
 import ru.dragonestia.picker.repository.RoomRepository;
@@ -56,7 +56,7 @@ public class FillingNodesConfig {
 
     @Bean
     void createSequentialFillingNode() {
-        var node = new Instance(NodeIdentifier.of("seq"), PickingMethod.SEQUENTIAL_FILLING, false);
+        var node = new Instance(InstanceId.of("seq"), PickingMethod.SEQUENTIAL_FILLING, false);
         instanceRepository.create(node);
 
         fillNode(node);
@@ -66,7 +66,7 @@ public class FillingNodesConfig {
 
     @Bean
     void createRoundRobinNode() {
-        var node = new Instance(NodeIdentifier.of("round"), PickingMethod.ROUND_ROBIN, false);
+        var node = new Instance(InstanceId.of("round"), PickingMethod.ROUND_ROBIN, false);
         instanceRepository.create(node);
 
         fillNode(node);
@@ -76,7 +76,7 @@ public class FillingNodesConfig {
 
     @Bean
     void createLeastPickerNode() {
-        var node = new Instance(NodeIdentifier.of("least"), PickingMethod.LEAST_PICKED, false);
+        var node = new Instance(InstanceId.of("least"), PickingMethod.LEAST_PICKED, false);
         instanceRepository.create(node);
 
         fillNode(node);
@@ -88,12 +88,12 @@ public class FillingNodesConfig {
         for (int i = 0, n = 5; i < n; i++) {
             for (int j = 0; j < 3; j++) {
                 var roomId = "room-" + i + "-" + j;
-                var room = roomFactory.create(RoomIdentifier.of(roomId), instance, n, "", false);
+                var room = roomFactory.create(RoomId.of(roomId), instance, n, "", false);
                 roomRepository.create(room);
 
                 var users = n - i;
                 for (int k = users - 1; k >= 0; k--) {
-                    var user = new Entity(EntityIdentifier.of("user-" + k));
+                    var user = EntityId.of("user-" + k);
                     entityRepository.linkWithRoom(room, List.of(user), false);
                 }
 
