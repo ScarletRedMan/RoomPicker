@@ -59,20 +59,20 @@ public class UserMetricsAspect {
     void onCreateNode(Instance instance) {
         var nodeId = instance.getId();
         var gauge = Gauge.builder("roompicker_node_users_total", () -> data.get(nodeId.getValue()).users())
-                .tag("nodeId", nodeId.getValue())
+                .tag("instanceId", nodeId.getValue())
                 .register(meterRegistry);
 
         var counter = Counter.builder("roompicker_picks")
-                .tag("nodeId", nodeId.getValue())
+                .tag("instanceId", nodeId.getValue())
                 .baseUnit("1s")
                 .register(meterRegistry);
 
         var lockedGauge = Gauge.builder("roompicker_locked_rooms", () -> data.get(nodeId.getValue()).locked())
-                .tag("nodeId", nodeId.getValue())
+                .tag("instanceId", nodeId.getValue())
                 .register(meterRegistry);
 
         var roomsGauge = Gauge.builder("roompicker_rooms", () -> roomRepository.all(instance.getId()).size())
-                .tag("nodeId", nodeId.getValue())
+                .tag("instanceId", nodeId.getValue())
                 .register(meterRegistry);
 
         data.put(nodeId.getValue(), new NodeData(gauge, new AtomicInteger(0), counter, new AtomicInteger(0), lockedGauge, roomsGauge));

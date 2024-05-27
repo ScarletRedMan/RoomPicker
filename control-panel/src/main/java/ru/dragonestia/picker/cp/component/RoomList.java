@@ -15,27 +15,31 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.extern.log4j.Log4j2;
-import ru.dragonestia.picker.api.model.node.INode;
-import ru.dragonestia.picker.api.model.room.RoomDetails;
-import ru.dragonestia.picker.api.model.room.ShortResponseRoom;
-import ru.dragonestia.picker.api.repository.RoomRepository;
-import ru.dragonestia.picker.api.repository.query.room.GetAllRooms;
+import ru.dragonestia.picker.api.impl.RoomPickerClient;
+import ru.dragonestia.picker.api.model.instance.Instance;
+import ru.dragonestia.picker.api.model.instance.InstanceId;
+import ru.dragonestia.picker.api.model.room.RoomId;
+import ru.dragonestia.picker.cp.repository.dto.RoomDTO;
+import ru.dragonestia.picker.cp.repository.graphql.AllRooms;
+import ru.dragonestia.picker.cp.util.Notifications;
+import ru.dragonestia.picker.cp.util.UsingSlots;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Log4j2
 public class RoomList extends VerticalLayout implements RefreshableTable {
 
-    private final INode node;
-    private final RoomRepository roomRepository;
-    private final Grid<ShortResponseRoom> roomsGrid;
+    private final Instance instance;
+    private final RoomPickerClient client;
+    private final Grid<RoomDTO> roomsGrid;
     private final TextField searchField;
-    private List<ShortResponseRoom> cachedRooms;
-    private final Span totalUsers = new Span();
+    private List<RoomDTO> cachedRooms;
+    private final Span totalEntities = new Span();
 
-    public RoomList(INode node, RoomRepository roomRepository) {
-        this.node = node;
-        this.roomRepository = roomRepository;
+    public RoomList(Instance instance, RoomPickerClient client) {
+        this.instance = instance;
+        this.client = client;
 
         add(new H2("Rooms"));
         add(searchField = createSearchField());
@@ -58,39 +62,39 @@ public class RoomList extends VerticalLayout implements RefreshableTable {
         var temp = input.trim();
 
         roomsGrid.setItems(cachedRooms.stream()
-                .filter(room -> room.getIdentifier().startsWith(temp))
+                .filter(room -> room.getId().startsWith(temp))
                 .toList());
     }
 
-    private Grid<ShortResponseRoom> createGrid() {
-        var grid = new Grid<>(ShortResponseRoom.class, false);
+    private Grid<RoomDTO> createGrid() {
+        var grid = new Grid<>(RoomDTO.class, false);
 
-        grid.addColumn(ShortResponseRoom::getIdentifier).setHeader("Identifier").setSortable(true);
+        grid.addColumn(RoomDTO::getId).setHeader("Identifier").setSortable(true);
 
         grid.addComponentColumn(room -> {
             var result = new Span();
-            if (room.getMaxSlots() == -1) {
+            if (room.getSlots() == -1) {
                 result.setText("Unlimited");
                 result.getElement().getThemeList().add("badge contrast");
             } else {
-                result.setText(Integer.toString(room.getMaxSlots()));
+                result.setText(Integer.toString(room.getSlots()));
             }
             return result;
         }).setHeader("Slots").setComparator((room1, room2) -> {
-            var r1 = room1.hasUnlimitedSlots()? Integer.MAX_VALUE : room1.getMaxSlots();
-            var r2 = room2.hasUnlimitedSlots()? Integer.MAX_VALUE : room2.getMaxSlots();
+            var r1 = room1.getSlots() == 1? Integer.MAX_VALUE : room1.getSlots();
+            var r2 = room2.getSlots() == 1? Integer.MAX_VALUE : room2.getSlots();
 
             return Integer.compare(r1, r2);
         }).setSortable(true).setTextAlign(ColumnTextAlign.CENTER);
 
-        grid.addColumn(this::getUsers).setHeader("Users")
-                .setComparator((room1, room2) -> Integer.compare(getUsers(room1), getUsers(room2))).setSortable(true)
-                .setTextAlign(ColumnTextAlign.CENTER).setFooter(totalUsers);
+        grid.addColumn(RoomDTO::getCountEntities).setHeader("Entities")
+                .setComparator(Comparator.comparingInt(RoomDTO::getCountEntities)).setSortable(true)
+                .setTextAlign(ColumnTextAlign.CENTER).setFooter(totalEntities);
 
-        grid.addColumn(room -> Math.max(UserList.getUsingPercentage(room.getMaxSlots(), getUsers(room)), 0) + "%")
+        grid.addColumn(room -> Math.max(UsingSlots.getUsingPercentage(room.getSlots(), room.getCountEntities()), 0) + "%")
                 .setComparator((room1, room2) -> {
-                    var p1 = UserList.getUsingPercentage(room1.getMaxSlots(), getUsers(room1));
-                    var p2 = UserList.getUsingPercentage(room2.getMaxSlots(), getUsers(room2));
+                    var p1 = UsingSlots.getUsingPercentage(room1.getSlots(), room1.getCountEntities());
+                    var p2 = UsingSlots.getUsingPercentage(room2.getSlots(), room2.getCountEntities());
 
                     return Integer.compare(p1, p2);
                 }).setHeader("Occupancy").setTextAlign(ColumnTextAlign.CENTER);
@@ -114,7 +118,7 @@ public class RoomList extends VerticalLayout implements RefreshableTable {
         return grid;
     }
 
-    private HorizontalLayout createManageButtons(ShortResponseRoom room) {
+    private HorizontalLayout createManageButtons(RoomDTO room) {
         var layout = new HorizontalLayout(JustifyContentMode.END);
 
         {
@@ -134,15 +138,15 @@ public class RoomList extends VerticalLayout implements RefreshableTable {
         return layout;
     }
 
-    private void clickDetailsButton(ShortResponseRoom room) {
+    private void clickDetailsButton(RoomDTO room) {
         getUI().ifPresent(ui -> {
-            ui.navigate("/nodes/%s/rooms/%s".formatted(node.getIdentifier(), room.getIdentifier()));
+            ui.navigate("/instances/%s/rooms/%s".formatted(instance.id(), room.getId()));
         });
     }
 
-    private void clickRemoveButton(ShortResponseRoom room) {
+    private void clickRemoveButton(RoomDTO room) {
         var dialog = new Dialog("Confirm room deletion");
-        dialog.add(new Html("<p>Confirm that you want to delete room. Enter <b><u>" + room.getIdentifier() + "</u></b> to field below and confirm.</p>"));
+        dialog.add(new Html("<p>Confirm that you want to delete room. Enter <b><u>" + room.getId() + "</u></b> to field below and confirm.</p>"));
 
         var inputField = new TextField();
         inputField.setWidth("100%");
@@ -152,13 +156,13 @@ public class RoomList extends VerticalLayout implements RefreshableTable {
             var button = new Button("Confirm");
             button.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
             button.addClickListener(event -> {
-                if (!room.getIdentifier().equals(inputField.getValue())) {
+                if (!room.getId().equals(inputField.getValue())) {
                     Notifications.error("Invalid input");
                     return;
                 }
 
                 removeRoom(room);
-                Notifications.success("Room <b>" + room.getIdentifier() + "</b> was successfully removed!");
+                Notifications.success("Room <b>" + room.getId() + "</b> was successfully removed!");
                 dialog.close();
             });
 
@@ -174,31 +178,23 @@ public class RoomList extends VerticalLayout implements RefreshableTable {
         dialog.open();
     }
 
-    public void removeRoom(ShortResponseRoom room) {
-        roomRepository.removeRoom(room);
+    public void removeRoom(RoomDTO room) {
+        client.getRoomRepository().deleteRoom(InstanceId.of(room.getInstanceId()), RoomId.of(room.getId()));
         refresh();
-    }
-
-    private int getUsers(ShortResponseRoom room) {
-        var users = room.getDetail(RoomDetails.COUNT_USERS);
-        if (users == null) return 0;
-        try {
-
-            return Integer.parseInt(users);
-        } catch (NumberFormatException ex) {
-            return 0;
-        }
     }
 
     @Override
     public void refresh() {
-        cachedRooms = roomRepository.allRooms(GetAllRooms.withAllDetails(node.getIdentifierObject()));
+        cachedRooms = client.getRestTemplate().executeGraphQL(AllRooms.query(instance.id().getValue())).getAllRooms()
+                .stream()
+                .map(room -> (RoomDTO) room)
+                .toList();
         applySearch(searchField.getValue());
 
-        int users = 0;
+        int entities = 0;
         for (var room: cachedRooms) {
-            users += getUsers(room);
+            entities += room.getCountEntities();
         }
-        totalUsers.setText("Total users: " + users);
+        totalEntities.setText("Total entities: " + entities);
     }
 }

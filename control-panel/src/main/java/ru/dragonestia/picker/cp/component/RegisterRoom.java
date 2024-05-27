@@ -11,29 +11,29 @@ import com.vaadin.flow.component.textfield.Autocomplete;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import org.springframework.lang.Nullable;
-import ru.dragonestia.picker.api.model.node.INode;
-import ru.dragonestia.picker.api.model.room.IRoom;
-import ru.dragonestia.picker.api.model.room.RoomDefinition;
-import ru.dragonestia.picker.api.repository.type.RoomIdentifier;
+import ru.dragonestia.picker.api.model.instance.Instance;
+import ru.dragonestia.picker.api.model.room.Room;
+import ru.dragonestia.picker.api.model.room.RoomId;
+import ru.dragonestia.picker.cp.util.Notifications;
 
 import java.util.function.Function;
 
 public class RegisterRoom extends Details {
 
-    private final INode node;
-    private final Function<RoomDefinition, Response> onSubmit;
+    private final Instance instance;
+    private final Function<Room, Response> onSubmit;
     private final TextField identifierField;
     private final TextArea payloadField;
     private final Checkbox lockedField;
     private final Checkbox persistField;
 
-    public RegisterRoom(INode node, Function<RoomDefinition, Response> onSubmit) {
+    public RegisterRoom(Instance instance, Function<Room, Response> onSubmit) {
         super(new H2("Register room"));
-        this.node = node;
+        this.instance = instance;
         this.onSubmit = onSubmit;
 
         var layout = new VerticalLayout();
-        layout.add(createNodeIdentifierField());
+        layout.add(createInstanceIdentifierField());
         layout.add(identifierField = createRoomIdentifierField());
         layout.add(payloadField = createPayloadField());
         layout.add(lockedField = createLockedField());
@@ -43,10 +43,10 @@ public class RegisterRoom extends Details {
         add(layout);
     }
 
-    private TextField createNodeIdentifierField() {
-        var field = new TextField("Node identifier");
+    private TextField createInstanceIdentifierField() {
+        var field = new TextField("Instance identifier");
         field.setMinWidth(20, Unit.REM);
-        field.setValue(node.getIdentifier());
+        field.setValue(instance.id().getValue());
         field.setReadOnly(true);
         return field;
     }
@@ -97,7 +97,7 @@ public class RegisterRoom extends Details {
 
     private @Nullable String validateForm(String identifier) {
         if (identifier.isEmpty()) {
-            return "Node identifier cannot be empty";
+            return "Instance identifier cannot be empty";
         }
 
         return null;
@@ -116,13 +116,7 @@ public class RegisterRoom extends Details {
             return;
         }
 
-        var room = new RoomDefinition(node.getIdentifierObject(), RoomIdentifier.of(roomId))
-                .setMaxSlots(IRoom.UNLIMITED_SLOTS)
-                .setPayload(payloadField.getValue())
-                .setPersist(persistField.getValue());
-
-        room.setLocked(lockedField.getValue());
-        var response = onSubmit.apply(room);
+        var response = onSubmit.apply(new Room(RoomId.of(roomId), instance.id(), -1, lockedField.getValue(), payloadField.getValue(), persistField.getValue()));
         clear();
         if (response.error()) {
             Notifications.error(response.reason());

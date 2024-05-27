@@ -30,7 +30,6 @@ dependencies {
     implementation project(":client-impl")
 
     implementation 'com.vaadin:vaadin-spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
