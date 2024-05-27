@@ -107,13 +107,8 @@ public class RestTemplate {
         }
 
         if (node.has("errors")) {
-            var details = new HashMap<String, String>();
-            for (Iterator<Map.Entry<String, JsonNode>> it = node.fields(); it.hasNext(); ) {
-                var entry = it.next();
-
-                details.put(entry.getKey(), entry.getValue().textValue());
-            }
-            throw new GraphqlException(details);
+            var details = node.get("errors").get(0);
+            throw new GraphqlException(details.get("message").asText());
         }
 
         try {
