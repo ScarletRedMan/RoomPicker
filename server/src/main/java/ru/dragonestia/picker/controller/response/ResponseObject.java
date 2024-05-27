@@ -15,7 +15,7 @@ public final class ResponseObject {
         }
     }
 
-    public record Room(String id, String nodeId, int slots, boolean locked, boolean persist, String payload) {
+    public record Room(String id, String instanceId, int slots, boolean locked, boolean persist, String payload) {
 
         public static ResponseObject.Room of(ru.dragonestia.picker.model.room.Room room) {
             return new Room(room.getId().getValue(),
