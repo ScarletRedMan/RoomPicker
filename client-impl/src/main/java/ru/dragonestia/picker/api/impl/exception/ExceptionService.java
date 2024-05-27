@@ -14,16 +14,15 @@ public class ExceptionService {
         if (exceptionMap != null) return;
         exceptionMap = new HashMap<>();
 
-        var ref = new Reflections("ru.dragonestia.picker.api.exception");
+        var ref = new Reflections("ru.dragonestia.picker");
         for (var clazz: ref.getTypesAnnotatedWith(ApiException.class)) {
-            if (!clazz.isNestmateOf(RuntimeException.class)) continue;
-
             exceptionMap.put(clazz.getSimpleName(), clazz);
         }
     }
 
     public static RuntimeException prepare(String ex, String message) {
         try {
+            System.out.println(exceptionMap);
             return (RuntimeException) exceptionMap.getOrDefault(ex, UnknownException.class)
                     .getConstructor(String.class)
                     .newInstance(message);
